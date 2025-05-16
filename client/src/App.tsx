@@ -34,6 +34,19 @@ function Router() {
 }
 
 function App() {
+  // Handle authentication redirects
+  useEffect(() => {
+    const checkRedirectResult = async () => {
+      try {
+        await handleAuthRedirect();
+      } catch (error) {
+        console.error("Error handling redirect: ", error);
+      }
+    };
+    
+    checkRedirectResult();
+  }, []);
+
   return (
     <AuthProvider>
       <TooltipProvider>
