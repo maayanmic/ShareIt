@@ -1,0 +1,318 @@
+import { useState, useEffect } from "react";
+import { Link } from "wouter";
+import { useAuth } from "@/hooks/use-auth";
+import { getUserRecommendations } from "@/lib/firebase";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useToast } from "@/hooks/use-toast";
+import { 
+  Camera, 
+  Share, 
+  Users, 
+  ThumbsUp, 
+  Award, 
+  Settings, 
+  Edit,
+  Info
+} from "lucide-react";
+import RecommendationCard from "@/components/recommendation/recommendation-card";
+import DigitalWallet from "@/components/wallet/digital-wallet";
+
+export default function Profile() {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [recommendations, setRecommendations] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUserRecommendations = async () => {
+      if (!user) return;
+
+      try {
+        const data = await getUserRecommendations(user.uid);
+        setRecommendations(data);
+      } catch (error) {
+        console.error("Error fetching user recommendations:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load your recommendations. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserRecommendations();
+  }, [user, toast]);
+
+  if (!user) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[70vh]">
+        <Card className="w-full max-w-md">
+          <CardContent className="pt-6 text-center">
+            <Info className="h-16 w-16 text-primary-500 mx-auto mb-4" />
+            <h1 className="text-2xl font-bold mb-4">Login Required</h1>
+            <p className="text-gray-500 dark:text-gray-400 mb-6">
+              You need to be logged in to view your profile.
+            </p>
+            <div className="flex justify-center space-x-4">
+              <Button asChild>
+                <Link href="/login">Log In</Link>
+              </Button>
+              <Button variant="outline" asChild>
+                <Link href="/register">Register</Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container max-w-5xl mx-auto">
+      {/* Profile Header */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden mb-6">
+        <div className="bg-gradient-to-r from-primary-500 to-primary-600 h-32 flex items-end p-6">
+          <div className="flex flex-col md:flex-row items-center md:items-end gap-4">
+            <Avatar className="w-24 h-24 border-4 border-white dark:border-gray-800">
+              <AvatarImage src={user.photoURL || ""} alt={user.displayName || "User"} />
+              <AvatarFallback className="text-2xl">
+                {user.displayName?.charAt(0) || "U"}
+              </AvatarFallback>
+            </Avatar>
+            <div className="text-center md:text-left mb-4 md:mb-0">
+              <h1 className="text-2xl font-bold text-white">{user.displayName}</h1>
+              <p className="text-primary-100">
+                @{user.displayName?.toLowerCase().replace(/\s+/g, "") || "user"}
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="p-6">
+          <div className="flex flex-wrap gap-4 justify-center md:justify-start">
+            <div className="flex items-center">
+              <Users className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
+              <span>
+                <span className="font-semibold">{user.referrals || 0}</span> Referrals
+              </span>
+            </div>
+            <div className="flex items-center">
+              <Share className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
+              <span>
+                <span className="font-semibold">{recommendations.length}</span> Recommendations
+              </span>
+            </div>
+            <div className="flex items-center">
+              <ThumbsUp className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
+              <span>
+                <span className="font-semibold">{user.savedOffers || 0}</span> Saved Offers
+              </span>
+            </div>
+            <div className="flex items-center">
+              <Award className="h-5 w-5 text-amber-500 mr-2" />
+              <span>
+                <span className="font-semibold">{user.coins || 0}</span> Coins
+              </span>
+            </div>
+          </div>
+          <div className="mt-6 flex justify-center md:justify-end gap-4">
+            <Button variant="outline" className="flex items-center">
+              <Edit className="h-4 w-4 mr-2" />
+              Edit Profile
+            </Button>
+            <Button variant="outline" className="flex items-center">
+              <Settings className="h-4 w-4 mr-2" />
+              Settings
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Profile Content */}
+      <Tabs defaultValue="recommendations">
+        <TabsList className="mb-6">
+          <TabsTrigger value="recommendations">My Recommendations</TabsTrigger>
+          <TabsTrigger value="wallet">Digital Wallet</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="recommendations">
+          <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between">
+            <h2 className="text-xl font-semibold mb-2 md:mb-0">Your Recommendations</h2>
+            <Button asChild>
+              <Link href="/#create-recommendation">
+                <Camera className="h-4 w-4 mr-2" />
+                Create New Recommendation
+              </Link>
+            </Button>
+          </div>
+          
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 h-96 animate-pulse">
+                  <div className="w-full h-48 bg-gray-200 dark:bg-gray-700 rounded-lg mb-4"></div>
+                  <div className="w-2/3 h-6 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
+                  <div className="w-full h-4 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
+                  <div className="w-full h-4 bg-gray-200 dark:bg-gray-700 rounded mb-4"></div>
+                  <div className="w-1/3 h-4 bg-gray-200 dark:bg-gray-700 rounded mb-4"></div>
+                  <div className="flex justify-between mb-4">
+                    <div className="w-1/4 h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                    <div className="w-1/4 h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                  </div>
+                  <div className="flex space-x-2">
+                    <div className="w-1/2 h-8 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                    <div className="w-1/4 h-8 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : recommendations.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {recommendations.map((recommendation) => (
+                <RecommendationCard
+                  key={recommendation.id}
+                  id={recommendation.id}
+                  businessName={recommendation.businessName}
+                  businessImage={recommendation.imageUrl || "https://images.unsplash.com/photo-1555396273-367ea4eb4db5"}
+                  description={recommendation.description}
+                  discount={recommendation.discount || "10% OFF"}
+                  rating={recommendation.rating || 4}
+                  recommenderName={recommendation.userDisplayName || user.displayName}
+                  recommenderPhoto={recommendation.userPhotoURL || user.photoURL}
+                  recommenderId={recommendation.userId}
+                  validUntil={recommendation.validUntil || "N/A"}
+                  savedCount={recommendation.savedCount || 0}
+                  saved={true}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-8 text-center">
+              <div className="flex flex-col items-center">
+                <svg
+                  className="h-20 w-20 text-gray-400 dark:text-gray-600 mb-4"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"
+                  />
+                </svg>
+                <h3 className="text-lg font-semibold mb-2">No Recommendations Yet</h3>
+                <p className="text-gray-500 dark:text-gray-400 max-w-md mb-6">
+                  You haven't created any recommendations yet. Start sharing your favorite businesses to earn rewards!
+                </p>
+                <Button asChild>
+                  <Link href="/#create-recommendation">Create Your First Recommendation</Link>
+                </Button>
+              </div>
+            </div>
+          )}
+          
+          <div className="mt-8 bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
+            <h2 className="text-xl font-semibold mb-4">Recommendation Stats</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-gradient-to-r from-primary-50 to-white dark:from-gray-700 dark:to-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="text-base font-medium text-gray-600 dark:text-gray-300">Total Views</h3>
+                    <p className="text-3xl font-bold mt-1 text-gray-900 dark:text-white">{Math.max(0, recommendations.reduce((sum, rec) => sum + (rec.viewCount || 0), 0))}</p>
+                  </div>
+                  <div className="bg-primary-100 dark:bg-gray-600 p-2 rounded-lg">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-6 w-6 text-primary-600 dark:text-primary-400"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-gradient-to-r from-primary-50 to-white dark:from-gray-700 dark:to-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="text-base font-medium text-gray-600 dark:text-gray-300">Saved Offers</h3>
+                    <p className="text-3xl font-bold mt-1 text-gray-900 dark:text-white">{Math.max(0, recommendations.reduce((sum, rec) => sum + (rec.savedCount || 0), 0))}</p>
+                  </div>
+                  <div className="bg-primary-100 dark:bg-gray-600 p-2 rounded-lg">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-6 w-6 text-primary-600 dark:text-primary-400"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-gradient-to-r from-primary-50 to-white dark:from-gray-700 dark:to-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="text-base font-medium text-gray-600 dark:text-gray-300">Conversion Rate</h3>
+                    <p className="text-3xl font-bold mt-1 text-gray-900 dark:text-white">
+                      {recommendations.length > 0 
+                        ? `${Math.round((recommendations.reduce((sum, rec) => sum + (rec.savedCount || 0), 0) / Math.max(1, recommendations.reduce((sum, rec) => sum + (rec.viewCount || 1), 0))) * 100)}%` 
+                        : "0%"}
+                    </p>
+                  </div>
+                  <div className="bg-primary-100 dark:bg-gray-600 p-2 rounded-lg">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-6 w-6 text-primary-600 dark:text-primary-400"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="wallet">
+          <DigitalWallet />
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}
