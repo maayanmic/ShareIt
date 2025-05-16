@@ -199,13 +199,13 @@ export const createRecommendation = async (recommendation: any) => {
   }
 };
 
-export const getRecommendations = async (limit = 10) => {
+export const getRecommendations = async (limitCount = 10) => {
   try {
     const recommendationsCollection = collection(db, "recommendations");
     const q = query(
       recommendationsCollection, 
       orderBy("createdAt", "desc"), 
-      limit(limit)
+      limit(limitCount)
     );
     const recommendationsSnapshot = await getDocs(q);
     return recommendationsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -268,10 +268,10 @@ export const getSavedOffers = async (userId: string) => {
     const savedOffersSnapshot = await getDocs(q);
     
     // Get the actual recommendation details for each saved offer
-    const savedOffers = savedOffersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const savedOffers = savedOffersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() as any }));
     
     const recommendationsWithDetails = await Promise.all(
-      savedOffers.map(async (offer) => {
+      savedOffers.map(async (offer: any) => {
         const recommendationDoc = await getDoc(doc(db, "recommendations", offer.recommendationId));
         if (recommendationDoc.exists()) {
           return {
