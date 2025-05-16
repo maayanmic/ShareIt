@@ -14,6 +14,8 @@ import DesktopNav from "@/components/navigation/desktop-nav";
 import MobileNav from "@/components/navigation/mobile-nav";
 import { AuthProvider } from "@/hooks/use-auth";
 import { QRScannerProvider } from "@/components/qr/qr-scanner-modal";
+import { useEffect } from "react";
+import { handleAuthRedirect } from "@/lib/firebase";
 
 function Router() {
   return (

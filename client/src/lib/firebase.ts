@@ -1,7 +1,8 @@
 import { initializeApp } from "firebase/app";
 import { 
   getAuth, 
-  signInWithPopup, 
+  signInWithRedirect,
+  getRedirectResult,
   GoogleAuthProvider, 
   FacebookAuthProvider,
   createUserWithEmailAndPassword,
@@ -52,27 +53,7 @@ const facebookProvider = new FacebookAuthProvider();
 // Auth functions
 export const signInWithGoogle = async () => {
   try {
-    const result = await signInWithPopup(auth, googleProvider);
-    const user = result.user;
-    
-    // Check if user exists in Firestore, if not create a profile
-    const userRef = doc(db, "users", user.uid);
-    const userSnap = await getDoc(userRef);
-    
-    if (!userSnap.exists()) {
-      await setDoc(userRef, {
-        uid: user.uid,
-        email: user.email,
-        displayName: user.displayName,
-        photoURL: user.photoURL,
-        coins: 0,
-        referrals: 0,
-        savedOffers: 0,
-        createdAt: serverTimestamp()
-      });
-    }
-    
-    return user;
+    await signInWithRedirect(auth, googleProvider);
   } catch (error) {
     console.error("Error signing in with Google: ", error);
     throw error;
@@ -81,29 +62,42 @@ export const signInWithGoogle = async () => {
 
 export const signInWithFacebook = async () => {
   try {
-    const result = await signInWithPopup(auth, facebookProvider);
-    const user = result.user;
-    
-    // Check if user exists in Firestore, if not create a profile
-    const userRef = doc(db, "users", user.uid);
-    const userSnap = await getDoc(userRef);
-    
-    if (!userSnap.exists()) {
-      await setDoc(userRef, {
-        uid: user.uid,
-        email: user.email,
-        displayName: user.displayName,
-        photoURL: user.photoURL,
-        coins: 0,
-        referrals: 0,
-        savedOffers: 0,
-        createdAt: serverTimestamp()
-      });
-    }
-    
-    return user;
+    await signInWithRedirect(auth, facebookProvider);
   } catch (error) {
     console.error("Error signing in with Facebook: ", error);
+    throw error;
+  }
+};
+
+// Handle redirect result when user comes back from authentication provider
+export const handleAuthRedirect = async () => {
+  try {
+    const result = await getRedirectResult(auth);
+    if (result) {
+      const user = result.user;
+      
+      // Check if user exists in Firestore, if not create a profile
+      const userRef = doc(db, "users", user.uid);
+      const userSnap = await getDoc(userRef);
+      
+      if (!userSnap.exists()) {
+        await setDoc(userRef, {
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          photoURL: user.photoURL,
+          coins: 0,
+          referrals: 0,
+          savedOffers: 0,
+          createdAt: serverTimestamp()
+        });
+      }
+      
+      return user;
+    }
+    return null;
+  } catch (error) {
+    console.error("Error handling redirect result: ", error);
     throw error;
   }
 };

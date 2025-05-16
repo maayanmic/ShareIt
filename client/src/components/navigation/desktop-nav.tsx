@@ -50,15 +50,15 @@ export default function DesktopNav() {
         <div className="flex items-center space-x-8">
           {navItems.map((item) => (
             <Link key={item.href} href={item.href}>
-              <a
-                className={`text-gray-700 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-500 font-medium ${
+              <span
+                className={`text-gray-700 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-500 font-medium cursor-pointer ${
                   location === item.href
                     ? "text-primary-600 dark:text-primary-500"
                     : ""
                 }`}
               >
                 {item.name}
-              </a>
+              </span>
             </Link>
           ))}
         </div>
