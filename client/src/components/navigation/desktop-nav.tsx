@@ -46,31 +46,19 @@ export default function DesktopNav() {
         {/* Logo */}
         <Link href="/">
           <div className="flex items-center space-x-2 text-primary-500 cursor-pointer">
-            {logoUrl ? (
-              <img 
-                src={logoUrl} 
-                alt="שייר-איט" 
-                className="h-10 w-auto" 
-                onError={(e) => {
-                  // בטעות טעינת תמונה, נחזור לאייקון ברירת מחדל
-                  e.currentTarget.style.display = 'none';
-                  console.error("Failed to load logo image");
-                }}
+            {/* תמיד משתמשים באייקון מקומי כדי להימנע מבעיות CORS עם Firebase Storage */}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-8 w-8"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                clipRule="evenodd"
               />
-            ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-8 w-8"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            )}
+            </svg>
             <span className="text-xl font-semibold mr-2">שייר-איט</span>
           </div>
         </Link>
