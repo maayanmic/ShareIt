@@ -70,13 +70,13 @@ export default function RecommendationCard({
       setIsSaved(true);
       setLocalSavedCount(prev => prev + 1);
       toast({
-        title: "Offer saved",
-        description: `You've saved the offer from ${businessName}.`,
+        title: "ההצעה נשמרה",
+        description: `שמרת את ההצעה מ${businessName}.`,
       });
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to save offer. Please try again.",
+        title: "שגיאה",
+        description: "לא ניתן לשמור את ההצעה. אנא נסה שוב.",
         variant: "destructive",
       });
     }
