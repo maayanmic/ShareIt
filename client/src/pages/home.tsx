@@ -84,6 +84,78 @@ export default function Home() {
     <div className="flex flex-col space-y-6">
       <WelcomeBanner />
       
+      {/* כפתור בדיקת פיירבייס */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 mb-4">
+        <h3 className="text-lg font-medium mb-2">בדיקת חיבור למסד נתונים Firebase</h3>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+          לחץ על הכפתור כדי לבדוק את החיבור למסד הנתונים ולצור את האוספים הדרושים.
+        </p>
+        <Button 
+          onClick={async () => {
+            setCheckingFirebase(true);
+            setFirebaseStatus("בודק חיבור לפיירבייס...");
+            
+            try {
+              // בדוק אם אפשר לגשת למסד הנתונים
+              const businesses = await getBusinesses();
+              setFirebaseStatus(`נמצאו ${businesses.length} עסקים`);
+              
+              if (businesses.length === 0) {
+                setFirebaseStatus("מנסה ליצור עסקי דוגמה...");
+                
+                // נסה לקבל עסק ספציפי - זה ינסה ליצור עסקי דוגמה אם אין נתונים
+                const business = await getBusinessById("coffee");
+                
+                if (business) {
+                  setFirebaseStatus(`נוצרו עסקי דוגמה בהצלחה! מזהה: ${business.id}`);
+                  toast({
+                    title: "יצירת נתונים הצליחה",
+                    description: "עסקי דוגמה נוצרו בהצלחה במסד הנתונים",
+                  });
+                } else {
+                  setFirebaseStatus("שגיאה: לא הצלחנו ליצור עסקי דוגמה");
+                  toast({
+                    title: "שגיאה",
+                    description: "לא הצלחנו ליצור את עסקי הדוגמה",
+                    variant: "destructive"
+                  });
+                }
+              } else {
+                setFirebaseStatus(`חיבור תקין! נמצאו ${businesses.length} עסקים במסד הנתונים`);
+                toast({
+                  title: "חיבור תקין",
+                  description: `נמצאו ${businesses.length} עסקים במסד הנתונים`,
+                });
+              }
+            } catch (error: any) {
+              console.error("Error checking Firebase:", error);
+              setFirebaseStatus(`שגיאה בחיבור לפיירבייס: ${error.message}`);
+              toast({
+                title: "שגיאת חיבור",
+                description: `לא הצלחנו להתחבר לפיירבייס: ${error.message}`,
+                variant: "destructive"
+              });
+            } finally {
+              setCheckingFirebase(false);
+            }
+          }}
+          disabled={checkingFirebase}
+          className="bg-primary-500 rtl"
+        >
+          {checkingFirebase ? "בודק..." : "בדוק חיבור לפיירבייס"}
+        </Button>
+        
+        {firebaseStatus && (
+          <div className={`mt-4 p-3 rounded-lg ${
+            firebaseStatus.includes("שגיאה") 
+              ? "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-100" 
+              : "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-100"
+          }`}>
+            {firebaseStatus}
+          </div>
+        )}
+      </div>
+      
       {/* Your Feed Section */}
       <div>
         <div className="flex justify-between items-center mb-4">
