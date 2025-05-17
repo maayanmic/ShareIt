@@ -1,5 +1,4 @@
 import { Link, useLocation } from "wouter";
-import { MobileThemeToggle } from "@/components/ui/theme-toggle";
 import { useQRScanner } from "@/components/qr/qr-scanner-modal";
 import { Home, Search, Bookmark, Briefcase } from "lucide-react";
 
@@ -66,8 +65,6 @@ export default function MobileNav() {
             <span className="text-xs mt-1">הפרופיל שלי</span>
           </div>
         </Link>
-        
-        <MobileThemeToggle />
       </div>
     </div>
   );
