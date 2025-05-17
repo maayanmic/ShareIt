@@ -1,4 +1,4 @@
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps } from "firebase/app";
 import { getFirestore, collection, doc, getDoc, getDocs, setDoc, addDoc, updateDoc, serverTimestamp, query, where, limit, deleteDoc, increment, arrayUnion, arrayRemove } from "firebase/firestore";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, FacebookAuthProvider, signInWithRedirect, signOut, getRedirectResult, updateProfile } from "firebase/auth";
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
@@ -13,8 +13,15 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+// Initialize Firebase - אבל רק אם אין כבר אפליקציה קיימת
+// זה יפתור את בעיית האתחול הכפול
+let app;
+if (!getApps().length) {
+  app = initializeApp(firebaseConfig);
+} else {
+  app = getApps()[0];
+}
+
 export const db = getFirestore(app);
 export const auth = getAuth(app);
 export const storage = getStorage(app);
@@ -288,7 +295,7 @@ export const registerWithEmail = async (email: string, password: string, display
   } catch (error) {
     console.error("Error registering with email: ", error);
     
-    // נטפל בשגיאות ספציפיות - למשל אם כתובת האימייל כבר קיימת
+    // בדיקה לשגיאות ספציפיות
     if (error.code === 'auth/email-already-in-use') {
       throw new Error('כתובת האימייל כבר קיימת במערכת. אנא נסה להתחבר במקום להירשם.');
     }
