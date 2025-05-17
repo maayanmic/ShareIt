@@ -52,10 +52,12 @@ export default function MobileNav() {
           <span className="text-xs mt-1">סריקה</span>
         </button>
         
-        <Link href="/saved-offers">
-          <div className={`flex flex-col items-center justify-center py-1 ${location === "/saved-offers" ? "text-primary-500" : "text-gray-500 dark:text-gray-400"}`}>
-            <Bookmark className="h-6 w-6" />
-            <span className="text-xs mt-1">שמורים</span>
+        <Link href="/users">
+          <div className={`flex flex-col items-center justify-center py-1 ${location === "/users" ? "text-primary-500" : "text-gray-500 dark:text-gray-400"}`}>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+            <span className="text-xs mt-1">משתמשים</span>
           </div>
         </Link>
 
