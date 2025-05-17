@@ -151,7 +151,22 @@ export default function Home() {
         )}
       </div>
       
-      <CreateRecommendation />
+      {/* כפתור יצירת המלצה שיוביל לסריקת QR */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 mb-6">
+        <h3 className="text-xl font-semibold mb-3">שתף המלצה וקבל תגמולים</h3>
+        <p className="text-gray-600 dark:text-gray-400 mb-4">
+          סרוק את קוד ה-QR בבית העסק כדי ליצור המלצה אמיתית ולהתחיל להרוויח נקודות
+        </p>
+        <Button 
+          onClick={() => {
+            // פתיחת מודל סריקת QR או ניווט לעמוד סריקה
+            window.location.href = '/scan';
+          }}
+          className="bg-primary-500 w-full md:w-auto font-medium"
+        >
+          סרוק קוד QR ליצירת המלצה
+        </Button>
+      </div>
       
       <DigitalWallet />
     </div>
