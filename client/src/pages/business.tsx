@@ -179,15 +179,7 @@ export default function BusinessPage() {
     );
   }
 
-  if (!business) {
-    return (
-      <div className="container mx-auto py-8 text-center">
-        <h1 className="text-2xl font-bold mb-4">העסק לא נמצא</h1>
-        <p className="mb-6">לא הצלחנו למצוא את העסק המבוקש. ייתכן שהוא אינו קיים או שאין לך גישה אליו.</p>
-        <Button onClick={() => setLocation("/")}>חזרה לדף הבית</Button>
-      </div>
-    );
-  }
+  // הסרנו את הבדיקה שמחזירה הודעת שגיאה כי אנחנו תמיד נקבל עסק ברירת מחדל
 
   return (
     <div className="container mx-auto py-8 rtl">
