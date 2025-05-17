@@ -4,6 +4,7 @@ import { getUsers, createConnection, getUserRating } from "@/lib/firebase-update
 import { Button } from "@/components/ui/button";
 import { Star, StarHalf, UserPlus, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Link } from "wouter";
 
 export default function Users() {
   const [users, setUsers] = useState<any[]>([]);

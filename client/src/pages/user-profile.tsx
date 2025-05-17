@@ -119,11 +119,17 @@ export default function UserProfile() {
     return user.connections?.includes(userId) || false;
   };
   
+  // מחשב פעם אחת האם המשתמש מחובר
+  const connectedToProfile = isConnected();
+  
   // בדיקה אם המשתמש הנוכחי צופה בפרופיל שלו עצמו
   const isOwnProfile = () => {
     if (!user || !userId) return false;
     return user.uid === userId;
   };
+  
+  // מחשב פעם אחת האם זה הפרופיל העצמי
+  const ownProfile = isOwnProfile();
   
   if (loading) {
     return (
@@ -186,8 +192,8 @@ export default function UserProfile() {
             </p>
             
             {/* כפתור התחברות - לא מוצג אם זה הפרופיל של המשתמש עצמו */}
-            {!isOwnProfile() && (
-              isConnected() ? (
+            {!ownProfile && (
+              connectedToProfile ? (
                 <Button variant="outline" disabled className="text-green-600">
                   <Check className="ml-2 h-4 w-4" />
                   מחובר
@@ -213,7 +219,7 @@ export default function UserProfile() {
         {recommendations.length === 0 ? (
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 text-center">
             <p className="text-gray-500 dark:text-gray-400">
-              {isOwnProfile() 
+              {ownProfile 
                 ? "טרם שיתפת המלצות. סרוק קוד QR בעסק על מנת לשתף את ההמלצה הראשונה שלך!" 
                 : `${profileUser.displayName} טרם שיתף המלצות.`
               }
