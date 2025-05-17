@@ -283,38 +283,15 @@ export const signInWithGoogle = async () => {
 
 export const signInWithFacebook = async () => {
   try {
-    // בדוק אם המכשיר הוא מובייל - אם כן, השתמש ב-redirect במקום popup
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    // נוסיף scope לפייסבוק כדי לקבל את המידע הנדרש
+    facebookProvider.addScope('email');
+    facebookProvider.addScope('public_profile');
     
-    if (isMobile) {
-      // במובייל, השתמש ב-redirect שעובד טוב יותר בדפדפני מובייל
-      await signInWithRedirect(auth, facebookProvider);
-      return null; // פונקציה זו תחזיר null ו-handleAuthRedirect יטפל בתוצאות
-    } else {
-      // במחשב נייח, השתמש ב-popup כרגיל
-      const result = await signInWithPopup(auth, facebookProvider);
-      const user = result.user;
-      
-      // Check if user exists in Firestore, if not create a profile
-      const userRef = doc(db, "users", user.uid);
-      const userSnap = await getDoc(userRef);
-      
-      if (!userSnap.exists()) {
-        await setDoc(userRef, {
-          uid: user.uid,
-          email: user.email,
-          displayName: user.displayName,
-          photoURL: user.photoURL,
-          role: "user",  // הוספת שדה role כברירת מחדל
-          coins: 0,
-          referrals: 0,
-          savedOffers: 0,
-          createdAt: serverTimestamp()
-        });
-      }
-      
-      return user;
-    }
+    // תמיד נשתמש בשיטת redirect שעובדת טוב יותר בכל הפלטפורמות
+    await signInWithRedirect(auth, facebookProvider);
+    // הפונקציה הזו תחזיר null והמשתמש יועבר לדף פייסבוק
+    // כאשר יחזור, handleAuthRedirect יטפל בתוצאה
+    return null;
   } catch (error) {
     console.error("Error signing in with Facebook: ", error);
     throw error;
@@ -324,15 +301,20 @@ export const signInWithFacebook = async () => {
 // Handle redirect result when user comes back from authentication provider
 export const handleAuthRedirect = async () => {
   try {
+    console.log("בודק תוצאות הפניה מספק אימות חיצוני...");
     const result = await getRedirectResult(auth);
+    
     if (result) {
+      console.log("התקבלה תוצאת הפניה מוצלחת:", result.providerId);
       const user = result.user;
+      console.log("מידע משתמש התקבל:", user.displayName);
       
       // Check if user exists in Firestore, if not create a profile
       const userRef = doc(db, "users", user.uid);
       const userSnap = await getDoc(userRef);
       
       if (!userSnap.exists()) {
+        console.log("יוצר פרופיל משתמש חדש בפיירסטור...");
         await setDoc(userRef, {
           uid: user.uid,
           email: user.email,
@@ -344,13 +326,18 @@ export const handleAuthRedirect = async () => {
           savedOffers: 0,
           createdAt: serverTimestamp()
         });
+        console.log("פרופיל משתמש נוצר בהצלחה!");
+      } else {
+        console.log("משתמש קיים במערכת, ממשיך לעמוד הבית...");
       }
       
       return user;
+    } else {
+      console.log("לא התקבלה תוצאת הפניה");
     }
     return null;
   } catch (error) {
-    console.error("Error handling redirect result: ", error);
+    console.error("שגיאה בטיפול בתוצאת ההפניה: ", error);
     throw error;
   }
 };
