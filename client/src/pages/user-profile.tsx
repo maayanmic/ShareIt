@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
-import { getUserData, getUserRating, getUserRecommendations, createConnection } from "@/lib/firebase-update";
+import { getUserRating, createConnection, getUserData, getUserRecommendations } from "@/lib/firebase-update";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Star, StarHalf, UserPlus, Check } from "lucide-react";
@@ -76,7 +76,7 @@ export default function UserProfile() {
       });
       
       // עדכון פרטי המשתמש בקומפוננטה כך שהלחצן יתעדכן
-      setProfileUser(prevUser => ({
+      setProfileUser((prevUser: any) => ({
         ...prevUser,
         isConnected: true
       }));
@@ -113,7 +113,7 @@ export default function UserProfile() {
   
   // בדיקה אם המשתמש הנוכחי כבר מחובר למשתמש שבפרופיל
   const isConnected = () => {
-    if (!user || !profileUser) return false;
+    if (!user || !profileUser || !userId) return false;
     
     // בדוק אם המשתמש הנוכחי מחובר למשתמש שבפרופיל
     return user.connections?.includes(userId) || false;

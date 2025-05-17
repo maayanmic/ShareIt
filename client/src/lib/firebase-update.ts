@@ -139,8 +139,7 @@ export const getUserRecommendations = async (userId: string) => {
     const recommendationsRef = collection(db, "recommendations");
     const q = query(
       recommendationsRef, 
-      where("userId", "==", userId),
-      orderBy("createdAt", "desc")
+      where("userId", "==", userId)
     );
     const querySnapshot = await getDocs(q);
     
