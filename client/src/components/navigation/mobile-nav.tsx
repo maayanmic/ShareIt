@@ -11,17 +11,17 @@ export default function MobileNav() {
     <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 z-30 p-2">
       <div className="grid grid-cols-5 gap-1">
         <Link href="/">
-          <a className={`flex flex-col items-center justify-center py-1 ${location === "/" ? "text-primary-500" : "text-gray-500 dark:text-gray-400"}`}>
+          <div className={`flex flex-col items-center justify-center py-1 ${location === "/" ? "text-primary-500" : "text-gray-500 dark:text-gray-400"}`}>
             <Home className="h-6 w-6" />
             <span className="text-xs mt-1">בית</span>
-          </a>
+          </div>
         </Link>
         
         <Link href="/recommendations">
-          <a className={`flex flex-col items-center justify-center py-1 ${location === "/recommendations" ? "text-primary-500" : "text-gray-500 dark:text-gray-400"}`}>
+          <div className={`flex flex-col items-center justify-center py-1 ${location === "/recommendations" ? "text-primary-500" : "text-gray-500 dark:text-gray-400"}`}>
             <Search className="h-6 w-6" />
             <span className="text-xs mt-1">לגלות</span>
-          </a>
+          </div>
         </Link>
         
         <button 
@@ -46,17 +46,17 @@ export default function MobileNav() {
         </button>
         
         <Link href="/saved-offers">
-          <a className={`flex flex-col items-center justify-center py-1 ${location === "/saved-offers" ? "text-primary-500" : "text-gray-500 dark:text-gray-400"}`}>
+          <div className={`flex flex-col items-center justify-center py-1 ${location === "/saved-offers" ? "text-primary-500" : "text-gray-500 dark:text-gray-400"}`}>
             <Bookmark className="h-6 w-6" />
             <span className="text-xs mt-1">שמורים</span>
-          </a>
+          </div>
         </Link>
 
         <Link href="/portfolio">
-          <a className={`flex flex-col items-center justify-center py-1 ${location === "/portfolio" ? "text-primary-500" : "text-gray-500 dark:text-gray-400"}`}>
+          <div className={`flex flex-col items-center justify-center py-1 ${location === "/portfolio" ? "text-primary-500" : "text-gray-500 dark:text-gray-400"}`}>
             <Briefcase className="h-6 w-6" />
-            <span className="text-xs mt-1">Portfolio</span>
-          </a>
+            <span className="text-xs mt-1">תיק עבודות</span>
+          </div>
         </Link>
         
         <MobileThemeToggle />
