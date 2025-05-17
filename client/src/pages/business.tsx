@@ -21,99 +21,23 @@ export default function BusinessPage() {
     const loadBusiness = async () => {
       if (!businessId) return;
       
-      // מאגר עסקים מקומי
-      const localBusinesses = [
-        {
-          id: "1",
-          name: "מכון היופי של לילך",
-          category: "יופי וטיפוח",
-          description: "במכון היופי של לילך תוכלי להתפנק בטיפולי יופי מתקדמים. לק ג'ל, טיפולי פנים, מניקור פדיקור וכל הטיפולים המובילים",
-          address: "רחוב דיזנגוף 32, תל אביב",
-          phone: "08-9237561",
-          website: "lilachbeauty@gmail.com",
-          email: "lilachbeauty@gmail.com",
-          images: [
-            "https://images.unsplash.com/photo-1540555700478-4be289fbecef?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=400"
-          ],
-          workingHours: {
-            sunday: "9:00-19:00",
-            monday: "9:00-19:00",
-            tuesday: "9:00-19:00",
-            wednesday: "9:00-19:00",
-            thursday: "9:00-19:00",
-            friday: "9:00-14:00",
-            saturday: "סגור"
-          }
-        },
-        {
-          id: "2",
-          name: "בדיקה",
-          category: "בריאות",
-          description: "במכון בדיקה תוכלו להתחבר לבריאותכם באמצעות בדיקות מקיפות. לך, למשפחתך ולמטופליך",
-          address: "רחוב בדיקה 123, תל אביב",
-          website: "checkup@gmail.com",
-          phone: "03-1234567",
-          email: "checkup@gmail.com",
-          images: ["https://images.unsplash.com/photo-1583324113626-70df0f4deaab?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=400"],
-          workingHours: {
-            sunday: "8:00-18:00",
-            monday: "8:00-18:00",
-            tuesday: "8:00-18:00",
-            wednesday: "8:00-18:00",
-            thursday: "8:00-18:00",
-            friday: "8:00-13:00",
-            saturday: "סגור"
-          }
-        },
-        {
-          id: "coffee",
-          name: "קפה טוב",
-          category: "בתי קפה",
-          description: "בית קפה איכותי עם מבחר עשיר של קפה, מאפים וארוחות בוקר. האווירה נעימה ומתאימה ללימודים, פגישות עבודה או סתם לבלות עם חברים.",
-          address: "רחוב הרצל 123, תל אביב",
-          phone: "03-1234567",
-          website: "https://example.com/coffeegood",
-          email: "coffee@good.com",
-          images: [
-            "https://images.unsplash.com/photo-1559925393-8be0ec4767c8?q=80&w=1000&auto=format&fit=crop",
-            "https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=1000&auto=format&fit=crop"
-          ],
-          discount: "10% הנחה על כל התפריט",
-          hours: "א'-ה' 07:00-22:00, ו' 08:00-16:00, שבת סגור",
-          ratings: 4.5
-        }
-      ];
-      
       try {
-        // בדוק אם העסק קיים במאגר המקומי
-        const localBusiness = localBusinesses.find(business => business.id === businessId);
-        
-        if (localBusiness) {
-          console.log("מצאתי עסק במאגר המקומי:", localBusiness.name);
-          setBusiness(localBusiness);
-          setLoading(false);
-          return;
-        }
-        
-        // אם העסק לא נמצא במאגר המקומי, נסה לקבל אותו מפיירבייס
-        console.log("מנסה לקבל את העסק מהשרת:", businessId);
+        // נסה לקבל את נתוני העסק מפיירבייס
         const businessData = await getBusinessById(businessId);
         
         if (businessData) {
-          console.log("מצאתי עסק בפיירבייס:", businessData.name);
           setBusiness(businessData);
         } else {
-          console.log("העסק לא נמצא בשום מקום, משתמש בעסק ברירת מחדל");
-          // אם לא מצאנו את העסק בשום מקום, נשתמש בעסק ברירת מחדל
-          const defaultBusiness = {
+          // מוק לצורך פיתוח
+          const mockBusiness = {
             id: businessId,
-            name: "עסק לדוגמה",
-            category: "קטגוריה כללית",
-            description: "תיאור של עסק לדוגמה שנוצר כי לא נמצא העסק המבוקש",
-            address: "רחוב לדוגמה 123, תל אביב",
-            phone: "03-1234567",
-            website: "example@example.com",
-            email: "example@example.com",
+            name: "מכון היופי של לילך",
+            category: "יופי וטיפוח",
+            description: "במכון היופי של לילך תוכלי להתפנק בטיפולי יופי מתקדמים. לק ג'ל, טיפולי פנים, מניקור פדיקור וכל הטיפולים המובילים",
+            address: "רחוב דיזנגוף 32, תל אביב",
+            phone: "08-9237561",
+            website: "lilachbeauty@gmail.com",
+            email: "lilachbeauty@gmail.com",
             images: [
               "https://images.unsplash.com/photo-1540555700478-4be289fbecef?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=400"
             ],
@@ -128,41 +52,15 @@ export default function BusinessPage() {
             }
           };
           
-          setBusiness(defaultBusiness);
+          setBusiness(mockBusiness);
         }
       } catch (error) {
-        console.error("שגיאה בטעינת נתוני העסק:", error);
+        console.error("Error loading business data:", error);
         toast({
           title: "שגיאה",
           description: "אירעה שגיאה בטעינת נתוני העסק",
           variant: "destructive"
         });
-        
-        // במקרה של שגיאה, נשתמש בעסק ברירת מחדל
-        const fallbackBusiness = {
-          id: businessId,
-          name: "עסק לדוגמה (נוצר בגלל שגיאה)",
-          category: "קטגוריה כללית",
-          description: "תיאור של עסק לדוגמה שנוצר כי הייתה שגיאה בטעינת העסק המבוקש",
-          address: "רחוב לדוגמה 123, תל אביב",
-          phone: "03-1234567",
-          website: "example@example.com",
-          email: "example@example.com",
-          images: [
-            "https://images.unsplash.com/photo-1540555700478-4be289fbecef?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=400"
-          ],
-          workingHours: {
-            sunday: "9:00-19:00",
-            monday: "9:00-19:00",
-            tuesday: "9:00-19:00",
-            wednesday: "9:00-19:00",
-            thursday: "9:00-19:00",
-            friday: "9:00-14:00",
-            saturday: "סגור"
-          }
-        };
-        
-        setBusiness(fallbackBusiness);
       } finally {
         setLoading(false);
       }
@@ -179,7 +77,15 @@ export default function BusinessPage() {
     );
   }
 
-  // הסרנו את הבדיקה שמחזירה הודעת שגיאה כי אנחנו תמיד נקבל עסק ברירת מחדל
+  if (!business) {
+    return (
+      <div className="container mx-auto py-8 text-center">
+        <h1 className="text-2xl font-bold mb-4">העסק לא נמצא</h1>
+        <p className="mb-6">לא הצלחנו למצוא את העסק המבוקש. ייתכן שהוא אינו קיים או שאין לך גישה אליו.</p>
+        <Button onClick={() => setLocation("/")}>חזרה לדף הבית</Button>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto py-8 rtl">

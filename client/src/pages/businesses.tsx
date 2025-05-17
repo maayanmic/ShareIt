@@ -51,14 +51,11 @@ const sampleBusinesses = [
 
 // רכיב תצוגת בית עסק
 function BusinessCard({ business }: { business: any }) {
-  // אם יש תמונות במערך, ניקח את הראשונה, אחרת ניקח את שדה image אם קיים
-  const imageUrl = business.images?.[0] || business.image || "https://via.placeholder.com/400x200?text=No+Image";
-  
   return (
     <Card className="overflow-hidden">
       <div className="relative h-48">
         <img 
-          src={imageUrl} 
+          src={business.image} 
           alt={business.name} 
           className="w-full h-full object-cover"
         />
@@ -77,26 +74,18 @@ function BusinessCard({ business }: { business: any }) {
         <p className="text-sm mb-4 line-clamp-3">{business.description}</p>
         
         <div className="space-y-2 text-sm">
-          {business.address && (
-            <div className="flex items-center">
-              <MapPinIcon className="h-4 w-4 ml-2 text-gray-500" />
-              <span>{business.address}</span>
-            </div>
-          )}
-          
-          {business.phone && (
-            <div className="flex items-center">
-              <PhoneIcon className="h-4 w-4 ml-2 text-gray-500" />
-              <span>{business.phone}</span>
-            </div>
-          )}
-          
-          {business.website && (
-            <div className="flex items-center">
-              <Mail className="h-4 w-4 ml-2 text-gray-500" />
-              <span>{business.website}</span>
-            </div>
-          )}
+          <div className="flex items-center">
+            <MapPinIcon className="h-4 w-4 ml-2 text-gray-500" />
+            <span>{business.address}</span>
+          </div>
+          <div className="flex items-center">
+            <PhoneIcon className="h-4 w-4 ml-2 text-gray-500" />
+            <span>{business.phone}</span>
+          </div>
+          <div className="flex items-center">
+            <Mail className="h-4 w-4 ml-2 text-gray-500" />
+            <span>{business.website}</span>
+          </div>
         </div>
         
         <div className="flex justify-between mt-4">
