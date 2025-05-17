@@ -83,7 +83,7 @@ export default function Home() {
       {/* Your Feed Section */}
       <div>
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">Your Feed</h2>
+          <h2 className="text-xl font-semibold">המלצות עבורך</h2>
           <div className="flex space-x-2">
             <Button
               variant={filter === 'recent' ? 'default' : 'outline'} 
@@ -91,7 +91,7 @@ export default function Home() {
               className={filter === 'recent' ? 'bg-primary-500' : ''}
               onClick={() => setFilter('recent')}
             >
-              Recent
+              חדשים
             </Button>
             <Button
               variant={filter === 'popular' ? 'default' : 'outline'}
@@ -99,7 +99,7 @@ export default function Home() {
               className={filter === 'popular' ? 'bg-primary-500' : ''}
               onClick={() => setFilter('popular')}
             >
-              Popular
+              פופולריים
             </Button>
           </div>
         </div>

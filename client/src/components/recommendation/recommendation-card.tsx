@@ -135,19 +135,19 @@ export default function RecommendationCard({
               <AvatarImage src={recommenderPhoto} alt={recommenderName} />
               <AvatarFallback>{recommenderName.charAt(0)}</AvatarFallback>
             </Avatar>
-            <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
-              Recommended by <span className="font-medium text-gray-700 dark:text-gray-300">{recommenderName}</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400 mr-2">
+              הומלץ על-ידי <span className="font-medium text-gray-700 dark:text-gray-300">{recommenderName}</span>
             </span>
           </div>
           
           <div className="flex justify-between items-center mt-4">
             <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
-              <Clock className="h-4 w-4 mr-1" />
-              <span>Valid until {validUntil}</span>
+              <Clock className="h-4 w-4 ml-1" />
+              <span>בתוקף עד {validUntil}</span>
             </div>
             <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
-              <Users className="h-4 w-4 mr-1" />
-              <span>{localSavedCount} people saved</span>
+              <Users className="h-4 w-4 ml-1" />
+              <span>{localSavedCount} אנשים שמרו</span>
             </div>
           </div>
           
@@ -159,11 +159,11 @@ export default function RecommendationCard({
             >
               {isSaved ? (
                 <>
-                  <CheckCircle2 className="h-4 w-4 mr-1" />
-                  Saved
+                  <CheckCircle2 className="h-4 w-4 ml-1" />
+                  נשמר
                 </>
               ) : (
-                'Save Offer'
+                'שמור הצעה'
               )}
             </Button>
             <Button 

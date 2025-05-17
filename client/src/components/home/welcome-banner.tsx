@@ -6,19 +6,19 @@ export default function WelcomeBanner() {
     <div className="bg-gradient-to-r from-primary-500 to-primary-700 rounded-2xl overflow-hidden shadow-lg">
       <div className="px-6 pt-6 pb-10 md:pb-6 md:flex md:justify-between md:items-center">
         <div className="mb-6 md:mb-0">
-          <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">Welcome to ShareIt!</h1>
-          <p className="text-primary-50 text-sm md:text-base max-w-lg">
-            Share recommendations about businesses you love, help friends discover great places, and earn rewards for every successful referral.
+          <h1 className="text-2xl md:text-3xl font-bold text-white mb-2 text-right">ברוכים הבאים לשייר-איט!</h1>
+          <p className="text-primary-50 text-sm md:text-base max-w-lg text-right">
+            שתפו המלצות על עסקים שאתם אוהבים, עזרו לחברים לגלות מקומות נהדרים, וקבלו תגמולים על כל הפניה מוצלחת.
           </p>
-          <div className="flex mt-4 space-x-4">
+          <div className="flex mt-4 space-x-4 flex-row-reverse">
             <button className="px-4 py-2 bg-white text-primary-600 rounded-lg font-medium shadow-sm hover:shadow-md transition duration-300 flex items-center">
-              <PlayCircle className="h-5 w-5 mr-2" />
-              How It Works
+              <PlayCircle className="h-5 w-5 ml-2" />
+              איך זה עובד
             </button>
             <Link href="/recommendations">
               <button className="px-4 py-2 bg-transparent border border-white text-white rounded-lg font-medium hover:bg-white hover:bg-opacity-10 transition duration-300 flex items-center">
-                <Library className="h-5 w-5 mr-2" />
-                Browse Businesses
+                <Library className="h-5 w-5 ml-2" />
+                דפדפו בעסקים
               </button>
             </Link>
           </div>
