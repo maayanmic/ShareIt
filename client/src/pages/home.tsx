@@ -88,7 +88,7 @@ export default function Home() {
       {/* Your Feed Section */}
       <div>
         <div className="grid grid-cols-2 mb-4">
-          <h2 className="text-xl font-semibold text-right">המלצות עבורך</h2>
+          <h2 className="text-xl font-semibold text-right">המלצות של חבריך</h2>
           <div className="flex justify-end space-x-2">
             <Button
               variant={filter === 'recent' ? 'default' : 'outline'} 
