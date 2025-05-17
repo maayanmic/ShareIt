@@ -184,12 +184,12 @@ export default function Users() {
                   />
                 </div>
                 <div className="flex-1 text-right">
-                  <a 
+                  <Link 
                     href={`/user/${user.id}`} 
                     className="font-semibold hover:text-primary-600 transition-colors"
                   >
                     {user.displayName}
-                  </a>
+                  </Link>
                   <div className="mt-1">{renderRating(user.rating || 0)}</div>
                 </div>
               </div>
