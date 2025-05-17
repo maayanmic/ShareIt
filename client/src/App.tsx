@@ -34,6 +34,13 @@ function AuthenticatedRoutes() {
   const { user, loading } = useAuth();
   const [, setLocation] = useLocation();
   
+  // שימוש ב-useEffect להפניית משתמש לא מחובר לדף התחברות
+  useEffect(() => {
+    if (!loading && !user) {
+      setLocation("/login");
+    }
+  }, [user, loading, setLocation]);
+  
   // אם עדיין טוען את מצב המשתמש, נציג מסך טעינה
   if (loading) {
     return (
@@ -43,12 +50,8 @@ function AuthenticatedRoutes() {
     );
   }
   
-  // אם המשתמש לא מחובר, הפנה לדף התחברות
+  // אם המשתמש לא מחובר, הצג תוכן ריק עד להפניה
   if (!user) {
-    // שימוש ב-useEffect כדי להפנות את המשתמש לדף התחברות באופן מבוקר
-    useEffect(() => {
-      setLocation("/login");
-    }, [setLocation]);
     return null;
   }
   
@@ -61,6 +64,10 @@ function AuthenticatedRoutes() {
       <Route path="/profile" component={Profile} />
       <Route path="/portfolio" component={Portfolio} />
       <Route path="/portfolio/:id" component={PortfolioDetail} />
+      <Route path="/business/:businessId" component={props => import("@/pages/business").then(m => {
+        const Business = m.default;
+        return <Business {...props} />;
+      })} />
       <Route component={NotFound} />
     </Switch>
   );
