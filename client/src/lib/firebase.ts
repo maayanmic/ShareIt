@@ -365,8 +365,20 @@ export const getSiteConfig = async () => {
 // Get logo from site configuration
 export const getLogoURL = async () => {
   try {
+    // נסה להשיג את התמונה מנתיב מדויק
     const logo3Ref = ref(storage, "siteconfig/images/Logo3");
-    const logoURL = await getDownloadURL(logo3Ref).catch(() => null);
+    const logoURL = await getDownloadURL(logo3Ref)
+      .catch(async () => {
+        // אם הנתיב הראשון לא עובד, ננסה לחפש בתוך הקולקשיין של siteconfig
+        console.log("Trying to find logo in Firestore instead of Storage");
+        const configDoc = await getDoc(doc(db, "siteconfig", "general"));
+        if (configDoc.exists() && configDoc.data().logoUrl) {
+          return configDoc.data().logoUrl;
+        }
+        return null;
+      });
+    
+    console.log("Logo URL found:", logoURL);
     return logoURL;
   } catch (error) {
     console.error("Error getting logo: ", error);
