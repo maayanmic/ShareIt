@@ -266,6 +266,7 @@ export const signInWithGoogle = async () => {
         email: user.email,
         displayName: user.displayName,
         photoURL: user.photoURL,
+        role: "user",  // הוספת שדה role כברירת מחדל
         coins: 0,
         referrals: 0,
         savedOffers: 0,
@@ -295,6 +296,7 @@ export const signInWithFacebook = async () => {
         email: user.email,
         displayName: user.displayName,
         photoURL: user.photoURL,
+        role: "user",  // הוספת שדה role כברירת מחדל
         coins: 0,
         referrals: 0,
         savedOffers: 0,
@@ -326,6 +328,7 @@ export const handleAuthRedirect = async () => {
           email: user.email,
           displayName: user.displayName,
           photoURL: user.photoURL,
+          role: "user",  // הוספת שדה role כברירת מחדל
           coins: 0,
           referrals: 0,
           savedOffers: 0,
@@ -356,6 +359,7 @@ export const registerWithEmail = async (email: string, password: string, display
       email: user.email,
       displayName,
       photoURL: null,
+      role: "user",  // שדה ברירת מחדל - משתמש רגיל
       coins: 0,
       referrals: 0,
       savedOffers: 0,
@@ -395,17 +399,37 @@ export const getUserData = async (userId: string) => {
     if (userDoc.exists()) {
       const userData = userDoc.data();
       
-      // הוספת דגל isAdmin לפי הרול
+      // הוספת דגל isAdmin לפי הרול וטיפול במקרה שחסר שדה role
       return {
         ...userData,
+        // וידוא שיש שדה role, אם אין - שימוש בברירת מחדל "user"
+        role: userData.role || "user",
         // אם שדה ה-role מוגדר כ-admin, המשתמש הוא מנהל
-        isAdmin: userData.role === "admin"
+        isAdmin: userData.role === "admin",
+        // וידוא שהשדות הנדרשים קיימים
+        coins: userData.coins || 0,
+        referrals: userData.referrals || 0,
+        savedOffers: userData.savedOffers || 0
       };
     }
-    return null;
+    return {
+      // ערכי ברירת מחדל אם המשתמש לא נמצא ב-Firestore
+      role: "user",
+      isAdmin: false,
+      coins: 0,
+      referrals: 0,
+      savedOffers: 0
+    };
   } catch (error) {
     console.error("Error getting user data: ", error);
-    throw error;
+    // במקרה של שגיאה, נחזיר ערכי ברירת מחדל
+    return {
+      role: "user",
+      isAdmin: false,
+      coins: 0,
+      referrals: 0,
+      savedOffers: 0
+    };
   }
 };
 
