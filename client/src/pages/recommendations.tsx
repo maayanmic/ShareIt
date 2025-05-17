@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
-import { getBusinesses } from "@/lib/firebase";
+import { useBusinesses } from "@/hooks/use-businesses";
 import RecommendationCard from "@/components/recommendation/recommendation-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,24 +8,8 @@ import { Search, MapPin, Filter } from "lucide-react";
 
 export default function Recommendations() {
   const { user } = useAuth();
-  const [businesses, setBusinesses] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { businesses, isLoading } = useBusinesses();
   const [searchTerm, setSearchTerm] = useState("");
-
-  useEffect(() => {
-    const fetchBusinesses = async () => {
-      try {
-        const data = await getBusinesses();
-        setBusinesses(data);
-      } catch (error) {
-        console.error("Error fetching businesses:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchBusinesses();
-  }, []);
 
   // Sample data for when no actual data is available yet
   const sampleBusinesses = [
@@ -121,7 +105,8 @@ export default function Recommendations() {
     }
   ];
 
-  const displayBusinesses = businesses.length > 0 ? businesses : sampleBusinesses;
+  // כאן נשתמש בבתי העסק האמיתיים אם קיימים, אחרת בנתוני הדוגמה
+  const displayBusinesses = businesses && businesses.length > 0 ? businesses : sampleBusinesses;
 
   const filteredBusinesses = searchTerm 
     ? displayBusinesses.filter(business => 
