@@ -6,7 +6,7 @@ export default function WelcomeBanner() {
     <div className="bg-gradient-to-r from-primary-500 to-primary-700 rounded-2xl overflow-hidden shadow-lg">
       <div className="px-6 pt-6 pb-10 md:pb-6 md:flex md:justify-between md:items-center">
         <div className="mb-6 md:mb-0">
-          <h1 className="text-2xl md:text-3xl font-bold text-white mb-2 text-right">ברוכים הבאים לשייר-איט!</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-white mb-2 text-right">ברוכים הבאים ל-ShareIt!</h1>
           <p className="text-primary-50 text-sm md:text-base max-w-lg text-right">
             שתפו המלצות על עסקים שאתם אוהבים, עזרו לחברים לגלות מקומות נהדרים, וקבלו תגמולים על כל הפניה מוצלחת.
           </p>
