@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
-import { getBusinessById, saveOffer, getRecommendationById } from "@/lib/firebase";
+import { getBusinessById, saveOffer, getRecommendations } from "@/lib/firebase";
 import { ArrowLeft } from "lucide-react";
 import RecommendationCard from "@/components/recommendation/recommendation-card";
 
@@ -48,7 +48,7 @@ export default function RecommendationPage() {
           console.log("כל ההמלצות שנטענו:", allRecommendations);
           
           // חיפוש ההמלצה לפי המזהה
-          const foundRecommendation = allRecommendations.find(rec => rec.id === recId);
+          const foundRecommendation = allRecommendations.find((rec: any) => rec.id === recId);
           
           if (foundRecommendation) {
             console.log("נמצאה המלצה:", foundRecommendation);
