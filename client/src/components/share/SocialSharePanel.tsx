@@ -143,16 +143,16 @@ export function SocialSharePanel({
           variant="outline"
           onClick={onBack}
           disabled={isSharing}
-          className="bg-gray-800 text-white hover:bg-gray-700"
+          className="bg-gray-100 text-gray-800 hover:bg-gray-200"
         >
-          &larr; המשך
+          חזור
         </Button>
         <Button
           onClick={onComplete}
           disabled={isSharing}
-          className="bg-gray-100 text-gray-800 hover:bg-gray-200"
+          className="bg-gray-800 text-white hover:bg-gray-700"
         >
-          חזור &rarr;
+          סיום
         </Button>
       </div>
     </div>
