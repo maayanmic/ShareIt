@@ -21,10 +21,10 @@ import { Separator } from "@/components/ui/separator";
 
 const loginSchema = z.object({
   email: z.string().email({
-    message: "Please enter a valid email address.",
+    message: "נא להזין כתובת אימייל תקינה.",
   }),
   password: z.string().min(6, {
-    message: "Password must be at least 6 characters.",
+    message: "הסיסמה חייבת להכיל לפחות 6 תווים.",
   }),
 });
 
@@ -133,7 +133,7 @@ export default function Login() {
                     <FormLabel>אימייל</FormLabel>
                     <FormControl>
                       <Input 
-                        placeholder="your.email@example.com" 
+                        placeholder="האימייל שלך" 
                         type="email" 
                         {...field} 
                         disabled={isLoading}
@@ -152,7 +152,7 @@ export default function Login() {
                     <FormLabel>סיסמה</FormLabel>
                     <FormControl>
                       <Input 
-                        placeholder="••••••••" 
+                        placeholder="הסיסמה שלך" 
                         type="password" 
                         {...field} 
                         disabled={isLoading}

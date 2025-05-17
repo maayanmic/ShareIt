@@ -21,17 +21,17 @@ import { Separator } from "@/components/ui/separator";
 
 const registerSchema = z.object({
   displayName: z.string().min(2, {
-    message: "Name must be at least 2 characters.",
+    message: "שם חייב להכיל לפחות 2 תווים.",
   }),
   email: z.string().email({
-    message: "Please enter a valid email address.",
+    message: "נא להזין כתובת אימייל תקינה.",
   }),
   password: z.string().min(6, {
-    message: "Password must be at least 6 characters.",
+    message: "הסיסמה חייבת להכיל לפחות 6 תווים.",
   }),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
+  message: "הסיסמאות אינן תואמות",
   path: ["confirmPassword"],
 });
 
@@ -86,9 +86,9 @@ export default function Register() {
     <div className="flex items-center justify-center min-h-[80vh]">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Create an account</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center">יצירת חשבון</CardTitle>
           <CardDescription className="text-center">
-            Enter your information to create a ShareIt account
+            הזן את הפרטים שלך כדי ליצור חשבון ב-ShareIt
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -154,13 +154,14 @@ export default function Register() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>אימייל</FormLabel>
                     <FormControl>
                       <Input 
-                        placeholder="your.email@example.com" 
+                        placeholder="האימייל שלך" 
                         type="email" 
                         {...field} 
                         disabled={isLoading}
+                        className="text-right"
                       />
                     </FormControl>
                     <FormMessage />
