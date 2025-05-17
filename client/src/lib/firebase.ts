@@ -51,6 +51,204 @@ const storage = getStorage(app);
 const googleProvider = new GoogleAuthProvider();
 const facebookProvider = new FacebookAuthProvider();
 
+// יצירת קולקשנים מיד עם טעינת האפליקציה
+(async function initializeCollections() {
+  try {
+    console.log("מתחיל ליצור קולקשנים בפיירבייס...");
+    
+    // יצירת קולקשן businesses אם לא קיים
+    const businessesRef = collection(db, "businesses");
+    const businessesSnapshot = await getDocs(businessesRef);
+    
+    if (businessesSnapshot.empty) {
+      console.log("קולקשן businesses ריק - יוצר עסקי דוגמה");
+      
+      // עסקי דוגמה
+      const sampleBusinesses = [
+        {
+          id: "coffee",
+          name: "קפה טוב",
+          category: "בתי קפה",
+          description: "בית קפה איכותי עם מבחר עשיר של קפה, מאפים וארוחות בוקר. האווירה נעימה ומתאימה ללימודים, פגישות עבודה או סתם לבלות עם חברים.",
+          address: "רחוב הרצל 123, תל אביב",
+          phone: "03-1234567",
+          website: "https://example.com/coffeegood",
+          images: [
+            "https://images.unsplash.com/photo-1559925393-8be0ec4767c8?q=80&w=1000&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=1000&auto=format&fit=crop"
+          ],
+          discount: "10% הנחה על כל התפריט",
+          hours: "א'-ה' 07:00-22:00, ו' 08:00-16:00, שבת סגור",
+          ratings: 4.5,
+          reviews: [
+            {
+              id: "review1",
+              userId: "user123",
+              userName: "ישראל ישראלי",
+              rating: 5,
+              text: "קפה מעולה ושירות אדיב. ממליץ בחום!",
+              date: "2023-11-15",
+              recommended: true
+            }
+          ],
+          createdAt: serverTimestamp()
+        },
+        {
+          id: "restaurant",
+          name: "מסעדה טעימה",
+          category: "מסעדות",
+          description: "מסעדה משפחתית עם מטבח ים תיכוני עשיר וטעים. התפריט כולל מבחר מנות דגים, בשרים וצמחוניות עם חומרי גלם טריים.",
+          address: "רחוב אלנבי 45, תל אביב",
+          phone: "03-7654321",
+          website: "https://example.com/tastyrestaurant",
+          images: [
+            "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1000&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=1000&auto=format&fit=crop"
+          ],
+          discount: "ארוחת ילדים חינם בימי ראשון",
+          hours: "א'-ש' 12:00-23:00",
+          ratings: 4.2,
+          reviews: [
+            {
+              id: "review2",
+              userId: "user456",
+              userName: "חנה כהן",
+              rating: 4,
+              text: "אוכל מצוין ואווירה נעימה. קצת יקר אבל שווה.",
+              date: "2023-10-20",
+              recommended: true
+            }
+          ],
+          createdAt: serverTimestamp()
+        },
+        {
+          id: "attire",
+          name: "חנות בגדים",
+          category: "אופנה",
+          description: "חנות אופנה המציעה מגוון רחב של פריטי לבוש לנשים, גברים וילדים. מותגים מקומיים ובינלאומיים במחירים נוחים.",
+          address: "קניון עזריאלי, קומה 2, תל אביב",
+          phone: "03-9876543",
+          website: "https://example.com/fashionstore",
+          images: [
+            "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?q=80&w=1000&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=1000&auto=format&fit=crop"
+          ],
+          discount: "20% הנחה על הפריט השני",
+          hours: "א'-ה' 09:30-22:00, ו' 09:00-15:00, שבת: שעה לאחר צאת השבת עד 23:00",
+          ratings: 4.0,
+          reviews: [
+            {
+              id: "review3",
+              userId: "user789",
+              userName: "דני לוי",
+              rating: 4,
+              text: "שירות אדיב ומבחר גדול. המחירים הוגנים.",
+              date: "2023-09-05",
+              recommended: true
+            }
+          ],
+          createdAt: serverTimestamp()
+        }
+      ];
+      
+      // הוסף את העסקים לדאטהבייס
+      for (const business of sampleBusinesses) {
+        try {
+          console.log(`מנסה ליצור עסק: ${business.name} עם מזהה: ${business.id}`);
+          
+          // יצירת עסק עם מזהה מוגדר מראש
+          await setDoc(doc(db, "businesses", business.id), business);
+          
+          console.log(`נוצר בהצלחה עסק לדוגמה: ${business.name}`);
+        } catch (error) {
+          console.error(`שגיאה ביצירת עסק ${business.name}:`, error);
+        }
+      }
+    } else {
+      console.log(`קולקשן businesses קיים וכולל ${businessesSnapshot.docs.length} עסקים`);
+    }
+    
+    // יצירת קולקשן recommendations אם לא קיים
+    const recommendationsRef = collection(db, "recommendations");
+    const recommendationsSnapshot = await getDocs(recommendationsRef);
+    
+    if (recommendationsSnapshot.empty) {
+      console.log("קולקשן recommendations ריק - יוצר המלצות דוגמה");
+      
+      // המלצות דוגמה
+      const sampleRecommendations = [
+        {
+          id: "rec1",
+          businessId: "coffee",
+          userId: "demo_user1",
+          userName: "ישראל ישראלי",
+          userPhotoURL: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&auto=format&fit=crop&w=40&h=40",
+          businessName: "קפה טוב",
+          businessImage: "https://images.unsplash.com/photo-1559925393-8be0ec4767c8?q=80&w=1000&auto=format&fit=crop",
+          text: "המקום הכי טוב לקפה בעיר! השירות אדיב והאווירה נעימה. ממליץ בחום על הקרואסון שוקולד!",
+          rating: 5,
+          discount: "10% הנחה",
+          validUntil: new Date(new Date().setMonth(new Date().getMonth() + 1)),
+          savedCount: 12,
+          createdAt: serverTimestamp()
+        }
+      ];
+      
+      // הוסף את ההמלצות לדאטהבייס
+      for (const rec of sampleRecommendations) {
+        try {
+          console.log(`מנסה ליצור המלצה: ${rec.id}`);
+          await setDoc(doc(db, "recommendations", rec.id), rec);
+          console.log(`נוצרה בהצלחה המלצה לדוגמה: ${rec.id}`);
+        } catch (error) {
+          console.error(`שגיאה ביצירת המלצה ${rec.id}:`, error);
+        }
+      }
+    } else {
+      console.log(`קולקשן recommendations קיים וכולל ${recommendationsSnapshot.docs.length} המלצות`);
+    }
+    
+    // יצירת קולקשן users אם לא קיים
+    const usersRef = collection(db, "users");
+    const usersSnapshot = await getDocs(usersRef);
+    
+    if (usersSnapshot.empty) {
+      console.log("קולקשן users ריק - יוצר משתמשי דוגמה");
+      
+      // משתמשי דוגמה
+      const sampleUsers = [
+        {
+          uid: "demo_user1",
+          email: "demo@example.com",
+          displayName: "ישראל ישראלי",
+          photoURL: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&auto=format&fit=crop&w=40&h=40",
+          coins: 50,
+          referrals: 3,
+          savedOffers: 5,
+          createdAt: serverTimestamp()
+        }
+      ];
+      
+      // הוסף את המשתמשים לדאטהבייס
+      for (const user of sampleUsers) {
+        try {
+          console.log(`מנסה ליצור משתמש: ${user.displayName}`);
+          await setDoc(doc(db, "users", user.uid), user);
+          console.log(`נוצר בהצלחה משתמש לדוגמה: ${user.displayName}`);
+        } catch (error) {
+          console.error(`שגיאה ביצירת משתמש ${user.displayName}:`, error);
+        }
+      }
+    } else {
+      console.log(`קולקשן users קיים וכולל ${usersSnapshot.docs.length} משתמשים`);
+    }
+    
+    console.log("סיום יצירת קולקשנים!");
+  } catch (error) {
+    console.error("שגיאה ביצירת קולקשנים:", error);
+  }
+})();
+
 // Auth functions
 export const signInWithGoogle = async () => {
   try {
