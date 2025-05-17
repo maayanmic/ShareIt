@@ -170,6 +170,40 @@ export const getUserData = async (userId: string) => {
 export const getUserRecommendations = async (userId: string) => {
   try {
     console.log(`מחפש המלצות עבור משתמש ${userId}`);
+    
+    // אם זה משתמש הדמו, החזר המלצות קבועות
+    if (userId === "demo_user1") {
+      console.log("מחזיר המלצות דמו קבועות למשתמש ישראל ישראלי");
+      return [
+        {
+          id: "demo_recommendation_1",
+          userId: "demo_user1",
+          businessId: "business1", 
+          businessName: "קפה טוב",
+          businessImage: "https://images.unsplash.com/photo-1559925393-8be0ec4767c8?q=80&w=1000&auto=format&fit=crop",
+          description: "המקום הכי טוב לקפה בעיר! השירות אדיב והאווירה נעימה. ממליץ בחום על הקרואסון שוקולד!",
+          text: "המקום הכי טוב לקפה בעיר! השירות אדיב והאווירה נעימה. ממליץ בחום על הקרואסון שוקולד!",
+          rating: 4.8,
+          discount: "10% הנחה",
+          validUntil: new Date(2025, 11, 31),
+          savedCount: 12
+        },
+        {
+          id: "demo_recommendation_2",
+          userId: "demo_user1",
+          businessId: "business2",
+          businessName: "מסעדת השף",
+          businessImage: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1000&auto=format&fit=crop",
+          description: "ההמבורגר הכי טעים שאכלתי! מנות גדולות ושירות מעולה. כדאי להזמין מראש.",
+          text: "ההמבורגר הכי טעים שאכלתי! מנות גדולות ושירות מעולה. כדאי להזמין מראש.",
+          rating: 4.5,
+          discount: "1+1 על מנה ראשונה",
+          validUntil: new Date(2025, 10, 15),
+          savedCount: 28
+        }
+      ];
+    }
+    
     const recommendationsRef = collection(db, "recommendations");
     
     // טען את כל ההמלצות כי יכולים להיות כמה שדות שונים
