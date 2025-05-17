@@ -635,34 +635,67 @@ export const getRecommendations = async (limitCount = 10) => {
 
 export const getUserRecommendations = async (userId: string) => {
   try {
+    console.log("Getting recommendations for user:", userId);
+    
+    // בדיקה - אם ה-userId אינו מחרוזת תקינה, החזר מערך ריק
+    if (!userId || typeof userId !== 'string' || userId.length < 5) {
+      console.warn("Invalid userId provided:", userId);
+      return [];
+    }
+    
     const recommendationsCollection = collection(db, "recommendations");
     const q = query(
       recommendationsCollection, 
-      where("userId", "==", userId),
-      orderBy("createdAt", "desc")
+      where("userId", "==", userId)
+      // הסרת מיון לפי createdAt כי ייתכן שזה גורם לבעיות אם השדה לא קיים בכל המסמכים
+      // אחר כך נמיין את התוצאות בצד הלקוח
     );
+    
+    console.log("Fetching recommendations with query:", q);
     const recommendationsSnapshot = await getDocs(q);
+    console.log("Retrieved recommendations count:", recommendationsSnapshot.docs.length);
     
     // עיבוד נתונים להמרת תאריכים מפיירבייס למחרוזות
-    return recommendationsSnapshot.docs.map(doc => {
+    const results = recommendationsSnapshot.docs.map(doc => {
       const data = doc.data();
       
       // המרת שדה validUntil מאובייקט Timestamp למחרוזת אם הוא קיים
       if (data.validUntil && typeof data.validUntil === 'object' && 'seconds' in data.validUntil) {
-        // המרה לאובייקט Date ואז למחרוזת בפורמט הרצוי
-        const date = new Date(data.validUntil.seconds * 1000);
-        data.validUntil = date.toLocaleDateString('he-IL', {
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric'
-        });
+        try {
+          // המרה לאובייקט Date ואז למחרוזת בפורמט הרצוי
+          const date = new Date(data.validUntil.seconds * 1000);
+          data.validUntil = date.toLocaleDateString('he-IL', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+          });
+        } catch (dateError) {
+          console.error("Error converting date:", dateError);
+          data.validUntil = "תאריך לא ידוע";
+        }
+      } else {
+        // אם אין תאריך תוקף, קבע ערך ברירת מחדל
+        data.validUntil = "ללא הגבלה";
       }
+      
+      // כדי להימנע מבעיות ב-rendering, טיפול בנתונים חסרים
+      if (!data.imageUrl) data.imageUrl = null;
+      if (!data.businessName) data.businessName = "עסק";
+      if (!data.description) data.description = "אין תיאור";
+      if (!data.discount) data.discount = "הנחה";
+      if (!data.rating) data.rating = 5;
+      if (!data.savedCount) data.savedCount = 0;
       
       return { id: doc.id, ...data };
     });
+    
+    console.log("Processed recommendations:", results);
+    return results;
   } catch (error) {
     console.error("Error getting user recommendations: ", error);
-    throw error;
+    // במקום לזרוק שגיאה, החזר מערך ריק כך שהממשק לא ייתקע
+    console.log("Returning empty array due to error");
+    return [];
   }
 };
 
@@ -778,53 +811,11 @@ export const getSiteConfig = async () => {
 
 // Get logo from site configuration
 export const getLogoURL = async () => {
-  try {
-    // נסה מספר נתיבים אפשריים כדי למצוא את הלוגו
-    
-    // נתיב 1: בתיקיית images של Storage
-    try {
-      const logo3Ref = ref(storage, "images/Logo3");
-      return await getDownloadURL(logo3Ref);
-    } catch (storageError) {
-      console.log("Logo not found in images/Logo3, trying next path...");
-    }
-    
-    // נתיב 2: בתיקיית siteconfig/images של Storage
-    try {
-      const logo3Ref = ref(storage, "siteconfig/images/Logo3");
-      return await getDownloadURL(logo3Ref);
-    } catch (storageError) {
-      console.log("Logo not found in siteconfig/images/Logo3, trying next path...");
-    }
-    
-    // נתיב 3: שדה logoUrl בדוקומנט siteconfig/general
-    try {
-      const configDoc = await getDoc(doc(db, "siteconfig", "general"));
-      if (configDoc.exists() && configDoc.data().logoUrl) {
-        console.log("Found logo URL in siteconfig/general document");
-        return configDoc.data().logoUrl;
-      }
-    } catch (firestoreError) {
-      console.log("Could not access siteconfig/general, trying with capital S...");
-    }
-    
-    // נתיב 4: נסה עם אות גדולה (siteConfig במקום siteconfig)
-    try {
-      const configDoc = await getDoc(doc(db, "siteConfig", "general"));
-      if (configDoc.exists() && configDoc.data().logoUrl) {
-        console.log("Found logo URL in siteConfig/general document");
-        return configDoc.data().logoUrl;
-      }
-    } catch (firestoreError) {
-      console.log("Could not access siteConfig/general either");
-    }
-    
-    console.log("Could not find logo URL in any location");
-    return null;
-  } catch (error) {
-    console.error("Error getting logo: ", error);
-    return null;
-  }
+  // במקום לנסות להוריד לוגו מ-Firebase Storage, נחזיר null
+  // זה יפתור את בעיית ה-CORS בטעינת הלוגו
+  // האפליקציה תשתמש בלוגו ברירת המחדל הממותג כבר בקוד
+  console.log("Using default local logo instead of Firebase Storage logo");
+  return null;
 };
 
 export { auth, db, storage };
