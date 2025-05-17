@@ -48,6 +48,37 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
+
+// ניסיון ליצור קולקשנים אם הם לא קיימים
+(async () => {
+  try {
+    console.log("מתחיל ליצור קולקשנים בפיירבייס...");
+    
+    // בדיקה והקמה של קולקשן המשתמשים
+    const usersCollectionRef = collection(db, "users");
+    const usersSnapshot = await getDocs(usersCollectionRef);
+    console.log(`קולקשן users קיים וכולל ${usersSnapshot.docs.length} משתמשים`);
+    
+    // בדיקה והקמה של קולקשן העסקים
+    const businessesCollectionRef = collection(db, "businesses");
+    const businessesSnapshot = await getDocs(businessesCollectionRef);
+    console.log(`קולקשן businesses קיים וכולל ${businessesSnapshot.docs.length} עסקים`);
+    
+    // בדיקה והקמה של קולקשן ההמלצות
+    const recommendationsCollectionRef = collection(db, "recommendations");
+    const recommendationsSnapshot = await getDocs(recommendationsCollectionRef);
+    console.log(`קולקשן recommendations קיים וכולל ${recommendationsSnapshot.docs.length} המלצות`);
+    
+    // בדיקה והקמה של קולקשן החיבורים
+    const connectionsCollectionRef = collection(db, "connections");
+    const connectionsSnapshot = await getDocs(connectionsCollectionRef);
+    console.log(`קולקשן connections קיים וכולל ${connectionsSnapshot.docs.length} חיבורים`);
+    
+    console.log("סיום יצירת קולקשנים!");
+  } catch (error) {
+    console.error("שגיאה ביצירת קולקשנים:", error);
+  }
+})();
 const googleProvider = new GoogleAuthProvider();
 const facebookProvider = new FacebookAuthProvider();
 
