@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
-import { useBusinesses } from "@/hooks/use-businesses";
+import { useBusinesses, Business } from "@/hooks/use-businesses";
 import RecommendationCard from "@/components/recommendation/recommendation-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -142,7 +142,7 @@ export default function Recommendations() {
         </div>
       </div>
 
-      {loading ? (
+      {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <div key={i} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 h-96 animate-pulse">
@@ -164,7 +164,7 @@ export default function Recommendations() {
         </div>
       ) : filteredBusinesses.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredBusinesses.map((business) => (
+          {filteredBusinesses.map((business: Business) => (
             <RecommendationCard
               key={business.id}
               id={business.id}
@@ -172,12 +172,12 @@ export default function Recommendations() {
               businessImage={business.image}
               description={business.description}
               discount={business.discount}
-              rating={business.rating}
-              recommenderName={business.recommendedBy}
-              recommenderPhoto={business.recommendedByPhoto}
-              recommenderId={business.recommendedById}
-              validUntil={business.validUntil}
-              savedCount={business.savedCount}
+              rating={business.rating || 4}
+              recommenderName={business.recommendedBy || "משתמש"}
+              recommenderPhoto={business.recommendedByPhoto || "https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=40&h=40&auto=format&fit=crop"}
+              recommenderId={business.recommendedById || "user1"}
+              validUntil={business.validUntil || "30 ביוני"}
+              savedCount={business.savedCount || 0}
             />
           ))}
         </div>
