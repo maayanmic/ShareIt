@@ -137,11 +137,18 @@ export const QRScannerProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             variant: "destructive"
           });
         }
-      } else {
+      } else if (businessId) {
         // קרא לפונקציית הקולבק והעבר את המשתמש לדף העסק
         onScanCallback(businessId);
         // ניווט לדף העסק
         setLocation(`/business/${businessId}`);
+      } else {
+        // אם אין מזהה עסק תקין, הצג שגיאה
+        toast({
+          title: "שגיאה",
+          description: "מזהה עסק לא חוקי",
+          variant: "destructive"
+        });
       }
       
       closeScanner();
