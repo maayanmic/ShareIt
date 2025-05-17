@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/use-auth";
 
 type QRScannerContextType = {
   isOpen: boolean;
-  openScanner: (onScan: (result: string | null) => void) => void;
+  openScanner: (onScan?: (result: string | null) => void) => void;
   closeScanner: () => void;
 };
 
@@ -38,9 +38,17 @@ export const QRScannerProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     };
   }, []);
 
-  const openScanner = (onScan: (result: string | null) => void) => {
+  const openScanner = (onScan?: (result: string | null) => void) => {
     setIsOpen(true);
-    setOnScanCallback(() => onScan);
+    if (onScan) {
+      setOnScanCallback(() => onScan);
+    } else {
+      // כאשר לא מועבר קולבק, נשתמש בהתנהגות ברירת מחדל
+      setOnScanCallback(() => (result) => {
+        // התנהגות ברירת מחדל מטופלת בפונקציית handleSuccessfulScan
+        console.log("Default scan behavior, result:", result);
+      });
+    }
   };
 
   const closeScanner = () => {

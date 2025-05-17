@@ -142,11 +142,14 @@ export default function Profile() {
         <TabsContent value="recommendations">
           <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between">
             <h2 className="text-xl font-semibold mb-2 md:mb-0">Your Recommendations</h2>
-            <Button asChild>
-              <Link href="/#create-recommendation">
-                <Camera className="h-4 w-4 mr-2" />
-                Create New Recommendation
-              </Link>
+            <Button
+              onClick={() => {
+                const { openScanner } = require("@/components/qr/qr-scanner-modal");
+                openScanner();
+              }}
+            >
+              <Camera className="h-4 w-4 mr-2" />
+              Scan QR & Create Recommendation
             </Button>
           </div>
           
@@ -211,8 +214,13 @@ export default function Profile() {
                 <p className="text-gray-500 dark:text-gray-400 max-w-md mb-6">
                   You haven't created any recommendations yet. Start sharing your favorite businesses to earn rewards!
                 </p>
-                <Button asChild>
-                  <Link href="/#create-recommendation">Create Your First Recommendation</Link>
+                <Button
+                  onClick={() => {
+                    const { openScanner } = require("@/components/qr/qr-scanner-modal");
+                    openScanner();
+                  }}
+                >
+                  Scan QR & Create Your First Recommendation
                 </Button>
               </div>
             </div>
