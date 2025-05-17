@@ -7,11 +7,27 @@ import { useToast } from "@/hooks/use-toast";
 
 export default function Users() {
   const [users, setUsers] = useState<any[]>([]);
+  const [filteredUsers, setFilteredUsers] = useState<any[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [connectingTo, setConnectingTo] = useState<string | null>(null);
   const { user } = useAuth();
   const { toast } = useToast();
 
+  // הפילטור של משתמשים לפי חיפוש
+  useEffect(() => {
+    if (searchQuery.trim() === "") {
+      setFilteredUsers(users);
+    } else {
+      const query = searchQuery.toLowerCase();
+      const filtered = users.filter(u => 
+        u.displayName?.toLowerCase().includes(query)
+      );
+      setFilteredUsers(filtered);
+    }
+  }, [searchQuery, users]);
+
+  // טעינת רשימת המשתמשים
   useEffect(() => {
     async function fetchUsers() {
       try {
@@ -32,6 +48,7 @@ export default function Users() {
         }));
         
         setUsers(enrichedUsers);
+        setFilteredUsers(enrichedUsers); // אתחול הרשימה המסוננת עם כל המשתמשים
       } catch (error) {
         console.error("שגיאה בטעינת רשימת המשתמשים:", error);
       } finally {
@@ -91,9 +108,39 @@ export default function Users() {
     );
   };
 
+  // פונקציה לטיפול בשינוי טקסט בשדה החיפוש
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
+
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-6 text-right">משתמשים</h1>
+      <h1 className="text-2xl font-bold mb-4 text-right">משתמשים</h1>
+      
+      {/* שורת חיפוש */}
+      <div className="relative mb-6">
+        <input
+          type="text"
+          placeholder="חיפוש לפי שם משתמש..."
+          value={searchQuery}
+          onChange={handleSearchChange}
+          className="w-full p-3 border border-gray-300 rounded-lg text-right pr-10 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+        />
+        <svg 
+          xmlns="http://www.w3.org/2000/svg"
+          className="absolute left-3 top-3.5 h-5 w-5 text-gray-400"
+          fill="none" 
+          viewBox="0 0 24 24" 
+          stroke="currentColor"
+        >
+          <path 
+            strokeLinecap="round" 
+            strokeLinejoin="round" 
+            strokeWidth="2" 
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" 
+          />
+        </svg>
+      </div>
       
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -117,9 +164,16 @@ export default function Users() {
         <div className="text-center py-10 text-gray-500">
           <p className="text-xl">לא נמצאו משתמשים במערכת</p>
         </div>
+      ) : filteredUsers.length === 0 ? (
+        <div className="text-center py-10 text-gray-500">
+          <p className="text-lg">לא נמצאו משתמשים התואמים לחיפוש "{searchQuery}"</p>
+          <Button className="mt-4" variant="outline" onClick={() => setSearchQuery("")}>
+            הצג את כל המשתמשים
+          </Button>
+        </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {users.map((user) => (
+          {filteredUsers.map((user) => (
             <div key={user.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4">
               <div className="flex items-center gap-4 mb-4">
                 <div className="relative">
@@ -130,7 +184,12 @@ export default function Users() {
                   />
                 </div>
                 <div className="flex-1 text-right">
-                  <h3 className="font-semibold">{user.displayName}</h3>
+                  <a 
+                    href={`/user/${user.id}`} 
+                    className="font-semibold hover:text-primary-600 transition-colors"
+                  >
+                    {user.displayName}
+                  </a>
                   <div className="mt-1">{renderRating(user.rating || 0)}</div>
                 </div>
               </div>

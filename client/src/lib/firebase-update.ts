@@ -109,3 +109,52 @@ export const getUserRating = async (userId: string) => {
     return 0;
   }
 };
+
+// פונקציה להבאת נתוני משתמש ספציפי
+export const getUserData = async (userId: string) => {
+  try {
+    const userRef = doc(db, "users", userId);
+    const userSnapshot = await getDoc(userRef);
+    
+    if (!userSnapshot.exists()) {
+      return null;
+    }
+    
+    // בדוק אם המשתמש הנוכחי מחובר למשתמש זה
+    const userData = userSnapshot.data();
+    
+    return {
+      id: userSnapshot.id,
+      ...userData
+    };
+  } catch (error) {
+    console.error("שגיאה בהבאת נתוני משתמש:", error);
+    return null;
+  }
+};
+
+// פונקציה להבאת ההמלצות של משתמש ספציפי
+export const getUserRecommendations = async (userId: string) => {
+  try {
+    const recommendationsRef = collection(db, "recommendations");
+    const q = query(
+      recommendationsRef, 
+      where("userId", "==", userId),
+      orderBy("createdAt", "desc")
+    );
+    const querySnapshot = await getDocs(q);
+    
+    const recommendations = [];
+    for (const doc of querySnapshot.docs) {
+      recommendations.push({
+        id: doc.id,
+        ...doc.data()
+      });
+    }
+    
+    return recommendations;
+  } catch (error) {
+    console.error("שגיאה בהבאת המלצות משתמש:", error);
+    return [];
+  }
+};
