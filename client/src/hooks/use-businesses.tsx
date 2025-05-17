@@ -98,26 +98,21 @@ export function useBusinesses() {
     queryKey: ['businesses'],
     queryFn: async () => {
       try {
-        console.log("מנסה לטעון עסקים מהשרת...");
         const data = await getBusinesses();
         if (data && data.length > 0) {
-          console.log("נטענו בהצלחה עסקים מהשרת:", data.length);
           return data as Business[];
         }
-        console.log("לא נמצאו עסקים בשרת, משתמש בנתוני דוגמה");
-        return sampleBusinesses;
+        throw new Error("No businesses found");
       } catch (error) {
-        console.error("שגיאה בטעינת עסקים מהשרת:", error);
-        console.log("משתמש בנתוני דוגמה עקב השגיאה");
-        return sampleBusinesses;
+        console.error("Error fetching businesses:", error);
+        throw error;
       }
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    retry: 1 // נסה פעם אחת נוספת במקרה של שגיאה
+    staleTime: 5 * 60 * 1000 // 5 minutes
   });
 
   return {
-    businesses: businesses || sampleBusinesses,
+    businesses,
     isLoading,
     error
   };
