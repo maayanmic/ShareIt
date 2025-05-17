@@ -161,7 +161,7 @@ export const QRScannerProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           { facingMode: "environment" },
           {
             fps: 10,
-            qrbox: { width: 250, height: 250 }
+            qrbox: { width: 300, height: 300 }
           },
           (decodedText) => {
             // עיבוד ההתראה המוצלחת
@@ -259,7 +259,7 @@ export const QRScannerProvider: React.FC<{ children: React.ReactNode }> = ({ chi
                 id={scannerContainerId}
                 className="bg-gray-100 dark:bg-gray-900 rounded-lg aspect-square w-full max-w-sm mx-auto flex items-center justify-center overflow-hidden"
               >
-                <div className="relative w-4/5 h-4/5 border-2 border-primary-500">
+                <div className="relative w-[90%] h-[90%] border-2 border-primary-500">
                   <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-primary-500 -mt-2 -mr-2"></div>
                   <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-primary-500 -mt-2 -ml-2"></div>
                   <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-primary-500 -mb-2 -mr-2"></div>

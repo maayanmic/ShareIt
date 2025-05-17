@@ -83,12 +83,12 @@ function App() {
         <Toaster />
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 transition-colors duration-300">
           <DesktopNav />
-          <div className="container mx-auto pt-4 md:pt-20 pb-24 md:pb-8 px-4">
-            <QRScannerProvider>
+          <QRScannerProvider>
+            <div className="container mx-auto pt-4 md:pt-20 pb-24 md:pb-8 px-4">
               <Router />
-            </QRScannerProvider>
-          </div>
-          <MobileNav />
+            </div>
+            <MobileNav />
+          </QRScannerProvider>
         </div>
       </TooltipProvider>
     </AuthProvider>

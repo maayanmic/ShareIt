@@ -10,6 +10,7 @@ export default function MobileNav() {
   const handleScanClick = () => {
     // פותח את סורק ה-QR ללא קולבק ספציפי
     // הסורק יטפל אוטומטית בניתוב לאחר סריקה מוצלחת
+    console.log("פותח סורק QR ממובייל");
     openScanner();
   };
 
