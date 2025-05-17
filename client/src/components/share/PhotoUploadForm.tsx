@@ -172,7 +172,7 @@ export default function PhotoUploadForm({
           disabled={isSubmitting}
           className="bg-gray-100 text-gray-800 hover:bg-gray-200"
         >
-          המשך
+          חזור
         </Button>
         
         <Button
@@ -180,7 +180,7 @@ export default function PhotoUploadForm({
           disabled={isSubmitting || !recommendationText.trim() || !selectedImage}
           className="bg-gray-800 text-white hover:bg-gray-700"
         >
-          {isSubmitting ? "שומר..." : "חזור"}
+          {isSubmitting ? "שומר..." : "המשך"}
         </Button>
       </div>
     </div>
