@@ -118,7 +118,6 @@ export default function RecommendationCard({
         </div>
         <CardContent className="p-4">
           <div className="flex justify-between items-start">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{businessName}</h3>
             <div className="flex items-center">
               {Array.from({ length: 5 }).map((_, i) => (
                 <Star 
@@ -127,52 +126,53 @@ export default function RecommendationCard({
                 />
               ))}
             </div>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white text-right">{businessName}</h3>
           </div>
-          <p className="text-gray-500 dark:text-gray-400 text-sm mt-2">{description}</p>
+          <p className="text-gray-500 dark:text-gray-400 text-sm mt-2 text-right">{description}</p>
           
-          <div className="flex items-center mt-4">
+          <div className="flex items-center justify-end mt-4">
+            <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
+              הומלץ על-ידי <span className="font-medium text-gray-700 dark:text-gray-300">{recommenderName}</span>
+            </span>
             <Avatar className="h-6 w-6">
               <AvatarImage src={recommenderPhoto} alt={recommenderName} />
               <AvatarFallback>{recommenderName && recommenderName.charAt(0) || '?'}</AvatarFallback>
             </Avatar>
-            <span className="text-xs text-gray-500 dark:text-gray-400 mr-2">
-              הומלץ על-ידי <span className="font-medium text-gray-700 dark:text-gray-300">{recommenderName}</span>
-            </span>
           </div>
           
-          <div className="flex justify-between items-center mt-4">
+          <div className="flex flex-row-reverse justify-between items-center mt-4">
             <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
-              <Clock className="h-4 w-4 ml-1" />
               <span>בתוקף עד {validUntil}</span>
+              <Clock className="h-4 w-4 mr-1" />
             </div>
             <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
-              <Users className="h-4 w-4 ml-1" />
               <span>{localSavedCount} אנשים שמרו</span>
+              <Users className="h-4 w-4 mr-1" />
             </div>
           </div>
           
           <div className="mt-4 flex justify-between">
             <Button 
-              className={`flex-1 mr-2 ${isSaved ? 'bg-green-500 hover:bg-green-600' : 'bg-primary-500 hover:bg-primary-600'}`}
+              variant="outline" 
+              className="px-3 py-1.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300"
+              onClick={shareSocial}
+            >
+              שתף
+              <Share2 className="h-4 w-4 mr-2" />
+            </Button>
+            <Button 
+              className={`flex-1 ml-2 ${isSaved ? 'bg-green-500 hover:bg-green-600' : 'bg-primary-500 hover:bg-primary-600'}`}
               onClick={handleSaveOffer}
               disabled={isSaved}
             >
               {isSaved ? (
                 <>
-                  <CheckCircle2 className="h-4 w-4 ml-1" />
                   נשמר
+                  <CheckCircle2 className="h-4 w-4 mr-1" />
                 </>
               ) : (
                 'שמור הצעה'
               )}
-            </Button>
-            <Button 
-              variant="outline" 
-              className="px-3 py-1.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300"
-              onClick={shareSocial}
-            >
-              <Share2 className="h-4 w-4 ml-2" />
-              שתף
             </Button>
           </div>
         </CardContent>
