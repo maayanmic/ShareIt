@@ -90,16 +90,16 @@ export default function DigitalWallet() {
   const redeemableOffers = [
     {
       id: "coffee1",
-      name: "Coffee Workshop",
+      name: "קפה ורקשופ",
       image: "https://pixabay.com/get/g50da71414b15d2f75e2f2561e68be2f9955ae90a626f62787a9fd2ed2f2c731dc827ba9d65936b17f2649eb5984e92672ec8932e704e7d5e29f70993cdbf27f8_1280.jpg",
-      description: "Free coffee with any purchase",
+      description: "קפה חינם עם כל קנייה",
       coins: 30,
     },
     {
       id: "fresh1",
-      name: "Fresh & Local",
+      name: "טרי ומקומי",
       image: "https://images.unsplash.com/photo-1447078806655-40579c2520d6?ixlib=rb-1.2.1&auto=format&fit=crop&w=80&h=80",
-      description: "10% off your next meal",
+      description: "10% הנחה בארוחה הבאה",
       coins: 25,
     },
   ];
