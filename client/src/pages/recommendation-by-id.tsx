@@ -132,17 +132,27 @@ export default function RecommendationById() {
             const businessData = await getBusinessById(processedRec.businessId);
             
             if (businessData) {
-              setBusiness(businessData);
+              const typedBusinessData: BusinessData = {
+                id: businessData.id || "",
+                name: businessData.name || "",
+                category: businessData.category || "",
+                description: businessData.description || "",
+                address: businessData.address || "",
+                image: businessData.image || "",
+                businessImage: businessData.businessImage
+              };
+              setBusiness(typedBusinessData);
             } else {
               // יצירת אובייקט עסק על סמך נתוני ההמלצה
-              setBusiness({
+              const businessData: BusinessData = {
                 id: processedRec.businessId,
                 name: processedRec.businessName,
                 category: "עסק",
                 description: "פרטי העסק אינם זמינים",
                 address: "כתובת לא ידועה",
-                image: foundRecommendation.businessImage || "https://images.unsplash.com/photo-1537047902294-62a40c20a6ae?q=80&w=500",
-              });
+                image: (anyFoundRecommendation.businessImage as string) || "https://images.unsplash.com/photo-1537047902294-62a40c20a6ae?q=80&w=500",
+              };
+              setBusiness(businessData);
             }
           } catch (businessError) {
             console.error("שגיאה בטעינת פרטי העסק:", businessError);
