@@ -92,7 +92,7 @@ export default function UserProfile() {
     }
   };
   
-  // פונקציה להצגת דירוג המשתמש בכוכבים
+  // פונקציה להצגת דירוג המשתמש בכוכבים (ללא מספר)
   const renderRating = (rating: number) => {
     const fullStars = Math.floor(rating);
     const hasHalfStar = rating % 1 >= 0.5;
@@ -106,7 +106,6 @@ export default function UserProfile() {
         {Array(5 - fullStars - (hasHalfStar ? 1 : 0)).fill(0).map((_, i) => (
           <Star key={i} className="h-5 w-5 text-gray-300" />
         ))}
-        <span className="ml-1 text-sm text-gray-600">{rating.toFixed(1)}</span>
       </div>
     );
   };
