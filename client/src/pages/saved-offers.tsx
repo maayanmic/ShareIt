@@ -373,7 +373,7 @@ export default function SavedOffers() {
       </Tabs>
 
       <div className="mt-8 bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
-        <h2 className="text-xl font-semibold mb-4">How to Use Offers</h2>
+        <h2 className="text-xl font-semibold mb-4 text-right">איך להשתמש בהצעות</h2>
         <Separator className="mb-4" />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="flex flex-col items-center text-center">
@@ -393,8 +393,8 @@ export default function SavedOffers() {
                 />
               </svg>
             </div>
-            <h3 className="font-medium mb-2">1. At the Business</h3>
-            <p className="text-gray-500 dark:text-gray-400 text-sm">Visit the business and show your saved offer to the cashier when making a purchase.</p>
+            <h3 className="font-medium mb-2">1. בבית העסק</h3>
+            <p className="text-gray-500 dark:text-gray-400 text-sm">בקר בבית העסק והצג את ההצעה השמורה שלך לקופאי בעת ביצוע רכישה.</p>
           </div>
           
           <div className="flex flex-col items-center text-center">
@@ -414,8 +414,8 @@ export default function SavedOffers() {
                 />
               </svg>
             </div>
-            <h3 className="font-medium mb-2">2. Claim Your Offer</h3>
-            <p className="text-gray-500 dark:text-gray-400 text-sm">Tap "Use this Offer" to generate a redemption code or show the screen to the cashier.</p>
+            <h3 className="font-medium mb-2">2. מימוש ההצעה</h3>
+            <p className="text-gray-500 dark:text-gray-400 text-sm">לחץ על "מימוש ההצעה" כדי להציג את ההצעה לקופאי.</p>
           </div>
           
           <div className="flex flex-col items-center text-center">
@@ -435,8 +435,8 @@ export default function SavedOffers() {
                 />
               </svg>
             </div>
-            <h3 className="font-medium mb-2">3. Earn Rewards</h3>
-            <p className="text-gray-500 dark:text-gray-400 text-sm">When friends use your recommendations, you'll earn coins to redeem for more offers!</p>
+            <h3 className="font-medium mb-2">3. צבירת תגמולים</h3>
+            <p className="text-gray-500 dark:text-gray-400 text-sm">כשחברים משתמשים בהמלצות שלך, תרוויח מטבעות למימוש הצעות נוספות!</p>
           </div>
         </div>
       </div>
