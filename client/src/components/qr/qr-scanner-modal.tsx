@@ -156,12 +156,13 @@ export const QRScannerProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         // יצירת מופע חדש של סורק QR
         qrScannerRef.current = new Html5Qrcode(scannerContainerId);
         
-        // התחלת סריקה עם מצלמה אחורית
+        // התחלת סריקה עם מצלמה אחורית - הגדלת אזור הסריקה משמעותית
         qrScannerRef.current.start(
           { facingMode: "environment" },
           {
             fps: 10,
-            qrbox: { width: 300, height: 300 }
+            // הגדרת אזור סריקה גדול יותר שיתפרס על רוב השטח
+            qrbox: { width: 280, height: 280 }
           },
           (decodedText) => {
             // עיבוד ההתראה המוצלחת
@@ -254,18 +255,26 @@ export const QRScannerProvider: React.FC<{ children: React.ReactNode }> = ({ chi
               </Button>
             </div>
             <div className="p-4">
-              {/* אזור לסורק QR */}
+              {/* אזור לסורק QR - מסגרת גדולה יותר */}
               <div 
                 id={scannerContainerId}
                 className="bg-gray-100 dark:bg-gray-900 rounded-lg aspect-square w-full max-w-sm mx-auto flex items-center justify-center overflow-hidden"
               >
-                <div className="relative w-[90%] h-[90%] border-2 border-primary-500">
-                  <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-primary-500 -mt-2 -mr-2"></div>
-                  <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-primary-500 -mt-2 -ml-2"></div>
-                  <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-primary-500 -mb-2 -mr-2"></div>
-                  <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-primary-500 -mb-2 -ml-2"></div>
-                  <div className="w-full h-full flex items-center justify-center">
-                    <p className="text-gray-500 dark:text-gray-400 text-sm text-center">מקם את קוד ה-QR בתוך המסגרת</p>
+                {/* מסגרת סריקה גדולה יותר */}
+                <div className="relative w-full h-full flex items-center justify-center">
+                  {/* מסגרת לבנה עם פינות לעיצוב */}
+                  <div className="absolute inset-[10%] border-0 z-20">
+                    {/* פינות בולטות גדולות יותר */}
+                    <div className="absolute top-0 right-0 w-14 h-14 border-t-4 border-r-4 border-white"></div>
+                    <div className="absolute top-0 left-0 w-14 h-14 border-t-4 border-l-4 border-white"></div>
+                    <div className="absolute bottom-0 right-0 w-14 h-14 border-b-4 border-r-4 border-white"></div>
+                    <div className="absolute bottom-0 left-0 w-14 h-14 border-b-4 border-l-4 border-white"></div>
+                  </div>
+                  {/* שטח שקוף באמצע */}
+                  <div className="w-full h-full flex items-center justify-center z-10">
+                    <p className="text-white text-sm text-center drop-shadow-md font-medium">
+                      מקם את קוד ה-QR בתוך המסגרת
+                    </p>
                   </div>
                 </div>
               </div>
