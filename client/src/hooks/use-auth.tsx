@@ -16,6 +16,8 @@ interface AuthUser extends User {
   coins?: number;
   referrals?: number;
   savedOffers?: number;
+  role?: string;
+  isAdmin?: boolean;
 }
 
 interface AuthContextType {
