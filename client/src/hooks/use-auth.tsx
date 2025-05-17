@@ -200,17 +200,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const handleFacebookLogin = async () => {
     try {
-      await signInWithFacebook();
-      toast({
-        title: "Welcome!",
-        description: "You have successfully logged in with Facebook.",
-      });
-      setLocation("/");
+      // בדיקה אם משתמשים במובייל או שולחן עבודה
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      
+      if (isMobile) {
+        console.log("מתחבר דרך פייסבוק במובייל...");
+        // במובייל לא נציג הודעת הצלחה, כי הפעולה תהיה הפניה והודעה לא תוצג
+        await signInWithFacebook();
+        // בזמן שהמשתמש מופנה לפייסבוק, לא נמשיך את הקוד כאן
+      } else {
+        // בשולחן עבודה (popup) נציג הודעת הצלחה כרגיל
+        const user = await signInWithFacebook();
+        if (user) {
+          toast({
+            title: "ברוך הבא!",
+            description: "התחברת בהצלחה באמצעות פייסבוק.",
+          });
+          setLocation("/");
+        }
+      }
     } catch (error) {
-      console.error("Facebook login error: ", error);
+      console.error("שגיאה בהתחברות פייסבוק: ", error);
       toast({
-        title: "Login Error",
-        description: "Failed to log in with Facebook.",
+        title: "שגיאת התחברות",
+        description: "לא ניתן להתחבר באמצעות פייסבוק. נסה שוב.",
         variant: "destructive",
       });
       throw error;
