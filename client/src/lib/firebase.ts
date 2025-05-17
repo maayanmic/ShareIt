@@ -287,13 +287,25 @@ export const signInWithFacebook = async () => {
     facebookProvider.addScope('email');
     facebookProvider.addScope('public_profile');
     
+    // פתרון עבור בעיית ה-sessionStorage במובייל
+    // הגדר מצב אימות זמני לפני הפניה
+    const currentUrl = window.location.href;
+    // שמור מידע בלוקל סטורג' לפני הפניה
+    localStorage.setItem('fbAuthInProgress', 'true');
+    localStorage.setItem('fbAuthRedirectUrl', currentUrl);
+    
+    console.log("מתחיל תהליך התחברות פייסבוק, שומר מצב מקומי...");
+    
     // תמיד נשתמש בשיטת redirect שעובדת טוב יותר בכל הפלטפורמות
-    await signInWithRedirect(auth, facebookProvider);
+    await signInWithPopup(auth, facebookProvider);
     // הפונקציה הזו תחזיר null והמשתמש יועבר לדף פייסבוק
     // כאשר יחזור, handleAuthRedirect יטפל בתוצאה
     return null;
   } catch (error) {
     console.error("Error signing in with Facebook: ", error);
+    // נקה את המצב הזמני במקרה של שגיאה
+    localStorage.removeItem('fbAuthInProgress');
+    localStorage.removeItem('fbAuthRedirectUrl');
     throw error;
   }
 };
