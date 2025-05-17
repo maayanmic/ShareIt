@@ -9,6 +9,7 @@ import Businesses from "@/pages/businesses";
 import SavedOffers from "@/pages/saved-offers";
 import Profile from "@/pages/profile";
 import Users from "@/pages/users";
+import UserProfile from "@/pages/user-profile";
 
 import BusinessPage from "@/pages/business";
 import DesktopNav from "@/components/navigation/desktop-nav";
@@ -57,6 +58,9 @@ function Router() {
       </Route>
       <Route path="/users">
         {user ? <Users /> : <Login />}
+      </Route>
+      <Route path="/user/:userId">
+        {user ? <UserProfile /> : <Login />}
       </Route>
       <Route>
         {user ? <NotFound /> : <Login />}
