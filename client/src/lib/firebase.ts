@@ -588,7 +588,24 @@ export const getRecommendations = async (limitCount = 10) => {
       limit(limitCount)
     );
     const recommendationsSnapshot = await getDocs(q);
-    return recommendationsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    
+    // עיבוד נתונים להמרת תאריכים מפיירבייס למחרוזות
+    return recommendationsSnapshot.docs.map(doc => {
+      const data = doc.data();
+      
+      // המרת שדה validUntil מאובייקט Timestamp למחרוזת אם הוא קיים
+      if (data.validUntil && typeof data.validUntil === 'object' && 'seconds' in data.validUntil) {
+        // המרה לאובייקט Date ואז למחרוזת בפורמט הרצוי
+        const date = new Date(data.validUntil.seconds * 1000);
+        data.validUntil = date.toLocaleDateString('he-IL', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric'
+        });
+      }
+      
+      return { id: doc.id, ...data };
+    });
   } catch (error) {
     console.error("Error getting recommendations: ", error);
     throw error;
@@ -604,7 +621,24 @@ export const getUserRecommendations = async (userId: string) => {
       orderBy("createdAt", "desc")
     );
     const recommendationsSnapshot = await getDocs(q);
-    return recommendationsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    
+    // עיבוד נתונים להמרת תאריכים מפיירבייס למחרוזות
+    return recommendationsSnapshot.docs.map(doc => {
+      const data = doc.data();
+      
+      // המרת שדה validUntil מאובייקט Timestamp למחרוזת אם הוא קיים
+      if (data.validUntil && typeof data.validUntil === 'object' && 'seconds' in data.validUntil) {
+        // המרה לאובייקט Date ואז למחרוזת בפורמט הרצוי
+        const date = new Date(data.validUntil.seconds * 1000);
+        data.validUntil = date.toLocaleDateString('he-IL', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric'
+        });
+      }
+      
+      return { id: doc.id, ...data };
+    });
   } catch (error) {
     console.error("Error getting user recommendations: ", error);
     throw error;
