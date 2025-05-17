@@ -171,8 +171,8 @@ export default function RecommendationCard({
               className="px-3 py-1.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300"
               onClick={shareSocial}
             >
-              <Share2 className="h-4 w-4 mr-2" />
-              Share
+              <Share2 className="h-4 w-4 ml-2" />
+              שתף
             </Button>
           </div>
         </CardContent>
@@ -181,15 +181,15 @@ export default function RecommendationCard({
       <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Login Required</AlertDialogTitle>
+            <AlertDialogTitle>נדרשת התחברות</AlertDialogTitle>
             <AlertDialogDescription>
-              You need to be logged in to save offers. Would you like to log in now?
+              עליך להיות מחובר כדי לשמור הצעות. האם ברצונך להתחבר עכשיו?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>ביטול</AlertDialogCancel>
             <Link href="/login">
-              <AlertDialogAction>Log In</AlertDialogAction>
+              <AlertDialogAction>התחברות</AlertDialogAction>
             </Link>
           </AlertDialogFooter>
         </AlertDialogContent>

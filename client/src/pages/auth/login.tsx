@@ -77,9 +77,9 @@ export default function Login() {
     <div className="flex items-center justify-center min-h-[80vh]">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Login to ShareIt</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center">התחברות לשייר-איט</CardTitle>
           <CardDescription className="text-center">
-            Enter your email and password to sign in to your account
+            הזן את האימייל והסיסמה שלך כדי להתחבר לחשבונך
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -117,7 +117,7 @@ export default function Login() {
 
           <div className="flex items-center">
             <Separator className="flex-1" />
-            <span className="px-2 text-muted-foreground text-sm">OR</span>
+            <span className="px-2 text-muted-foreground text-sm">או</span>
             <Separator className="flex-1" />
           </div>
 
@@ -128,13 +128,14 @@ export default function Login() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>אימייל</FormLabel>
                     <FormControl>
                       <Input 
                         placeholder="your.email@example.com" 
                         type="email" 
                         {...field} 
                         disabled={isLoading}
+                        className="text-right"
                       />
                     </FormControl>
                     <FormMessage />
@@ -146,13 +147,14 @@ export default function Login() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel>סיסמה</FormLabel>
                     <FormControl>
                       <Input 
                         placeholder="••••••••" 
                         type="password" 
                         {...field} 
                         disabled={isLoading}
+                        className="text-right"
                       />
                     </FormControl>
                     <FormMessage />
@@ -160,16 +162,16 @@ export default function Login() {
                 )}
               />
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Logging in..." : "Login with Email"}
+                {isLoading ? "מתחבר..." : "התחבר עם אימייל"}
               </Button>
             </form>
           </Form>
         </CardContent>
         <CardFooter className="flex flex-col space-y-2">
           <div className="text-center text-sm text-muted-foreground">
-            Don't have an account?{" "}
+            אין לך חשבון?{" "}
             <Link href="/register">
-              <a className="text-primary-600 hover:underline">Register</a>
+              <a className="text-primary-600 hover:underline">הרשם</a>
             </Link>
           </div>
         </CardFooter>
