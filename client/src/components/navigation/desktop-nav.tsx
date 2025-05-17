@@ -17,11 +17,11 @@ export default function DesktopNav() {
   const { user, logout } = useAuth();
 
   const navItems = [
-    { name: "Home", href: "/" },
-    { name: "Discover", href: "/recommendations" },
-    { name: "Portfolio", href: "/portfolio" },
-    { name: "My Recommendations", href: "/profile" },
-    { name: "Saved Offers", href: "/saved-offers" },
+    { name: "דף הבית", href: "/" },
+    { name: "לגלות", href: "/recommendations" },
+    { name: "תיק עבודות", href: "/portfolio" },
+    { name: "ההמלצות שלי", href: "/profile" },
+    { name: "הצעות שמורות", href: "/saved-offers" },
   ];
 
   return (
@@ -42,7 +42,7 @@ export default function DesktopNav() {
                 clipRule="evenodd"
               />
             </svg>
-            <span className="text-xl font-semibold">ShareIt</span>
+            <span className="text-xl font-semibold">שייר-איט</span>
           </div>
         </Link>
 
@@ -112,24 +112,24 @@ export default function DesktopNav() {
                   </div>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuLabel>החשבון שלי</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <Link href="/profile">
                     <DropdownMenuItem>
-                      <User className="mr-2 h-4 w-4" />
-                      <span>Profile</span>
+                      <User className="ml-2 h-4 w-4" />
+                      <span>פרופיל</span>
                     </DropdownMenuItem>
                   </Link>
                   <Link href="/saved-offers">
                     <DropdownMenuItem>
-                      <Settings className="mr-2 h-4 w-4" />
-                      <span>Saved Offers</span>
+                      <Settings className="ml-2 h-4 w-4" />
+                      <span>הצעות שמורות</span>
                     </DropdownMenuItem>
                   </Link>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={logout}>
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <span>Log out</span>
+                    <LogOut className="ml-2 h-4 w-4" />
+                    <span>התנתקות</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -137,7 +137,7 @@ export default function DesktopNav() {
           ) : (
             <Link href="/login">
               <button className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 transition duration-300">
-                Log In
+                התחברות
               </button>
             </Link>
           )}
