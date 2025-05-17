@@ -3,7 +3,7 @@ import { Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
-import { shareToFacebook, shareToTwitter, shareToInstagram } from "@/lib/socialShare";
+import { shareToFacebook } from "@/lib/socialShare";
 
 interface SocialSharePanelProps {
   businessName: string;
@@ -33,7 +33,7 @@ export function SocialSharePanel({
     return `${baseUrl}/recommendation/${recommendationId}?referrer=${user?.uid || ""}`;
   };
   
-  // פונקציה לטיפול בשיתוף בפייסבוק
+  // פונקציה לטיפול בשיתוף בפייסבוק - זה כפתור שעובד באמת
   const handleFacebookShare = async () => {
     setIsSharing(true);
     
@@ -42,12 +42,8 @@ export function SocialSharePanel({
       
       console.log("מנסה לשתף בפייסבוק עם התמונה:", imageUrl);
       
-      // לצורך הדגמה והתמודדות עם בעיות CORS, נדלג על קריאת API אמיתית
-      // נציג הודעת הצלחה מוקאפ במקום זה
-      // await shareToFacebook(getShareUrl(), shareText, imageUrl);
-      
-      // שהייה קצרה לדימוי שליחה
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // קריאה אמיתית לפייסבוק - זה צריך לעבוד באמת
+      await shareToFacebook(getShareUrl(), shareText, imageUrl);
       
       toast({
         title: "נשלח בהצלחה",
@@ -68,69 +64,20 @@ export function SocialSharePanel({
     }
   };
   
-  // פונקציה לטיפול בשיתוף באינסטגרם
-  const handleInstagramShare = async () => {
-    setIsSharing(true);
-    
-    try {
-      if (!imageUrl) {
-        throw new Error("נדרשת תמונה לשיתוף באינסטגרם");
-      }
-      
-      console.log("מנסה לשתף באינסטגרם עם התמונה:", imageUrl);
-      
-      // לצורך הדגמה, נשהה לרגע לחוויית משתמש טובה יותר
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // במקום לשימוש ב-API, נציג הודעת הצלחה
-      toast({
-        title: "נשלח בהצלחה",
-        description: "ההמלצה הועברה לאינסטגרם בהצלחה!",
-      });
-      
-      // קריאה לפונקציה להמשך התהליך
-      onComplete();
-    } catch (error) {
-      console.error("שגיאה בשיתוף לאינסטגרם:", error);
-      toast({
-        title: "שגיאה בשיתוף",
-        description: "לא ניתן לשתף ישירות לאינסטגרם דרך הדפדפן. נסה להעתיק את הקישור ולשתף ידנית.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSharing(false);
-    }
+  // פונקציה לטיפול ויזואלי בלבד באינסטגרם - רק לצורך הדגמה, לא פונקציונלי
+  const handleInstagramShare = () => {
+    toast({
+      title: "פונקציה לא זמינה",
+      description: "שיתוף לאינסטגרם יהיה זמין בגרסה העתידית",
+    });
   };
   
-  // פונקציה לטיפול בשיתוף בטוויטר
-  const handleTwitterShare = async () => {
-    setIsSharing(true);
-    
-    try {
-      const shareText = `המלצה על ${businessName}: ${recommendationText}`;
-      console.log("מנסה לשתף בטוויטר:", shareText);
-      
-      // לצורך הדגמה בלבד - במקום להשתמש ב-API, נשהה מעט
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // הודעת הצלחה מוקאפ
-      toast({
-        title: "נשלח בהצלחה",
-        description: "ההמלצה שותפה בטוויטר בהצלחה!",
-      });
-      
-      // קריאה לפונקציה להמשך התהליך
-      onComplete();
-    } catch (error) {
-      console.error("שגיאה בשיתוף לטוויטר:", error);
-      toast({
-        title: "שגיאה בשיתוף",
-        description: "לא הצלחנו לשתף את ההמלצה בטוויטר. אנא נסה שוב מאוחר יותר.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSharing(false);
-    }
+  // פונקציה לטיפול ויזואלי בלבד בטיקטוק - רק לצורך הדגמה, לא פונקציונלי
+  const handleTikTokShare = () => {
+    toast({
+      title: "פונקציה לא זמינה",
+      description: "שיתוף לטיקטוק יהיה זמין בגרסה העתידית",
+    });
   };
   
   return (
@@ -167,7 +114,7 @@ export function SocialSharePanel({
         
         <Button 
           className="w-full bg-[#000000] hover:bg-[#333333] flex items-center justify-center py-6 text-lg" 
-          onClick={onComplete}
+          onClick={handleTikTokShare}
           disabled={isSharing}
         >
           <svg className="h-5 w-5 ml-2 fill-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
