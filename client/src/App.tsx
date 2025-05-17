@@ -12,6 +12,7 @@ import Users from "@/pages/users";
 import UserProfile from "@/pages/user-profile";
 import ScannedBusiness from "@/pages/scanned-business";
 import RecommendationPage from "@/pages/recommendation";
+import RecommendationById from "@/pages/recommendation-by-id";
 import BusinessPage from "@/pages/business";
 import DesktopNav from "@/components/navigation/desktop-nav";
 import MobileNav from "@/components/navigation/mobile-nav";
@@ -67,7 +68,7 @@ function Router() {
         {user ? <UserProfile /> : <Login />}
       </Route>
       <Route path="/recommendation/:id">
-        <RecommendationPage />
+        <RecommendationById />
       </Route>
       <Route>
         {user ? <NotFound /> : <Login />}
