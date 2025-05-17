@@ -75,7 +75,7 @@ function RedeemableOffer({ id, name, image, description, coins, onRedeem }: Rede
             onClick={() => onRedeem(id, name)}
             className="px-2 py-1 bg-primary-500 hover:bg-primary-600 text-white text-xs rounded"
           >
-            Redeem
+            מימוש
           </Button>
         </div>
       </div>
@@ -107,8 +107,8 @@ export default function DigitalWallet() {
   const handleRedeem = (id: string, name: string) => {
     if (!user || user.coins < 25) {
       toast({
-        title: "Not enough coins",
-        description: "You need more coins to redeem this offer.",
+        title: "אין מספיק מטבעות",
+        description: "אתה צריך יותר מטבעות כדי לממש הצעה זו.",
         variant: "destructive",
       });
       return;
@@ -116,22 +116,24 @@ export default function DigitalWallet() {
 
     // In a real app, we would make an API call to redeem the offer
     toast({
-      title: "Offer redeemed!",
-      description: `You have successfully redeemed the offer from ${name}.`,
+      title: "ההצעה מומשה!",
+      description: `מימשת בהצלחה את ההצעה מ-${name}.`,
     });
   };
 
   if (!user) {
     return (
       <div className="mt-8">
-        <h2 className="text-xl font-semibold mb-4">Your Digital Wallet</h2>
+        <h2 className="text-xl font-semibold mb-4 text-right">הארנק הדיגיטלי שלך</h2>
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden p-6 text-center">
           <p className="text-gray-500 dark:text-gray-400 mb-4">
-            You need to be logged in to view your digital wallet.
+            עליך להתחבר כדי לצפות בארנק הדיגיטלי שלך.
           </p>
-          <Button href="/login" asChild>
-            <a>Log In to Continue</a>
-          </Button>
+          <Link href="/login">
+            <Button>
+              התחבר כדי להמשיך
+            </Button>
+          </Link>
         </div>
       </div>
     );
@@ -139,7 +141,7 @@ export default function DigitalWallet() {
 
   return (
     <div className="mt-8">
-      <h2 className="text-xl font-semibold mb-4">Your Digital Wallet</h2>
+      <h2 className="text-xl font-semibold mb-4 text-right">הארנק הדיגיטלי שלך</h2>
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden p-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <WalletCard
@@ -159,7 +161,7 @@ export default function DigitalWallet() {
                 />
               </svg>
             }
-            title="Total Coins"
+            title="סך כל המטבעות"
             value={user.coins || 0}
             subtext={
               <div>
@@ -171,7 +173,7 @@ export default function DigitalWallet() {
                 </div>
                 <div className="flex justify-between mt-1 text-xs opacity-90">
                   <span>0</span>
-                  <span>{user.coins || 0}/50 coins until next reward tier</span>
+                  <span>{user.coins || 0}/50 מטבעות עד לדרגת התגמול הבאה</span>
                 </div>
               </div>
             }
@@ -180,12 +182,12 @@ export default function DigitalWallet() {
           <WalletCard
             gradient="bg-gradient-to-r from-green-500 to-green-400"
             icon={<Users className="h-10 w-10 text-white opacity-80" />}
-            title="Successful Referrals"
+            title="הפניות מוצלחות"
             value={user.referrals || 0}
             subtext={
               <p className="flex items-center">
-                <TrendingUp className="h-4 w-4 mr-1" />
-                Up {Math.max(0, (user.referrals || 0) - 2)} from last month
+                <TrendingUp className="h-4 w-4 ml-1" />
+                עלייה של {Math.max(0, (user.referrals || 0) - 2)} מהחודש שעבר
               </p>
             }
           />
@@ -193,12 +195,12 @@ export default function DigitalWallet() {
           <WalletCard
             gradient="bg-gradient-to-r from-amber-500 to-amber-400"
             icon={<Bookmark className="h-10 w-10 text-white opacity-80" />}
-            title="Saved Offers"
+            title="הצעות שמורות"
             value={user.savedOffers || 0}
             subtext={
               <p className="flex items-center">
-                <Check className="h-4 w-4 mr-1" />
-                {Math.max(0, Math.min(2, (user.savedOffers || 0)))} expiring within 7 days
+                <Check className="h-4 w-4 ml-1" />
+                {Math.max(0, Math.min(2, (user.savedOffers || 0)))} פוקעות תוך 7 ימים
               </p>
             }
           />
@@ -206,7 +208,7 @@ export default function DigitalWallet() {
 
         {/* Redemption Options */}
         <div className="mt-6">
-          <h3 className="text-lg font-semibold mb-4">Ready to Redeem</h3>
+          <h3 className="text-lg font-semibold mb-4 text-right">מוכן למימוש</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {redeemableOffers.map((offer) => (
               <RedeemableOffer
