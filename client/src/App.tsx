@@ -12,7 +12,7 @@ import Portfolio from "@/pages/portfolio";
 import PortfolioDetail from "@/pages/portfolio-detail";
 import DesktopNav from "@/components/navigation/desktop-nav";
 import MobileNav from "@/components/navigation/mobile-nav";
-import { AuthProvider } from "@/hooks/use-auth";
+import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import { QRScannerProvider } from "@/components/qr/qr-scanner-modal";
 import { useEffect } from "react";
 import { handleAuthRedirect } from "@/lib/firebase";
@@ -20,9 +20,37 @@ import { handleAuthRedirect } from "@/lib/firebase";
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Home} />
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
+      <Route path="/" component={AuthenticatedRoutes} />
+      <Route component={Login} /> {/* משתמשים לא מחוברים מופנים לדף התחברות */}
+    </Switch>
+  );
+}
+
+// רכיב ניתוב עבור משתמשים מחוברים בלבד
+function AuthenticatedRoutes() {
+  const { user, loading } = useAuth();
+  
+  // אם עדיין טוען את מצב המשתמש, נציג מסך טעינה
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
+      </div>
+    );
+  }
+  
+  // אם המשתמש לא מחובר, הפנה לדף התחברות
+  if (!user) {
+    window.location.href = "/login";
+    return null;
+  }
+  
+  // אם המשתמש מחובר, הצג את הנתיבים המאובטחים
+  return (
+    <Switch>
+      <Route path="/" component={Home} />
       <Route path="/recommendations" component={Recommendations} />
       <Route path="/saved-offers" component={SavedOffers} />
       <Route path="/profile" component={Profile} />
