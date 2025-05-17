@@ -113,20 +113,53 @@ export const getUserRating = async (userId: string) => {
 // פונקציה להבאת נתוני משתמש ספציפי
 export const getUserData = async (userId: string) => {
   try {
+    console.log(`מנסה להביא נתוני משתמש עבור: ${userId}`);
+    
+    // נסה להשתמש ב-userId כמזהה המסמך
     const userRef = doc(db, "users", userId);
     const userSnapshot = await getDoc(userRef);
     
-    if (!userSnapshot.exists()) {
-      return null;
+    if (userSnapshot.exists()) {
+      console.log(`מצאתי משתמש ישירות לפי ID: ${userId}`);
+      const userData = userSnapshot.data();
+      return {
+        id: userSnapshot.id,
+        ...userData
+      };
     }
     
-    // בדוק אם המשתמש הנוכחי מחובר למשתמש זה
-    const userData = userSnapshot.data();
+    // אם לא מצאנו, ננסה לחפש משתמש לפי שדה uid
+    console.log("מנסה למצוא משתמש לפי uid במקום id...");
+    const usersCollection = collection(db, "users");
+    const q = query(usersCollection, where("uid", "==", userId));
+    const querySnapshot = await getDocs(q);
     
-    return {
-      id: userSnapshot.id,
-      ...userData
-    };
+    if (!querySnapshot.empty) {
+      const userDoc = querySnapshot.docs[0];
+      console.log(`מצאתי משתמש לפי uid: ${userId}`);
+      return {
+        id: userDoc.id,
+        ...userDoc.data()
+      };
+    }
+    
+    // לא מצאנו - עבור משתמש דמו אפשר להחזיר פרטים סטטיים
+    if (userId === "demo_user1") {
+      console.log("מחזיר פרטי משתמש דמו קבועים עבור:", userId);
+      return {
+        id: userId,
+        uid: userId,
+        displayName: "ישראל ישראלי",
+        photoURL: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&auto=format&fit=crop&w=40&h=40",
+        email: "demo@example.com",
+        coins: 50,
+        referrals: 3,
+        savedOffers: 5
+      };
+    }
+    
+    console.log(`לא נמצא משתמש עבור: ${userId}`);
+    return null;
   } catch (error) {
     console.error("שגיאה בהבאת נתוני משתמש:", error);
     return null;
@@ -136,21 +169,30 @@ export const getUserData = async (userId: string) => {
 // פונקציה להבאת ההמלצות של משתמש ספציפי
 export const getUserRecommendations = async (userId: string) => {
   try {
+    console.log(`מחפש המלצות עבור משתמש ${userId}`);
     const recommendationsRef = collection(db, "recommendations");
-    const q = query(
-      recommendationsRef, 
-      where("userId", "==", userId)
-    );
-    const querySnapshot = await getDocs(q);
+    
+    // טען את כל ההמלצות כי יכולים להיות כמה שדות שונים
+    const querySnapshot = await getDocs(recommendationsRef);
     
     const recommendations = [];
-    for (const doc of querySnapshot.docs) {
-      recommendations.push({
-        id: doc.id,
-        ...doc.data()
-      });
+    
+    // סנן את ההמלצות לפי כל שדות הזיהוי האפשריים
+    for (const docSnapshot of querySnapshot.docs) {
+      const doc = docSnapshot.data();
+      
+      // בדוק כל סוגי השדות בהם יכול להיות מזהה המשתמש
+      if (doc.userId === userId || 
+          doc.recommenderId === userId || 
+          (doc.creator && doc.creator.id === userId)) {
+        recommendations.push({
+          id: docSnapshot.id,
+          ...doc
+        });
+      }
     }
     
+    console.log(`נמצאו ${recommendations.length} המלצות למשתמש ${userId}`);
     return recommendations;
   } catch (error) {
     console.error("שגיאה בהבאת המלצות משתמש:", error);
