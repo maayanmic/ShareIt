@@ -38,11 +38,71 @@ export default function RecommendationPage() {
           return;
         }
         
-        // כאן היינו מביאים מידע על ההמלצה מהדאטאבייס
-        // אבל לצורך הדגמה, נשתמש בנתונים קבועים
         const recId = params.id;
+        console.log("טוען המלצה לפי מזהה:", recId);
         
-        // קריאה דמה להמלצה - יש להחליף בקריאה אמיתית ל-Firebase
+        // ניסיון לטעון את ההמלצה האמיתית מפיירבייס
+        try {
+          // נייבא את כל ההמלצות ונסנן לפי המזהה
+          const allRecommendations = await getRecommendations(100);
+          console.log("כל ההמלצות שנטענו:", allRecommendations);
+          
+          // חיפוש ההמלצה לפי המזהה
+          const foundRecommendation = allRecommendations.find(rec => rec.id === recId);
+          
+          if (foundRecommendation) {
+            console.log("נמצאה המלצה:", foundRecommendation);
+            
+            // המרת הנתונים למבנה שנדרש בדף
+            const formattedRecommendation = {
+              id: foundRecommendation.id,
+              businessId: foundRecommendation.businessId,
+              businessName: foundRecommendation.businessName,
+              description: foundRecommendation.text || foundRecommendation.description,
+              discount: foundRecommendation.discount || "10% הנחה",
+              rating: foundRecommendation.rating || 5,
+              imageUrl: foundRecommendation.imageUrl,
+              expiryDate: foundRecommendation.validUntil || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+              savedCount: foundRecommendation.savedCount || 0,
+              creator: {
+                id: foundRecommendation.userId || referrerId || "user-1",
+                name: foundRecommendation.userName || "משתמש",
+                photoUrl: foundRecommendation.userPhotoURL || "https://randomuser.me/api/portraits/men/32.jpg",
+              }
+            };
+            
+            setRecommendation(formattedRecommendation);
+            
+            // טעינת מידע על העסק
+            try {
+              const businessData = await getBusinessById(formattedRecommendation.businessId);
+              if (businessData) {
+                setBusiness(businessData);
+              } else {
+                // אם לא נמצא מידע על העסק, נשתמש במידע מההמלצה
+                setBusiness({
+                  id: formattedRecommendation.businessId,
+                  name: formattedRecommendation.businessName,
+                  category: "עסק",
+                  description: "פרטי העסק אינם זמינים",
+                  address: "כתובת לא זמינה",
+                  image: foundRecommendation.businessImage || "https://images.unsplash.com/photo-1537047902294-62a40c20a6ae?q=80&w=500",
+                });
+              }
+            } catch (businessError) {
+              console.error("שגיאה בטעינת פרטי העסק:", businessError);
+            }
+            
+            return; // יצאנו מהפונקציה כי מצאנו את ההמלצה
+          } else {
+            console.warn("לא נמצאה המלצה עם המזהה:", recId);
+          }
+        } catch (firebaseError) {
+          console.error("שגיאה בטעינת המלצה מפיירבייס:", firebaseError);
+        }
+        
+        // אם לא מצאנו את ההמלצה או שהייתה שגיאה, נציג מידע לדוגמה
+        console.log("משתמש במידע לדוגמה עבור המלצה:", recId);
         const mockRecommendation = {
           id: recId,
           businessId: "business-1",
@@ -62,11 +122,7 @@ export default function RecommendationPage() {
         
         setRecommendation(mockRecommendation);
         
-        // מידע על העסק
-        // const businessData = await getBusinessById(mockRecommendation.businessId);
-        // setBusiness(businessData);
-        
-        // לדוגמה
+        // מידע לדוגמה על העסק
         setBusiness({
           id: "business-1",
           name: "מסעדת השף",
