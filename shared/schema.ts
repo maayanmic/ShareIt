@@ -10,6 +10,7 @@ export const users = pgTable("users", {
   password: text("password").notNull(),
   displayName: text("display_name"),
   photoURL: text("photo_url"),
+  role: text("role").default("user"),
   coins: integer("coins").default(0),
   referrals: integer("referrals").default(0),
   savedOffers: integer("saved_offers").default(0),
