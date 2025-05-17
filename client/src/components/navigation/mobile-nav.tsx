@@ -24,10 +24,10 @@ export default function MobileNav() {
           </div>
         </Link>
         
-        <Link href="/recommendations">
-          <div className={`flex flex-col items-center justify-center py-1 ${location === "/recommendations" ? "text-primary-500" : "text-gray-500 dark:text-gray-400"}`}>
+        <Link href="/businesses">
+          <div className={`flex flex-col items-center justify-center py-1 ${location === "/businesses" ? "text-primary-500" : "text-gray-500 dark:text-gray-400"}`}>
             <Search className="h-6 w-6" />
-            <span className="text-xs mt-1">לגלות</span>
+            <span className="text-xs mt-1">בתי עסק</span>
           </div>
         </Link>
         

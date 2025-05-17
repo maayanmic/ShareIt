@@ -5,7 +5,7 @@ import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import Login from "@/pages/auth/login";
 import Register from "@/pages/auth/register";
-import Recommendations from "@/pages/recommendations";
+import Businesses from "@/pages/businesses";
 import SavedOffers from "@/pages/saved-offers";
 import Profile from "@/pages/profile";
 
@@ -41,8 +41,8 @@ function Router() {
       <Route path="/">
         {user ? <Home /> : <Login />}
       </Route>
-      <Route path="/recommendations">
-        {user ? <Recommendations /> : <Login />}
+      <Route path="/businesses">
+        {user ? <Businesses /> : <Login />}
       </Route>
       <Route path="/saved-offers">
         {user ? <SavedOffers /> : <Login />}
