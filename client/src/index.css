@@ -5,6 +5,7 @@
 @layer base {
   html {
     font-family: 'Heebo', sans-serif;
+    direction: rtl;
   }
   
   body {
@@ -12,7 +13,13 @@
     text-align: right;
   }
   
-  /* תיקון מרווחים עבור RTL */
+  h1, h2, h3, h4, h5, h6 {
+    color: #000000 !important;
+    text-align: right;
+    direction: rtl;
+  }
+  
+  /* תיקון מרווחים עבור RTL - חשוב מאוד לתמיכה נכונה בעברית */
   .ml-1 { margin-right: 0.25rem !important; margin-left: 0 !important; }
   .ml-2 { margin-right: 0.5rem !important; margin-left: 0 !important; }
   .ml-3 { margin-right: 0.75rem !important; margin-left: 0 !important; }
@@ -32,6 +39,17 @@
   .mr-8 { margin-left: 2rem !important; margin-right: 0 !important; }
   .mr-10 { margin-left: 2.5rem !important; margin-right: 0 !important; }
   .mr-12 { margin-left: 3rem !important; margin-right: 0 !important; }
+
+  /* תמיכה בשחור לכל הכותרות */
+  .text-white {
+    color: #000000 !important;
+  }
+  
+  /* התאמת כיוון לכל האלמנטים */
+  div, p, span, button, a, input, textarea, select, label {
+    direction: rtl;
+    text-align: right;
+  }
   
   .pl-1 { padding-right: 0.25rem !important; padding-left: 0 !important; }
   .pl-2 { padding-right: 0.5rem !important; padding-left: 0 !important; }
