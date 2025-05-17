@@ -99,13 +99,17 @@ export const QRScannerProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     
     try {
       // נסה לפרש את טקסט ה-QR כ-URL או מזהה של עסק
-      let businessId;
+      let businessId = "";
       
       // בדוק אם התוצאה היא URL מלא
       if (decodedText.startsWith("http")) {
         // חלץ את מזהה העסק מה-URL
         const url = new URL(decodedText);
-        businessId = url.searchParams.get("businessId") || url.pathname.split("/").pop();
+        const paramBusinessId = url.searchParams.get("businessId");
+        const pathSegments = url.pathname.split("/");
+        const lastSegment = pathSegments.length > 0 ? pathSegments[pathSegments.length - 1] : "";
+        
+        businessId = paramBusinessId || lastSegment || decodedText;
       } else {
         // אם זה לא URL, הנח שזה מזהה העסק עצמו
         businessId = decodedText;
@@ -119,12 +123,20 @@ export const QRScannerProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       // בדוק אם המשתמש מחובר
       if (!user) {
         // שמור את מזהה העסק בלוקל סטורג' כדי להעביר את המשתמש לאחר התחברות
-        localStorage.setItem("scannedBusinessId", businessId);
-        toast({
-          title: "נדרשת התחברות",
-          description: "יש להתחבר תחילה לפני שניתן להמשיך",
-        });
-        setLocation("/login");
+        if (businessId) {
+          localStorage.setItem("scannedBusinessId", businessId);
+          toast({
+            title: "נדרשת התחברות",
+            description: "יש להתחבר תחילה לפני שניתן להמשיך",
+          });
+          setLocation("/login");
+        } else {
+          toast({
+            title: "שגיאה",
+            description: "מזהה עסק לא חוקי",
+            variant: "destructive"
+          });
+        }
       } else {
         // קרא לפונקציית הקולבק והעבר את המשתמש לדף העסק
         onScanCallback(businessId);
