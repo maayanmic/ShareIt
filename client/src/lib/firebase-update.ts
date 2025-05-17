@@ -8,7 +8,8 @@ import {
   where,
   updateDoc,
   addDoc,
-  serverTimestamp
+  serverTimestamp,
+  limit
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { initializeApp } from "firebase/app";
@@ -250,8 +251,8 @@ export const getUserRecommendations = async (userId: string) => {
 };
 
 // פונקציית עזר לפורמט ההמלצות - מטפלת בתאריכים ושדות חסרים
-function formatRecommendations(recommendations) {
-  return recommendations.map(recommendation => {
+function formatRecommendations(recommendations: any[]) {
+  return recommendations.map((recommendation: any) => {
     // 1. המרת שדה validUntil מאובייקט Timestamp למחרוזת אם הוא קיים
     if (recommendation.validUntil) {
       if (typeof recommendation.validUntil === 'object' && 'seconds' in recommendation.validUntil) {
