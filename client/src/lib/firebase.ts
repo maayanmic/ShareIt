@@ -365,21 +365,48 @@ export const getSiteConfig = async () => {
 // Get logo from site configuration
 export const getLogoURL = async () => {
   try {
-    // נסה להשיג את התמונה מנתיב מדויק
-    const logo3Ref = ref(storage, "siteconfig/images/Logo3");
-    const logoURL = await getDownloadURL(logo3Ref)
-      .catch(async () => {
-        // אם הנתיב הראשון לא עובד, ננסה לחפש בתוך הקולקשיין של siteconfig
-        console.log("Trying to find logo in Firestore instead of Storage");
-        const configDoc = await getDoc(doc(db, "siteconfig", "general"));
-        if (configDoc.exists() && configDoc.data().logoUrl) {
-          return configDoc.data().logoUrl;
-        }
-        return null;
-      });
+    // נסה מספר נתיבים אפשריים כדי למצוא את הלוגו
     
-    console.log("Logo URL found:", logoURL);
-    return logoURL;
+    // נתיב 1: בתיקיית images של Storage
+    try {
+      const logo3Ref = ref(storage, "images/Logo3");
+      return await getDownloadURL(logo3Ref);
+    } catch (storageError) {
+      console.log("Logo not found in images/Logo3, trying next path...");
+    }
+    
+    // נתיב 2: בתיקיית siteconfig/images של Storage
+    try {
+      const logo3Ref = ref(storage, "siteconfig/images/Logo3");
+      return await getDownloadURL(logo3Ref);
+    } catch (storageError) {
+      console.log("Logo not found in siteconfig/images/Logo3, trying next path...");
+    }
+    
+    // נתיב 3: שדה logoUrl בדוקומנט siteconfig/general
+    try {
+      const configDoc = await getDoc(doc(db, "siteconfig", "general"));
+      if (configDoc.exists() && configDoc.data().logoUrl) {
+        console.log("Found logo URL in siteconfig/general document");
+        return configDoc.data().logoUrl;
+      }
+    } catch (firestoreError) {
+      console.log("Could not access siteconfig/general, trying with capital S...");
+    }
+    
+    // נתיב 4: נסה עם אות גדולה (siteConfig במקום siteconfig)
+    try {
+      const configDoc = await getDoc(doc(db, "siteConfig", "general"));
+      if (configDoc.exists() && configDoc.data().logoUrl) {
+        console.log("Found logo URL in siteConfig/general document");
+        return configDoc.data().logoUrl;
+      }
+    } catch (firestoreError) {
+      console.log("Could not access siteConfig/general either");
+    }
+    
+    console.log("Could not find logo URL in any location");
+    return null;
   } catch (error) {
     console.error("Error getting logo: ", error);
     return null;
