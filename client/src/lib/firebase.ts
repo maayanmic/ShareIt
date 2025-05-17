@@ -692,12 +692,25 @@ const createSampleBusinesses = async () => {
 
 export const createRecommendation = async (recommendation: any) => {
   try {
-    const recommendationsCollection = collection(db, "recommendations");
-    const docRef = await addDoc(recommendationsCollection, {
+    // יצירת מזהה ייחודי להמלצה
+    const uniqueId = `rec_${Date.now()}`;
+    
+    // הוספת המזהה הייחודי לאובייקט ההמלצה
+    const recommendationWithId = {
       ...recommendation,
+      id: uniqueId,  // שמירת מזהה ייחודי כשדה
       createdAt: serverTimestamp()
-    });
-    return docRef.id;
+    };
+    
+    // שמירה במסד הנתונים
+    const recommendationsCollection = collection(db, "recommendations");
+    const docRef = await addDoc(recommendationsCollection, recommendationWithId);
+    
+    // החזרת האובייקט המלא עם המזהה הייחודי והמזהה של המסמך
+    return {
+      ...recommendationWithId,
+      docId: docRef.id  // שומרים גם את מזהה המסמך
+    };
   } catch (error) {
     console.error("Error creating recommendation: ", error);
     throw error;
