@@ -15,6 +15,7 @@ import MobileNav from "@/components/navigation/mobile-nav";
 import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import { QRScannerProvider } from "@/components/qr/qr-scanner-modal";
 import { useEffect } from "react";
+import { useLocation } from "wouter";
 import { handleAuthRedirect } from "@/lib/firebase";
 
 function Router() {
@@ -31,6 +32,7 @@ function Router() {
 // רכיב ניתוב עבור משתמשים מחוברים בלבד
 function AuthenticatedRoutes() {
   const { user, loading } = useAuth();
+  const [, setLocation] = useLocation();
   
   // אם עדיין טוען את מצב המשתמש, נציג מסך טעינה
   if (loading) {
@@ -43,7 +45,10 @@ function AuthenticatedRoutes() {
   
   // אם המשתמש לא מחובר, הפנה לדף התחברות
   if (!user) {
-    window.location.href = "/login";
+    // שימוש ב-useEffect כדי להפנות את המשתמש לדף התחברות באופן מבוקר
+    useEffect(() => {
+      setLocation("/login");
+    }, [setLocation]);
     return null;
   }
   
