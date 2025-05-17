@@ -173,17 +173,18 @@ export default function Register() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel>סיסמה</FormLabel>
                     <FormControl>
                       <Input 
-                        placeholder="••••••••" 
+                        placeholder="הסיסמה שלך" 
                         type="password" 
                         {...field} 
                         disabled={isLoading}
+                        className="text-right"
                       />
                     </FormControl>
                     <FormDescription>
-                      Password must be at least 6 characters long.
+                      הסיסמה חייבת להכיל לפחות 6 תווים.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -194,13 +195,14 @@ export default function Register() {
                 name="confirmPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Confirm Password</FormLabel>
+                    <FormLabel>אימות סיסמה</FormLabel>
                     <FormControl>
                       <Input 
-                        placeholder="••••••••" 
+                        placeholder="הקלד שוב את הסיסמה" 
                         type="password" 
                         {...field} 
                         disabled={isLoading}
+                        className="text-right"
                       />
                     </FormControl>
                     <FormMessage />
@@ -208,16 +210,16 @@ export default function Register() {
                 )}
               />
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Creating account..." : "Register"}
+                {isLoading ? "יוצר חשבון..." : "הרשמה"}
               </Button>
             </form>
           </Form>
         </CardContent>
         <CardFooter className="flex flex-col space-y-2">
           <div className="text-center text-sm text-muted-foreground">
-            Already have an account?{" "}
+            יש לך כבר חשבון?{" "}
             <Link href="/login">
-              <a className="text-primary-600 hover:underline">Login</a>
+              <a className="text-primary-600 hover:underline">התחברות</a>
             </Link>
           </div>
         </CardFooter>
