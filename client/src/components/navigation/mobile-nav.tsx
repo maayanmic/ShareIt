@@ -26,7 +26,7 @@ export default function MobileNav() {
         
         <button 
           className="flex flex-col items-center justify-center bg-primary-500 rounded-full h-14 w-14 mx-auto -mt-5 text-white shadow-lg"
-          onClick={openScanner}
+          onClick={() => openScanner()}
         >
           <svg 
             xmlns="http://www.w3.org/2000/svg" 
