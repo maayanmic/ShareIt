@@ -52,10 +52,10 @@ export default function MobileNav() {
           </div>
         </Link>
 
-        <Link href="/portfolio">
-          <div className={`flex flex-col items-center justify-center py-1 ${location === "/portfolio" ? "text-primary-500" : "text-gray-500 dark:text-gray-400"}`}>
+        <Link href="/profile">
+          <div className={`flex flex-col items-center justify-center py-1 ${location === "/profile" ? "text-primary-500" : "text-gray-500 dark:text-gray-400"}`}>
             <Briefcase className="h-6 w-6" />
-            <span className="text-xs mt-1">תיק עבודות</span>
+            <span className="text-xs mt-1">הפרופיל שלי</span>
           </div>
         </Link>
         

@@ -35,7 +35,6 @@ export default function DesktopNav() {
   const navItems = [
     { name: "דף הבית", href: "/" },
     { name: "לגלות", href: "/recommendations" },
-    { name: "תיק עבודות", href: "/portfolio" },
     { name: "ההמלצות שלי", href: "/profile" },
     { name: "הצעות שמורות", href: "/saved-offers" },
   ];
