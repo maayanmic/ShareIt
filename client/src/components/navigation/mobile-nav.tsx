@@ -13,14 +13,14 @@ export default function MobileNav() {
         <Link href="/">
           <a className={`flex flex-col items-center justify-center py-1 ${location === "/" ? "text-primary-500" : "text-gray-500 dark:text-gray-400"}`}>
             <Home className="h-6 w-6" />
-            <span className="text-xs mt-1">Home</span>
+            <span className="text-xs mt-1">בית</span>
           </a>
         </Link>
         
         <Link href="/recommendations">
           <a className={`flex flex-col items-center justify-center py-1 ${location === "/recommendations" ? "text-primary-500" : "text-gray-500 dark:text-gray-400"}`}>
             <Search className="h-6 w-6" />
-            <span className="text-xs mt-1">Discover</span>
+            <span className="text-xs mt-1">לגלות</span>
           </a>
         </Link>
         
@@ -42,13 +42,13 @@ export default function MobileNav() {
               d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" 
             />
           </svg>
-          <span className="text-xs mt-1">Scan</span>
+          <span className="text-xs mt-1">סריקה</span>
         </button>
         
         <Link href="/saved-offers">
           <a className={`flex flex-col items-center justify-center py-1 ${location === "/saved-offers" ? "text-primary-500" : "text-gray-500 dark:text-gray-400"}`}>
             <Bookmark className="h-6 w-6" />
-            <span className="text-xs mt-1">Saved</span>
+            <span className="text-xs mt-1">שמורים</span>
           </a>
         </Link>
 
