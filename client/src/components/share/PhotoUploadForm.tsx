@@ -120,15 +120,16 @@ export default function PhotoUploadForm({
   };
 
   return (
-    <div className="flex flex-col items-center text-center p-4">
+    <div className="flex flex-col items-center text-center p-4 max-w-6xl mx-auto">
       <div className="mb-4">
         <Camera className="h-10 w-10 text-primary-500 mx-auto" />
       </div>
       
-      <h2 className="text-xl font-bold mb-2">צילום והמלצה</h2>
+      <h2 className="text-xl md:text-2xl font-bold mb-2">צילום והמלצה</h2>
       <p className="text-gray-600 mb-6">צלם תמונה והוסף המלצה על החוויה שלך</p>
       
-      <div className="w-full mb-6">
+      {/* תצוגה רספונסיבית: בדסקטופ התמונה וההמלצה זה לצד זה */}
+      <div className="w-full md:grid md:grid-cols-2 md:gap-8 mb-6">
         <input
           type="file"
           ref={fileInputRef}
@@ -137,51 +138,69 @@ export default function PhotoUploadForm({
           onChange={handleImageChange}
         />
         
-        {imagePreviewUrl ? (
-          <div className="relative mb-4">
-            <img 
-              src={imagePreviewUrl} 
-              alt="תצוגה מקדימה" 
-              className="w-full h-52 object-cover rounded-md border border-gray-200"
-            />
-            <Button
-              variant="secondary"
-              size="sm"
-              className="absolute bottom-2 right-2 bg-white shadow-md"
+        {/* אזור העלאת/הצגת תמונה */}
+        <div className="md:mb-0 mb-6">
+          {imagePreviewUrl ? (
+            <div className="relative mb-4">
+              <img 
+                src={imagePreviewUrl} 
+                alt="תצוגה מקדימה" 
+                className="w-full h-52 md:h-80 object-cover rounded-md border border-gray-200"
+              />
+              <Button
+                variant="secondary"
+                size="sm"
+                className="absolute bottom-2 right-2 bg-white shadow-md"
+                onClick={handleChooseImageClick}
+              >
+                <Camera className="h-4 w-4 ml-1" />
+                החלף תמונה
+              </Button>
+            </div>
+          ) : (
+            <div 
+              className="border-2 border-dashed border-gray-300 rounded-md p-8 text-center cursor-pointer hover:bg-gray-50 transition-colors h-52 md:h-80 flex flex-col items-center justify-center"
               onClick={handleChooseImageClick}
             >
-              <Camera className="h-4 w-4 ml-1" />
-              החלף תמונה
-            </Button>
-          </div>
-        ) : (
-          <div 
-            className="border-2 border-dashed border-gray-300 rounded-md p-8 text-center cursor-pointer hover:bg-gray-50 transition-colors"
-            onClick={handleChooseImageClick}
-          >
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
-              <Camera className="h-8 w-8 text-gray-500" />
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
+                <Camera className="h-8 w-8 text-gray-500" />
+              </div>
+              <p className="text-gray-500 font-medium">לחץ להעלאת תמונה</p>
+              <p className="text-gray-400 text-sm mt-2 hidden md:block">תמונות איכותיות מגדילות את הסיכוי לשיתוף</p>
             </div>
-            <p className="text-gray-500">לחץ להעלאת תמונה</p>
+          )}
+        </div>
+        
+        {/* אזור כתיבת המלצה */}
+        <div className="flex flex-col h-full">
+          <div className="mb-2 text-right">
+            <label className="text-md text-gray-700 font-medium">המלצה על {businessName}</label>
           </div>
-        )}
+          <Textarea
+            placeholder="כתוב את ההמלצה שלך כאן... תאר מה אהבת במקום, למה אתה ממליץ עליו ואיזה טיפים יש לך למבקרים הבאים."
+            className="resize-none h-32 md:h-64 text-right"
+            value={recommendationText}
+            onChange={(e) => setRecommendationText(e.target.value)}
+          />
+          
+          {/* טיפים בתצוגת דסקטופ */}
+          <div className="bg-blue-50 p-3 rounded-md mt-2 text-right hidden md:block">
+            <p className="text-sm text-blue-800 font-medium">טיפים לכתיבת המלצה טובה:</p>
+            <ul className="text-xs text-blue-700 list-disc mr-4 mt-1">
+              <li>תאר את החוויה האישית שלך במקום</li>
+              <li>ציין מה מיוחד במקום ומה הייחוד שלו</li>
+              <li>שתף טיפ שיעזור למבקרים עתידיים</li>
+            </ul>
+          </div>
+        </div>
       </div>
       
-      <div className="w-full mb-6">
-        <Textarea
-          placeholder="כתוב את ההמלצה שלך כאן..."
-          className="resize-none h-32 text-right"
-          value={recommendationText}
-          onChange={(e) => setRecommendationText(e.target.value)}
-        />
-      </div>
-      
-      <div className="flex justify-between w-full mt-4">
+      <div className="flex justify-between w-full mt-4 md:mt-6 md:max-w-lg">
         <Button
           variant="outline"
           onClick={onBack}
           disabled={isSubmitting}
-          className="bg-gray-100 text-gray-800 hover:bg-gray-200"
+          className="bg-gray-100 text-gray-800 hover:bg-gray-200 px-6"
         >
           חזור
         </Button>
@@ -189,9 +208,14 @@ export default function PhotoUploadForm({
         <Button
           onClick={handleSubmit}
           disabled={isSubmitting || !recommendationText.trim() || !selectedImage}
-          className="bg-gray-800 text-white hover:bg-gray-700"
+          className="bg-gray-800 text-white hover:bg-gray-700 px-8"
         >
-          {isSubmitting ? "שומר..." : "המשך"}
+          {isSubmitting ? (
+            <>
+              <span className="h-4 w-4 ml-2 animate-spin rounded-full border-2 border-white border-r-transparent"></span>
+              שומר...
+            </>
+          ) : "המשך"}
         </Button>
       </div>
     </div>
