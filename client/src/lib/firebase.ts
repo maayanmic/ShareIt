@@ -283,28 +283,38 @@ export const signInWithGoogle = async () => {
 
 export const signInWithFacebook = async () => {
   try {
-    const result = await signInWithPopup(auth, facebookProvider);
-    const user = result.user;
+    // בדוק אם המכשיר הוא מובייל - אם כן, השתמש ב-redirect במקום popup
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     
-    // Check if user exists in Firestore, if not create a profile
-    const userRef = doc(db, "users", user.uid);
-    const userSnap = await getDoc(userRef);
-    
-    if (!userSnap.exists()) {
-      await setDoc(userRef, {
-        uid: user.uid,
-        email: user.email,
-        displayName: user.displayName,
-        photoURL: user.photoURL,
-        role: "user",  // הוספת שדה role כברירת מחדל
-        coins: 0,
-        referrals: 0,
-        savedOffers: 0,
-        createdAt: serverTimestamp()
-      });
+    if (isMobile) {
+      // במובייל, השתמש ב-redirect שעובד טוב יותר בדפדפני מובייל
+      await signInWithRedirect(auth, facebookProvider);
+      return null; // פונקציה זו תחזיר null ו-handleAuthRedirect יטפל בתוצאות
+    } else {
+      // במחשב נייח, השתמש ב-popup כרגיל
+      const result = await signInWithPopup(auth, facebookProvider);
+      const user = result.user;
+      
+      // Check if user exists in Firestore, if not create a profile
+      const userRef = doc(db, "users", user.uid);
+      const userSnap = await getDoc(userRef);
+      
+      if (!userSnap.exists()) {
+        await setDoc(userRef, {
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          photoURL: user.photoURL,
+          role: "user",  // הוספת שדה role כברירת מחדל
+          coins: 0,
+          referrals: 0,
+          savedOffers: 0,
+          createdAt: serverTimestamp()
+        });
+      }
+      
+      return user;
     }
-    
-    return user;
   } catch (error) {
     console.error("Error signing in with Facebook: ", error);
     throw error;
