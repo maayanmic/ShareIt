@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useRef } from "react";
+import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from "react";
 import { X, Upload, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -6,30 +6,41 @@ import { Html5Qrcode } from "html5-qrcode";
 import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 
+// ממשק להעברת פונקציית קולבק לסריקה
+type ScanCallback = (result: string | null) => void;
+
+// טיפוס הקונטקסט של סורק ה-QR
 type QRScannerContextType = {
   isOpen: boolean;
-  openScanner: (onScan?: (result: string | null) => void) => void;
+  openScanner: (onScan?: ScanCallback) => void;
   closeScanner: () => void;
 };
 
+// יצירת קונטקסט לסורק ה-QR
 const QRScannerContext = createContext<QRScannerContextType>({
   isOpen: false,
   openScanner: () => {},
   closeScanner: () => {},
 });
 
+// הוק שמאפשר גישה לפונקציות הסורק
 export const useQRScanner = () => useContext(QRScannerContext);
 
+// רכיב ספק הקונטקסט לסורק ה-QR
 export const QRScannerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // מצב פתיחת הסורק
   const [isOpen, setIsOpen] = useState(false);
-  const [onScanCallback, setOnScanCallback] = useState<(result: string | null) => void>(() => () => {});
+  // פונקציית הקולבק שתיקרא כאשר הסריקה מצליחה
+  const [onScanCallback, setOnScanCallback] = useState<ScanCallback>(() => () => {});
+  // הוקים שימושיים
   const { toast } = useToast();
   const [, setLocation] = useLocation();
   const { user } = useAuth();
+  // סורק ה-QR
   const qrScannerRef = useRef<Html5Qrcode | null>(null);
   const scannerContainerId = "qr-reader";
   
-  // ניקוי סורק ה-QR כשהמודל נסגר
+  // ניקוי סורק ה-QR כשהקומפוננטה נהרסת
   useEffect(() => {
     return () => {
       if (qrScannerRef.current) {
@@ -38,66 +49,30 @@ export const QRScannerProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     };
   }, []);
 
-  const openScanner = (onScan?: (result: string | null) => void) => {
+  // פתיחת חלון הסריקה
+  const openScanner = useCallback((onScan?: ScanCallback) => {
     setIsOpen(true);
     if (onScan) {
       setOnScanCallback(() => onScan);
     } else {
-      // כאשר לא מועבר קולבק, נשתמש בהתנהגות ברירת מחדל
-      setOnScanCallback(() => (result) => {
-        // התנהגות ברירת מחדל מטופלת בפונקציית handleSuccessfulScan
-        console.log("Default scan behavior, result:", result);
+      // קולבק ברירת מחדל כשלא מועבר קולבק ספציפי
+      setOnScanCallback(() => (result: string | null) => {
+        // הניווט מטופל בתוך פונקציית handleSuccessfulScan
+        console.log("ברירת מחדל: ניווט לדף העסק");
       });
     }
-  };
+  }, []);
 
-  const closeScanner = () => {
+  // סגירת חלון הסריקה
+  const closeScanner = useCallback(() => {
     if (qrScannerRef.current) {
       qrScannerRef.current.stop().catch(console.error);
     }
     setIsOpen(false);
-  };
+  }, []);
   
-  // פונקציה שמתחילה את סריקת ה-QR כשהדיאלוג נפתח
-  useEffect(() => {
-    if (isOpen) {
-      // ודא שהאלמנט קיים לפני שמנסים להתחיל את הסריקה
-      setTimeout(() => {
-        const scannerContainer = document.getElementById(scannerContainerId);
-        if (!scannerContainer) return;
-        
-        // יצירת מופע חדש של סורק QR
-        qrScannerRef.current = new Html5Qrcode(scannerContainerId);
-        
-        // התחלת סריקה עם מצלמה אחורית
-        qrScannerRef.current.start(
-          { facingMode: "environment" },
-          {
-            fps: 10,
-            qrbox: { width: 250, height: 250 }
-          },
-          (decodedText) => {
-            // עיבוד ההתראה המוצלחת
-            handleSuccessfulScan(decodedText);
-          },
-          (errorMessage) => {
-            // שגיאות סריקה לא מוצגות למשתמש כי הן קורות כל הזמן בזמן סריקה
-            console.log(errorMessage);
-          }
-        ).catch((err) => {
-          console.error("Error starting QR scanner:", err);
-          toast({
-            title: "שגיאה בהפעלת המצלמה",
-            description: "לא ניתן להפעיל את מצלמת המכשיר, נא לאשר גישה למצלמה.",
-            variant: "destructive"
-          });
-        });
-      }, 500);
-    }
-  }, [isOpen, toast]);
-  
-  // פונקציה לטיפול בסריקה מוצלחת של קוד QR
-  const handleSuccessfulScan = (decodedText: string) => {
+  // פונקציה לטיפול בסריקה מוצלחת
+  const handleSuccessfulScan = useCallback((decodedText: string) => {
     // עצירת הסריקה לאחר שנמצא קוד
     if (qrScannerRef.current) {
       qrScannerRef.current.stop().catch(console.error);
@@ -168,10 +143,48 @@ export const QRScannerProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         variant: "destructive"
       });
     }
-  };
+  }, [closeScanner, onScanCallback, setLocation, toast, user]);
+  
+  // פונקציה להפעלת סורק ה-QR כשהדיאלוג נפתח
+  useEffect(() => {
+    if (isOpen) {
+      // ודא שהאלמנט קיים לפני שמנסים להתחיל את הסריקה
+      setTimeout(() => {
+        const scannerContainer = document.getElementById(scannerContainerId);
+        if (!scannerContainer) return;
+        
+        // יצירת מופע חדש של סורק QR
+        qrScannerRef.current = new Html5Qrcode(scannerContainerId);
+        
+        // התחלת סריקה עם מצלמה אחורית
+        qrScannerRef.current.start(
+          { facingMode: "environment" },
+          {
+            fps: 10,
+            qrbox: { width: 250, height: 250 }
+          },
+          (decodedText) => {
+            // עיבוד ההתראה המוצלחת
+            handleSuccessfulScan(decodedText);
+          },
+          (errorMessage) => {
+            // שגיאות סריקה לא מוצגות למשתמש כי הן קורות כל הזמן בזמן סריקה
+            console.log(errorMessage);
+          }
+        ).catch((err) => {
+          console.error("Error starting QR scanner:", err);
+          toast({
+            title: "שגיאה בהפעלת המצלמה",
+            description: "לא ניתן להפעיל את מצלמת המכשיר, נא לאשר גישה למצלמה.",
+            variant: "destructive"
+          });
+        });
+      }, 500);
+    }
+  }, [isOpen, toast, handleSuccessfulScan]);
   
   // פונקציה לטיפול בהעלאת קובץ עם קוד QR
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     
@@ -213,7 +226,19 @@ export const QRScannerProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           }
         }, 1000);
       });
-  };
+  }, [handleSuccessfulScan, isOpen, toast]);
+
+  // הדמיית סריקת QR לצורך בדיקות
+  const simulateScan = useCallback(() => {
+    toast({
+      title: "מדמה סריקת QR",
+      description: "בסביבת ייצור, זה יסרוק קוד QR אמיתי"
+    });
+    
+    const testBusinessIds = ["coffee", "attire", "restaurant"];
+    const randomBusinessId = testBusinessIds[Math.floor(Math.random() * testBusinessIds.length)];
+    handleSuccessfulScan(randomBusinessId);
+  }, [handleSuccessfulScan, toast]);
 
   return (
     <QRScannerContext.Provider value={{ isOpen, openScanner, closeScanner }}>
@@ -273,18 +298,7 @@ export const QRScannerProvider: React.FC<{ children: React.ReactNode }> = ({ chi
               <Button 
                 variant="default" 
                 className="mx-2"
-                onClick={() => {
-                  // מצלמה ידנית - לצורך בדיקות בסביבת פיתוח
-                  toast({
-                    title: "מדמה סריקת QR",
-                    description: "בסביבת ייצור, זה יסרוק קוד QR אמיתי"
-                  });
-                  // החלק הבא ישמש רק לצורך בדיקות בסביבת פיתוח
-                  // בסביבת ייצור, משתמשים יסרקו קודי QR אמיתיים
-                  const testBusinessIds = ["coffee", "attire", "restaurant"];
-                  const randomBusinessId = testBusinessIds[Math.floor(Math.random() * testBusinessIds.length)];
-                  handleSuccessfulScan(randomBusinessId);
-                }}
+                onClick={simulateScan}
               >
                 <Camera className="h-4 w-4 ml-2" />
                 מצלמה
