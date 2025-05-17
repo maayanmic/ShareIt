@@ -45,10 +45,32 @@
     color: #000000 !important;
   }
   
-  /* התאמת כיוון לכל האלמנטים */
-  div, p, span, button, a, input, textarea, select, label {
+  /* התאמת כיוון וסדר לכל האלמנטים */
+  div, p, span, button, a, input, textarea, select, label, h1, h2, h3, h4, h5, h6 {
     direction: rtl;
     text-align: right;
+  }
+  
+  /* היפוך כיוון flex items */
+  .flex {
+    flex-direction: row-reverse !important;
+  }
+  
+  /* לוודא שהכותרות מיושרות לימין */
+  .justify-between {
+    direction: rtl;
+    justify-content: flex-start !important;
+  }
+  
+  /* מעבר של תוכן לימין */
+  .container {
+    text-align: right !important;
+    direction: rtl !important;
+  }
+  
+  /* שינוי סדר הצגת פריטי רשימה */
+  .grid {
+    direction: rtl !important;
   }
   
   .pl-1 { padding-right: 0.25rem !important; padding-left: 0 !important; }
