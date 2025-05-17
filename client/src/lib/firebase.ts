@@ -842,11 +842,23 @@ export const getSiteConfig = async () => {
 
 // Get logo from site configuration
 export const getLogoURL = async () => {
-  // במקום לנסות להוריד לוגו מ-Firebase Storage, נחזיר null
-  // זה יפתור את בעיית ה-CORS בטעינת הלוגו
-  // האפליקציה תשתמש בלוגו ברירת המחדל הממותג כבר בקוד
-  console.log("Using default local logo instead of Firebase Storage logo");
-  return null;
+  try {
+    // קריאה לקולקשן siteConfig כדי לקבל את הלוגו
+    const configDoc = await getDoc(doc(db, "siteConfig", "main"));
+    if (configDoc.exists()) {
+      const data = configDoc.data();
+      if (data.logoUrl) {
+        return data.logoUrl;
+      }
+    }
+    
+    // אם אין לוגו במסד הנתונים, השתמש ב-URL הספציפי מ-Firebase Storage
+    return "https://firebasestorage.googleapis.com/v0/b/shareit-454f0.firebasestorage.app/o/images%2FLogo3.png?alt=media&token=63561733-5bb8-4dcb-bb88-ecdb2948d5d9";
+  } catch (error) {
+    console.error("Error getting logo URL:", error);
+    // במקרה של שגיאה, החזר את ה-URL הקבוע
+    return "https://firebasestorage.googleapis.com/v0/b/shareit-454f0.firebasestorage.app/o/images%2FLogo3.png?alt=media&token=63561733-5bb8-4dcb-bb88-ecdb2948d5d9";
+  }
 };
 
 export { auth, db, storage };
