@@ -87,26 +87,8 @@ export default function Home() {
       
       {/* Your Feed Section */}
       <div>
-        <div className="grid grid-cols-2 mb-4">
+        <div className="mb-4">
           <h2 className="text-xl font-semibold text-right">המלצות של חבריך</h2>
-          <div className="flex justify-end space-x-2">
-            <Button
-              variant={filter === 'recent' ? 'default' : 'outline'} 
-              size="sm"
-              className={filter === 'recent' ? 'bg-primary-500' : ''}
-              onClick={() => setFilter('recent')}
-            >
-              חדשים
-            </Button>
-            <Button
-              variant={filter === 'popular' ? 'default' : 'outline'}
-              size="sm"
-              className={filter === 'popular' ? 'bg-primary-500' : ''}
-              onClick={() => setFilter('popular')}
-            >
-              פופולריים
-            </Button>
-          </div>
         </div>
         
         {loading ? (
