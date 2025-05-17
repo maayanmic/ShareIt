@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Camera, Share2, Facebook, Instagram } from "lucide-react";
+import { Camera, Share2, Facebook, Instagram, MapPin, Phone, Mail, Clock } from "lucide-react";
 import { FaTiktok } from "react-icons/fa";
 import {
   Dialog,
@@ -49,36 +49,28 @@ export default function BusinessPage() {
         if (businessData) {
           setBusiness(businessData);
         } else {
-          // אם לא נמצא עסק, מציג נתוני דמו לצורכי פיתוח
-          // במערכת אמיתית, זה יציג הודעת שגיאה
+          // מוק לצורך פיתוח
           const mockBusiness = {
             id: businessId,
-            name: businessId === "coffee" ? "קפה טוב" : 
-                 businessId === "attire" ? "חנות בגדים" : 
-                 businessId === "restaurant" ? "מסעדה טעימה" : "עסק כלשהו",
-            description: "תיאור העסק יופיע כאן. זה המקום בו העסק יכול לספר על עצמו, על השירותים שהוא מציע, ועוד מידע רלוונטי.",
-            address: "רחוב הרצל 123, תל אביב",
-            category: businessId === "coffee" ? "בתי קפה" : 
-                      businessId === "attire" ? "אופנה" : 
-                      businessId === "restaurant" ? "מסעדות" : "עסקים",
-            phone: "03-1234567",
-            website: "https://example.com",
+            name: "מכון היופי של לילך",
+            category: "יופי וטיפוח",
+            description: "במכון היופי של לילך תוכלי להתפנק בטיפולי יופי מתקדמים. לק ג'ל, טיפולי פנים, מניקור פדיקור וכל הטיפולים המובילים",
+            address: "רחוב דיזנגוף 32, תל אביב",
+            phone: "08-9237561",
+            website: "lilachbeauty@gmail.com",
+            email: "lilachbeauty@gmail.com",
             images: [
-              "https://images.unsplash.com/photo-1559925393-8be0ec4767c8?q=80&w=1000&auto=format&fit=crop",
-              "https://images.unsplash.com/photo-1573706518886-fed668711750?q=80&w=1000&auto=format&fit=crop"
+              "https://images.unsplash.com/photo-1540555700478-4be289fbecef?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=400"
             ],
-            discount: "10% הנחה על הקנייה הראשונה",
-            reviews: [
-              {
-                id: "1",
-                userId: "user123",
-                userName: "ישראל ישראלי",
-                rating: 5,
-                text: "שירות מעולה! ממליץ בחום.",
-                date: "2023-11-15",
-                recommended: true
-              }
-            ]
+            workingHours: {
+              sunday: "9:00-19:00",
+              monday: "9:00-19:00",
+              tuesday: "9:00-19:00",
+              wednesday: "9:00-19:00",
+              thursday: "9:00-19:00",
+              friday: "9:00-14:00",
+              saturday: "סגור"
+            }
           };
           
           setBusiness(mockBusiness);
@@ -133,10 +125,7 @@ export default function BusinessPage() {
     
     try {
       // יצירת קישור ייחודי להמלצה זו
-      const uniqueShareableLink = generateUniqueLink(businessId as string, user.uid);
-      
-      // שמירת ההמלצה במערכת (Firestore)
-      // במימוש אמיתי, יש לשמור את נתוני ההמלצה בפיירבייס
+      const uniqueShareableLink = `https://${window.location.host}/business/${businessId}?ref=${user.uid}`;
       
       // הודעת הצלחה
       toast({
@@ -145,12 +134,15 @@ export default function BusinessPage() {
       });
       
       // פתיחת החלונית המתאימה לשיתוף ברשת החברתית שנבחרה
-      shareToSocialMedia(sharingMode, {
-        businessName: business?.name,
-        text: recommendationText,
-        image: uploadedImage,
-        link: uniqueShareableLink
-      });
+      if (sharingMode === 'facebook') {
+        const fbShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(uniqueShareableLink)}&quote=${encodeURIComponent(`${recommendationText} - המלצה על ${business?.name}`)}`;
+        window.open(fbShareUrl, '_blank', 'width=600,height=400');
+      } else if (sharingMode === 'instagram' || sharingMode === 'tiktok') {
+        toast({
+          title: `שיתוף ב${sharingMode === 'instagram' ? 'אינסטגרם' : 'טיקטוק'}`,
+          description: "המלצה נוצרה. שמור את התמונה ופתח את האפליקציה כדי לשתף אותה עם הקישור."
+        });
+      }
       
       // סגירת החלונית
       setIsDialogOpen(false);
@@ -166,59 +158,6 @@ export default function BusinessPage() {
         description: "אירעה שגיאה בעת שיתוף ההמלצה. נסה שוב מאוחר יותר.",
         variant: "destructive"
       });
-    }
-  };
-  
-  // פונקציה ליצירת קישור ייחודי להמלצה
-  const generateUniqueLink = (businessId: string, userId: string) => {
-    // במימוש אמיתי, יש ליצור מזהה ייחודי עבור ההמלצה
-    const uniqueId = Math.random().toString(36).substring(2, 10);
-    return `https://${window.location.host}/recommendation/${businessId}/${uniqueId}?ref=${userId}`;
-  };
-  
-  // פונקציה לשיתוף ברשת חברתית
-  const shareToSocialMedia = (
-    platform: 'facebook' | 'instagram' | 'tiktok' | null,
-    data: { businessName: string, text: string, image: string, link: string }
-  ) => {
-    if (!platform) return;
-    
-    const { businessName, text, link } = data;
-    
-    switch (platform) {
-      case 'facebook':
-        // שיתוף בפייסבוק
-        const fbShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(link)}&quote=${encodeURIComponent(`${text} - המלצה על ${businessName}`)}`;
-        window.open(fbShareUrl, '_blank', 'width=600,height=400');
-        break;
-        
-      case 'instagram':
-        // עבור אינסטגרם, שיטת השיתוף שונה ולרוב דורשת אפליקציית לקוח
-        toast({
-          title: "שיתוף באינסטגרם",
-          description: "המלצה נוצרה. שמור את התמונה ופתח את אפליקציית אינסטגרם כדי לשתף אותה עם הקישור."
-        });
-        
-        // פתח חלון להורדת התמונה
-        const instagramImage = document.createElement('a');
-        instagramImage.href = data.image;
-        instagramImage.download = `המלצה ל${businessName}.jpg`;
-        instagramImage.click();
-        break;
-        
-      case 'tiktok':
-        // TikTok בדרך כלל דורש את האפליקציה עצמה
-        toast({
-          title: "שיתוף בטיקטוק",
-          description: "המלצה נוצרה. שמור את התמונה ופתח את אפליקציית טיקטוק כדי לשתף אותה עם הקישור."
-        });
-        
-        // פתח חלון להורדת התמונה
-        const tiktokImage = document.createElement('a');
-        tiktokImage.href = data.image;
-        tiktokImage.download = `המלצה ל${businessName}.jpg`;
-        tiktokImage.click();
-        break;
     }
   };
 
@@ -242,34 +181,106 @@ export default function BusinessPage() {
 
   return (
     <div className="container mx-auto py-8 rtl">
-      <Card>
-        <CardContent className="p-0">
-          {/* תמונת כותרת של העסק */}
-          <div className="relative h-64 w-full">
-            <img 
-              src={business.images?.[0] || "https://placehold.co/600x400?text=No+Image"} 
-              alt={business.name} 
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
-              <div className="p-6 text-white">
-                <h1 className="text-3xl font-bold">{business.name}</h1>
-                <p className="text-sm opacity-80">{business.category}</p>
+      <div className="flex flex-col md:flex-row gap-6">
+        <div className="md:w-3/5">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md mb-6">
+            <div className="flex justify-between items-center mb-6">
+              <h1 className="text-3xl font-bold">{business.name}</h1>
+              <Button variant="outline" size="sm">
+                אהבתי
+              </Button>
+            </div>
+            
+            <div className="relative h-64 w-full mb-6">
+              <img 
+                src={business.images?.[0] || "https://placehold.co/600x400?text=No+Image"} 
+                alt={business.name} 
+                className="w-full h-full object-cover rounded-lg"
+              />
+            </div>
+            
+            <div className="mb-6">
+              <h2 className="text-xl font-semibold mb-3">תיאור</h2>
+              <p className="text-gray-700 dark:text-gray-300">{business.description}</p>
+            </div>
+            
+            <div className="flex flex-wrap gap-2 mb-4">
+              <Button variant="outline" className="bg-blue-50 text-blue-600 border-blue-100">
+                שיתוף
+              </Button>
+              <Button variant="outline" className="bg-green-50 text-green-600 border-green-100">
+                עריכה
+              </Button>
+            </div>
+          </div>
+          
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
+            <h2 className="text-xl font-semibold mb-4">פרטי קשר</h2>
+            <div className="grid grid-cols-1 gap-4">
+              <div className="flex items-center">
+                <MapPin className="h-5 w-5 ml-3 text-gray-500" />
+                <div>
+                  <p className="font-medium">{business.address}</p>
+                </div>
+              </div>
+              <div className="flex items-center">
+                <Phone className="h-5 w-5 ml-3 text-gray-500" />
+                <div>
+                  <p className="font-medium">{business.phone}</p>
+                </div>
+              </div>
+              <div className="flex items-center">
+                <Mail className="h-5 w-5 ml-3 text-gray-500" />
+                <div>
+                  <p className="font-medium">{business.website || business.email}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="md:w-2/5">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md mb-6">
+            <h2 className="text-xl font-semibold mb-4">שעות פעילות</h2>
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span className="font-medium">ראשון:</span>
+                <span>{business.workingHours?.sunday || "9:00-19:00"}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium">שני:</span>
+                <span>{business.workingHours?.monday || "9:00-19:00"}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium">שלישי:</span>
+                <span>{business.workingHours?.tuesday || "9:00-19:00"}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium">רביעי:</span>
+                <span>{business.workingHours?.wednesday || "9:00-19:00"}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium">חמישי:</span>
+                <span>{business.workingHours?.thursday || "9:00-19:00"}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium">שישי:</span>
+                <span>{business.workingHours?.friday || "9:00-14:00"}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium">שבת:</span>
+                <span>{business.workingHours?.saturday || "סגור"}</span>
               </div>
             </div>
           </div>
           
-          {/* כפתור שיתוף המלצה */}
-          <div className="p-6 flex justify-between items-center">
-            <div>
-              <h2 className="text-xl font-semibold">פרטי העסק</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">{business.address}</p>
-            </div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
+            <h2 className="text-xl font-semibold mb-4">הצע המלצה</h2>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="bg-primary-500">
+                <Button className="w-full">
                   <Share2 className="h-4 w-4 ml-2" />
-                  שתף המלצה
+                  צור המלצה חדשה
                 </Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[425px] rtl">
@@ -277,7 +288,6 @@ export default function BusinessPage() {
                   <DialogTitle>שתף המלצה על {business.name}</DialogTitle>
                   <DialogDescription>
                     צור המלצה אישית ושתף אותה ברשתות החברתיות.
-                    לאחר סריקת קוד ה-QR במקום, באפשרותך ליצור המלצה אישית.
                   </DialogDescription>
                 </DialogHeader>
                 
@@ -389,138 +399,8 @@ export default function BusinessPage() {
               </DialogContent>
             </Dialog>
           </div>
-          
-          {/* מידע על העסק */}
-          <div className="px-6 pb-6">
-            <Tabs defaultValue="info">
-              <TabsList>
-                <TabsTrigger value="info">פרטים</TabsTrigger>
-                <TabsTrigger value="reviews">המלצות</TabsTrigger>
-                <TabsTrigger value="deals">הטבות</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="info" className="mt-4">
-                <div className="space-y-4">
-                  <p>{business.description}</p>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                    {business.phone && (
-                      <div>
-                        <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">טלפון</h3>
-                        <p>{business.phone}</p>
-                      </div>
-                    )}
-                    
-                    {business.website && (
-                      <div>
-                        <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">אתר</h3>
-                        <a 
-                          href={business.website} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="text-primary-500 hover:underline"
-                        >
-                          {business.website}
-                        </a>
-                      </div>
-                    )}
-                    
-                    {business.hours && (
-                      <div>
-                        <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">שעות פתיחה</h3>
-                        <p>{business.hours}</p>
-                      </div>
-                    )}
-                  </div>
-                  
-                  {business.images && business.images.length > 1 && (
-                    <div className="mt-6">
-                      <h3 className="text-lg font-medium mb-2">גלריית תמונות</h3>
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                        {business.images.map((image: string, index: number) => (
-                          <img 
-                            key={index} 
-                            src={image} 
-                            alt={`${business.name} - תמונה ${index + 1}`}
-                            className="w-full h-32 object-cover rounded"
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="reviews" className="mt-4">
-                {business.reviews && business.reviews.length > 0 ? (
-                  <div className="space-y-4">
-                    {business.reviews.map((review: any) => (
-                      <div key={review.id} className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 last:border-0">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <h3 className="font-medium">{review.userName}</h3>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">
-                              {new Date(review.date).toLocaleDateString('he-IL')}
-                            </p>
-                          </div>
-                          <div className="flex items-center">
-                            {Array.from({ length: 5 }).map((_, i) => (
-                              <span 
-                                key={i} 
-                                className={`text-lg ${i < review.rating ? 'text-yellow-500' : 'text-gray-300 dark:text-gray-600'}`}
-                              >
-                                ★
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                        <p className="mt-2">{review.text}</p>
-                        {review.recommended && (
-                          <div className="mt-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100">
-                            מומלץ!
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-12">
-                    <p className="text-gray-500 dark:text-gray-400">אין המלצות כרגע</p>
-                    <Button 
-                      className="mt-4"
-                      onClick={() => setIsDialogOpen(true)}
-                    >
-                      היה ראשון להמליץ
-                    </Button>
-                  </div>
-                )}
-              </TabsContent>
-              
-              <TabsContent value="deals" className="mt-4">
-                {business.discount ? (
-                  <div className="bg-primary-50 dark:bg-primary-900/20 p-4 rounded-lg border border-primary-200 dark:border-primary-800">
-                    <h3 className="text-lg font-medium text-primary-700 dark:text-primary-300">הטבה מיוחדת</h3>
-                    <p className="text-primary-600 dark:text-primary-400 text-2xl font-bold my-2">{business.discount}</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      שתף המלצה כדי לקבל את ההטבה
-                    </p>
-                    <Button 
-                      className="mt-4 w-full"
-                      onClick={() => setIsDialogOpen(true)}
-                    >
-                      שתף כדי לקבל הטבה
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="text-center py-12">
-                    <p className="text-gray-500 dark:text-gray-400">אין הטבות זמינות כרגע</p>
-                  </div>
-                )}
-              </TabsContent>
-            </Tabs>
-          </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

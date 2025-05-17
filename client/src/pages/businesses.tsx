@@ -1,10 +1,109 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useBusinesses, Business } from "@/hooks/use-businesses";
-import RecommendationCard from "@/components/recommendation/recommendation-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, MapPin, Filter } from "lucide-react";
+import { Search, MapPin, Filter, MapPinIcon, PhoneIcon, Mail } from "lucide-react";
+import { Link } from "wouter";
+import { Card, CardContent } from "@/components/ui/card";
+
+// דוגמאות עסקים עם פרטים מורחבים לפי הדוגמה
+const sampleBusinesses = [
+  {
+    id: "1",
+    name: "מכון היופי של לילך",
+    category: "יופי וטיפוח",
+    description: "במכון היופי של לילך תוכלי להתפנק בטיפולי יופי מתקדמים. לק ג'ל, טיפולי פנים, מניקור פדיקור וכל הטיפולים המובילים",
+    image: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=400",
+    address: "רחוב דיזנגוף 32, תל אביב",
+    website: "lilachbeauty@gmail.com",
+    phone: "08-9237561",
+    workingHours: {
+      sunday: "9:00-19:00",
+      monday: "9:00-19:00",
+      tuesday: "9:00-19:00",
+      wednesday: "9:00-19:00",
+      thursday: "9:00-19:00",
+      friday: "9:00-14:00",
+      saturday: "סגור"
+    }
+  },
+  {
+    id: "2",
+    name: "בדיקה",
+    category: "בריאות",
+    description: "במכון בדיקה תוכלו להתחבר לבריאותכם באמצעות בדיקות מקיפות. לך, למשפחתך ולמטופליך",
+    image: "https://images.unsplash.com/photo-1583324113626-70df0f4deaab?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=400",
+    address: "רחוב בדיקה 123, תל אביב",
+    website: "checkup@gmail.com",
+    phone: "03-1234567",
+    workingHours: {
+      sunday: "8:00-18:00",
+      monday: "8:00-18:00",
+      tuesday: "8:00-18:00",
+      wednesday: "8:00-18:00",
+      thursday: "8:00-18:00",
+      friday: "8:00-13:00",
+      saturday: "סגור"
+    }
+  }
+];
+
+// רכיב תצוגת בית עסק
+function BusinessCard({ business }: { business: any }) {
+  return (
+    <Card className="overflow-hidden">
+      <div className="relative h-48">
+        <img 
+          src={business.image} 
+          alt={business.name} 
+          className="w-full h-full object-cover"
+        />
+      </div>
+      <CardContent className="p-4">
+        <div className="flex justify-between items-start mb-3">
+          <div>
+            <h3 className="text-xl font-bold">{business.name}</h3>
+            <p className="text-sm text-gray-500">{business.category}</p>
+          </div>
+          <Link href={`/business/${business.id}`}>
+            <Button variant="outline" size="sm">אהבתי</Button>
+          </Link>
+        </div>
+        
+        <p className="text-sm mb-4 line-clamp-3">{business.description}</p>
+        
+        <div className="space-y-2 text-sm">
+          <div className="flex items-center">
+            <MapPinIcon className="h-4 w-4 ml-2 text-gray-500" />
+            <span>{business.address}</span>
+          </div>
+          <div className="flex items-center">
+            <PhoneIcon className="h-4 w-4 ml-2 text-gray-500" />
+            <span>{business.phone}</span>
+          </div>
+          <div className="flex items-center">
+            <Mail className="h-4 w-4 ml-2 text-gray-500" />
+            <span>{business.website}</span>
+          </div>
+        </div>
+        
+        <div className="flex justify-between mt-4">
+          <Link href={`/business/${business.id}`}>
+            <Button variant="default">
+              צפייה בפרטים
+            </Button>
+          </Link>
+          <Link href={`/business/${business.id}`}>
+            <Button variant="outline">
+              שיתוף
+            </Button>
+          </Link>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
 export default function Businesses() {
   const { user } = useAuth();
@@ -12,7 +111,7 @@ export default function Businesses() {
   const [searchTerm, setSearchTerm] = useState("");
 
   // כאן נשתמש בבתי העסק האמיתיים אם קיימים, אחרת בנתוני הדוגמה
-  const displayBusinesses = businesses && businesses.length > 0 ? businesses : [];
+  const displayBusinesses = businesses && businesses.length > 0 ? businesses : sampleBusinesses;
 
   const filteredBusinesses = searchTerm 
     ? displayBusinesses.filter(business => 
@@ -31,7 +130,7 @@ export default function Businesses() {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
             <Input
               type="text"
-              placeholder="חפש עסקים לפי שם או קטגוריה..."
+              placeholder="חפש עסק לפי שם, תיאור, כתובת או קטגוריה..."
               className="pl-10"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -70,21 +169,8 @@ export default function Businesses() {
         </div>
       ) : filteredBusinesses.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredBusinesses.map((business: Business) => (
-            <RecommendationCard
-              key={business.id}
-              id={business.id}
-              businessName={business.name}
-              businessImage={business.image}
-              description={business.description}
-              discount={business.discount}
-              rating={business.rating || 4}
-              recommenderName={business.recommendedBy || "משתמש"}
-              recommenderPhoto={business.recommendedByPhoto || "https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=40&h=40&auto=format&fit=crop"}
-              recommenderId={business.recommendedById || "user1"}
-              validUntil={business.validUntil || "30 ביוני"}
-              savedCount={business.savedCount || 0}
-            />
+          {filteredBusinesses.map((business: any) => (
+            <BusinessCard key={business.id} business={business} />
           ))}
         </div>
       ) : (
