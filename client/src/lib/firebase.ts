@@ -296,11 +296,18 @@ export const registerWithEmail = async (email: string, password: string, display
     console.error("Error registering with email: ", error);
     
     // בדיקה לשגיאות ספציפיות
-    if (error.code === 'auth/email-already-in-use') {
-      throw new Error('כתובת האימייל כבר קיימת במערכת. אנא נסה להתחבר במקום להירשם.');
+    if (typeof error === 'object' && error !== null && 'code' in error) {
+      if (error.code === 'auth/email-already-in-use') {
+        throw new Error('כתובת האימייל כבר קיימת במערכת. אנא נסה להתחבר במקום להירשם.');
+      }
     }
     
-    throw error;
+    // טיפול כללי בשגיאה
+    if (error instanceof Error) {
+      throw error;
+    } else {
+      throw new Error('התרחשה שגיאה לא ידועה בתהליך ההרשמה');
+    }
   }
 };
 
