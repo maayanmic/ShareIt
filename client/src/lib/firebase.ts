@@ -348,4 +348,30 @@ export const uploadImage = async (file: File, path: string) => {
   }
 };
 
+// Get site configuration
+export const getSiteConfig = async () => {
+  try {
+    const configDoc = await getDoc(doc(db, "siteconfig", "general"));
+    if (configDoc.exists()) {
+      return configDoc.data();
+    }
+    return null;
+  } catch (error) {
+    console.error("Error getting site config: ", error);
+    throw error;
+  }
+};
+
+// Get logo from site configuration
+export const getLogoURL = async () => {
+  try {
+    const logo3Ref = ref(storage, "siteconfig/images/Logo3");
+    const logoURL = await getDownloadURL(logo3Ref).catch(() => null);
+    return logoURL;
+  } catch (error) {
+    console.error("Error getting logo: ", error);
+    return null;
+  }
+};
+
 export { auth, db, storage };

@@ -2,6 +2,8 @@ import { Link, useLocation } from "wouter";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useAuth } from "@/hooks/use-auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useEffect, useState } from "react";
+import { getLogoURL } from "@/lib/firebase";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,6 +17,20 @@ import { LogOut, User, Settings } from "lucide-react";
 export default function DesktopNav() {
   const [location] = useLocation();
   const { user, logout } = useAuth();
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchLogo = async () => {
+      try {
+        const url = await getLogoURL();
+        setLogoUrl(url);
+      } catch (error) {
+        console.error("Failed to load logo:", error);
+      }
+    };
+    
+    fetchLogo();
+  }, []);
 
   const navItems = [
     { name: "דף הבית", href: "/" },
@@ -30,19 +46,32 @@ export default function DesktopNav() {
         {/* Logo */}
         <Link href="/">
           <div className="flex items-center space-x-2 text-primary-500 cursor-pointer">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-8 w-8"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
-                clipRule="evenodd"
+            {logoUrl ? (
+              <img 
+                src={logoUrl} 
+                alt="שייר-איט" 
+                className="h-10 w-auto" 
+                onError={(e) => {
+                  // בטעות טעינת תמונה, נחזור לאייקון ברירת מחדל
+                  e.currentTarget.style.display = 'none';
+                  console.error("Failed to load logo image");
+                }}
               />
-            </svg>
-            <span className="text-xl font-semibold">שייר-איט</span>
+            ) : (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-8 w-8"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            )}
+            <span className="text-xl font-semibold mr-2">שייר-איט</span>
           </div>
         </Link>
 
