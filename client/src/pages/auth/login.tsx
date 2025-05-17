@@ -111,11 +111,10 @@ export default function Login() {
               </svg>
               Google
             </Button>
-            {/* כפתור פייסבוק מוסתר זמנית עד תיקון הבעיה עם הגדרות הפייסבוק */}
-            {/* <Button variant="outline" className="w-full" onClick={handleFacebookLogin} disabled={isLoading}>
+            <Button variant="outline" className="w-full" onClick={handleFacebookLogin} disabled={isLoading}>
               <Facebook className="h-5 w-5 mr-2 text-blue-600" />
               Facebook
-            </Button> */}
+            </Button>
           </div>
 
           <div className="flex items-center">
