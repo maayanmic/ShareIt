@@ -227,22 +227,41 @@ export default function UserProfile() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {recommendations.map((recommendation) => (
-              <RecommendationCard
-                key={recommendation.id}
-                id={recommendation.id}
-                businessName={recommendation.businessName}
-                businessImage={recommendation.businessImage}
-                description={recommendation.description}
-                discount={recommendation.discount}
-                rating={recommendation.rating}
-                recommenderName={profileUser.displayName}
-                recommenderPhoto={profileUser.photoURL || `https://avatars.dicebear.com/api/initials/${profileUser.displayName}.svg`}
-                recommenderId={profileUser.id}
-                validUntil={recommendation.validUntil}
-                savedCount={recommendation.savedCount}
-              />
-            ))}
+            {recommendations.map((recommendation) => {
+              // המרת שדה validUntil לפורמט תאריך תקין אם צריך
+              let formattedValidUntil = "ללא הגבלה";
+              
+              if (recommendation.validUntil) {
+                if (typeof recommendation.validUntil === 'object' && 'seconds' in recommendation.validUntil) {
+                  // המרה מאובייקט Timestamp של Firestore
+                  const date = new Date(recommendation.validUntil.seconds * 1000);
+                  formattedValidUntil = date.toLocaleDateString('he-IL');
+                } else if (recommendation.validUntil instanceof Date) {
+                  // אם זה אובייקט Date רגיל
+                  formattedValidUntil = recommendation.validUntil.toLocaleDateString('he-IL');
+                } else {
+                  // אם זה כבר מחרוזת, השתמש בה כמו שהיא
+                  formattedValidUntil = String(recommendation.validUntil);
+                }
+              }
+              
+              return (
+                <RecommendationCard
+                  key={recommendation.id}
+                  id={recommendation.id}
+                  businessName={recommendation.businessName}
+                  businessImage={recommendation.businessImage}
+                  description={recommendation.description || recommendation.text}
+                  discount={recommendation.discount}
+                  rating={recommendation.rating}
+                  recommenderName={profileUser.displayName}
+                  recommenderPhoto={profileUser.photoURL || `https://avatars.dicebear.com/api/initials/${profileUser.displayName}.svg`}
+                  recommenderId={profileUser.id}
+                  validUntil={formattedValidUntil}
+                  savedCount={recommendation.savedCount}
+                />
+              );
+            })}
           </div>
         )}
       </div>
