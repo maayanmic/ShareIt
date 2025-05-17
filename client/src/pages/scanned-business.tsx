@@ -80,32 +80,58 @@ export default function ScannedBusiness() {
     try {
       setIsLoading(true);
       
-      // במקרה אמיתי היינו שומרים את ההמלצה במסד נתונים כאן
-      // רק לצורך הדגמה, נדמה שיש לנו מזהה המלצה
-      let recommendationId;
-      
-      try {
-        // נסיון ליצור המלצה אמיתית ב-Firebase אם הפונקציה קיימת
-        const newRecommendation = await createRecommendation({
-          businessId,
-          text,
-          imageUrl,
-          userId: user?.uid || "anonymous",
-          createdAt: new Date(),
-        });
-        recommendationId = newRecommendation?.id || `rec_${Date.now()}`;
-      } catch (error) {
-        console.error("Error creating recommendation:", error);
-        // במקרה של שגיאה, נייצר מזהה זמני
-        recommendationId = `rec_${Date.now()}`;
+      if (!business) {
+        throw new Error("פרטי העסק אינם זמינים");
       }
       
-      // עדכון המצב עם פרטי ההמלצה
-      setRecommendation({
-        id: recommendationId,
+      // יצירת אובייקט המלצה מלא עם כל הפרטים הנדרשים
+      const recommendationData = {
+        businessId,
+        businessName: business.name || "",
+        businessImage: business.image || "",
         text,
         imageUrl,
+        userId: user?.uid || "anonymous",
+        userName: user?.displayName || "משתמש אנונימי",
+        userPhotoURL: user?.photoURL || "",
+        rating: 5,  // דירוג ברירת מחדל
+        discount: business.discount || "10% הנחה",
+        savedCount: 0,
+        createdAt: new Date().toISOString()
+      };
+      
+      console.log("יוצר המלצה חדשה:", recommendationData);
+      
+      // שליחת ההמלצה לשמירה ב-Firebase
+      let savedRecommendation;
+      
+      try {
+        savedRecommendation = await createRecommendation(recommendationData);
+        console.log("המלצה נשמרה בהצלחה:", savedRecommendation);
+      } catch (saveError) {
+        console.error("שגיאה בשמירת המלצה:", saveError);
+        // יצירת מזהה זמני במקרה של כישלון
+        savedRecommendation = {
+          id: `rec_${Date.now()}`,
+          ...recommendationData
+        };
+        toast({
+          title: "שימו לב",
+          description: "ההמלצה נשמרה באופן זמני. חלק מהפונקציונליות עשויה לא לעבוד באופן מלא.",
+        });
+      }
+      
+      // שמירת מידע ההמלצה המלא במצב האפליקציה
+      setRecommendation({
+        id: savedRecommendation.id,
+        text,
+        imageUrl,
+        fullData: savedRecommendation  // שמירת כל הנתונים לשימוש עתידי
       });
+      
+      // יצירת לינק ייחודי להמלצה
+      const recommLink = window.location.origin + "/recommendation/" + savedRecommendation.id;
+      console.log("נוצר קישור ייחודי להמלצה:", recommLink);
       
       // מעבר לשלב השיתוף
       setCurrentStep(RecommendationStep.SHARE);
