@@ -120,103 +120,115 @@ export default function PhotoUploadForm({
   };
 
   return (
-    <div className="flex flex-col items-center text-center p-4 max-w-6xl mx-auto">
-      <div className="mb-4">
-        <Camera className="h-10 w-10 text-primary-500 mx-auto" />
-      </div>
-      
-      <h2 className="text-xl md:text-2xl font-bold mb-2">צילום והמלצה</h2>
-      <p className="text-gray-600 mb-6">צלם תמונה והוסף המלצה על החוויה שלך</p>
-      
-      {/* תצוגה רספונסיבית: בדסקטופ התמונה וההמלצה זה לצד זה */}
-      <div className="w-full md:grid md:grid-cols-2 md:gap-8 mb-6">
-        <input
-          type="file"
-          ref={fileInputRef}
-          className="hidden"
-          accept="image/*"
-          onChange={handleImageChange}
-        />
-        
-        {/* אזור העלאת/הצגת תמונה */}
-        <div className="md:mb-0 mb-6">
-          {imagePreviewUrl ? (
-            <div className="relative mb-4">
-              <img 
-                src={imagePreviewUrl} 
-                alt="תצוגה מקדימה" 
-                className="w-full h-52 md:h-80 object-cover rounded-md border border-gray-200"
-              />
-              <Button
-                variant="secondary"
-                size="sm"
-                className="absolute bottom-2 right-2 bg-white shadow-md"
-                onClick={handleChooseImageClick}
-              >
-                <Camera className="h-4 w-4 ml-1" />
-                החלף תמונה
-              </Button>
-            </div>
-          ) : (
-            <div 
-              className="border-2 border-dashed border-gray-300 rounded-md p-8 text-center cursor-pointer hover:bg-gray-50 transition-colors h-52 md:h-80 flex flex-col items-center justify-center"
-              onClick={handleChooseImageClick}
-            >
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
-                <Camera className="h-8 w-8 text-gray-500" />
-              </div>
-              <p className="text-gray-500 font-medium">לחץ להעלאת תמונה</p>
-              <p className="text-gray-400 text-sm mt-2 hidden md:block">תמונות איכותיות מגדילות את הסיכוי לשיתוף</p>
-            </div>
-          )}
+    <div className="min-h-screen flex flex-col items-center px-4 py-8 md:px-8 lg:py-12">
+      <div className="w-full max-w-7xl mx-auto">
+        <div className="text-center mb-8 lg:mb-12">
+          <Camera className="h-12 w-12 text-primary-500 mx-auto mb-4" />
+          <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-3">צילום והמלצה</h1>
+          <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+            צלם תמונה והוסף המלצה על החוויה שלך ב{businessName}
+          </p>
         </div>
         
-        {/* אזור כתיבת המלצה */}
-        <div className="flex flex-col h-full">
-          <div className="mb-2 text-right">
-            <label className="text-md text-gray-700 font-medium">המלצה על {businessName}</label>
-          </div>
-          <Textarea
-            placeholder="כתוב את ההמלצה שלך כאן... תאר מה אהבת במקום, למה אתה ממליץ עליו ואיזה טיפים יש לך למבקרים הבאים."
-            className="resize-none h-32 md:h-64 text-right"
-            value={recommendationText}
-            onChange={(e) => setRecommendationText(e.target.value)}
+        {/* תצוגה רספונסיבית: בדסקטופ התמונה וההמלצה זה לצד זה */}
+        <div className="w-full lg:grid lg:grid-cols-2 lg:gap-16 xl:gap-24 mb-8">
+          <input
+            type="file"
+            ref={fileInputRef}
+            className="hidden"
+            accept="image/*"
+            onChange={handleImageChange}
           />
           
-          {/* טיפים בתצוגת דסקטופ */}
-          <div className="bg-blue-50 p-3 rounded-md mt-2 text-right hidden md:block">
-            <p className="text-sm text-blue-800 font-medium">טיפים לכתיבת המלצה טובה:</p>
-            <ul className="text-xs text-blue-700 list-disc mr-4 mt-1">
-              <li>תאר את החוויה האישית שלך במקום</li>
-              <li>ציין מה מיוחד במקום ומה הייחוד שלו</li>
-              <li>שתף טיפ שיעזור למבקרים עתידיים</li>
-            </ul>
+          {/* אזור העלאת/הצגת תמונה */}
+          <div className="mb-8 lg:mb-0">
+            <div className="text-right mb-3 px-1">
+              <h2 className="text-xl font-semibold text-gray-800">תמונה</h2>
+              <p className="text-gray-500">העלה תמונה המייצגת את החוויה שלך</p>
+            </div>
+            {imagePreviewUrl ? (
+              <div className="relative rounded-lg overflow-hidden shadow-lg">
+                <img 
+                  src={imagePreviewUrl} 
+                  alt="תצוגה מקדימה" 
+                  className="w-full h-64 md:h-96 object-cover"
+                />
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+                  <Button
+                    variant="secondary"
+                    className="bg-white shadow-md hover:bg-gray-100"
+                    onClick={handleChooseImageClick}
+                  >
+                    <Camera className="h-4 w-4 ml-2" />
+                    החלף תמונה
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div 
+                className="border-2 border-dashed border-gray-300 rounded-lg p-10 text-center cursor-pointer hover:bg-gray-50 transition-colors h-64 md:h-96 flex flex-col items-center justify-center"
+                onClick={handleChooseImageClick}
+              >
+                <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gray-100 mb-4">
+                  <Camera className="h-10 w-10 text-gray-500" />
+                </div>
+                <p className="text-gray-800 font-medium text-lg mb-2">לחץ להעלאת תמונה</p>
+                <p className="text-gray-500 max-w-md mx-auto">
+                  תמונות איכותיות מעלות משמעותית את הסיכוי שאחרים ישתמשו בהמלצה שלך
+                </p>
+              </div>
+            )}
+          </div>
+          
+          {/* אזור כתיבת המלצה */}
+          <div className="flex flex-col">
+            <div className="text-right mb-3 px-1">
+              <h2 className="text-xl font-semibold text-gray-800">המלצה</h2>
+              <p className="text-gray-500">ספר על החוויה שלך ב{businessName}</p>
+            </div>
+            <Textarea
+              placeholder="כתוב את ההמלצה שלך כאן... תאר מה אהבת במקום, למה אתה ממליץ עליו ואיזה טיפים יש לך למבקרים הבאים."
+              className="resize-none min-h-[200px] md:min-h-[300px] text-right text-lg p-4"
+              value={recommendationText}
+              onChange={(e) => setRecommendationText(e.target.value)}
+            />
+            
+            {/* טיפים לכתיבה */}
+            <div className="bg-blue-50 p-4 rounded-lg mt-4 text-right border border-blue-100">
+              <p className="text-lg text-blue-800 font-medium mb-2">טיפים לכתיבת המלצה טובה:</p>
+              <ul className="text-blue-700 list-disc mr-6 space-y-1">
+                <li>תאר את החוויה האישית שלך במקום בצורה אותנטית</li>
+                <li>ציין מה מיוחד במקום ומה הופך אותו לשונה ממקומות אחרים</li>
+                <li>שתף טיפ שיעזור למבקרים עתידיים להפיק את המירב מהביקור</li>
+                <li>המלץ על מנות, מוצרים או שירותים ספציפיים שאהבת</li>
+              </ul>
+            </div>
           </div>
         </div>
-      </div>
-      
-      <div className="flex justify-between w-full mt-4 md:mt-6 md:max-w-lg">
-        <Button
-          variant="outline"
-          onClick={onBack}
-          disabled={isSubmitting}
-          className="bg-gray-100 text-gray-800 hover:bg-gray-200 px-6"
-        >
-          חזור
-        </Button>
         
-        <Button
-          onClick={handleSubmit}
-          disabled={isSubmitting || !recommendationText.trim() || !selectedImage}
-          className="bg-gray-800 text-white hover:bg-gray-700 px-8"
-        >
-          {isSubmitting ? (
-            <>
-              <span className="h-4 w-4 ml-2 animate-spin rounded-full border-2 border-white border-r-transparent"></span>
-              שומר...
-            </>
-          ) : "המשך"}
-        </Button>
+        <div className="flex justify-between w-full mt-8 lg:mt-6 max-w-xl mx-auto">
+          <Button
+            variant="outline"
+            onClick={onBack}
+            disabled={isSubmitting}
+            className="bg-gray-100 text-gray-800 hover:bg-gray-200 px-8 py-6 text-lg"
+          >
+            חזור
+          </Button>
+          
+          <Button
+            onClick={handleSubmit}
+            disabled={isSubmitting || !recommendationText.trim() || !selectedImage}
+            className="bg-gray-800 text-white hover:bg-gray-700 px-10 py-6 text-lg"
+          >
+            {isSubmitting ? (
+              <>
+                <span className="h-5 w-5 ml-2 animate-spin rounded-full border-2 border-white border-r-transparent"></span>
+                שומר...
+              </>
+            ) : "המשך"}
+          </Button>
+        </div>
       </div>
     </div>
   );
