@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { getUserRecommendations } from "@/lib/firebase";
@@ -19,10 +19,12 @@ import {
 } from "lucide-react";
 import RecommendationCard from "@/components/recommendation/recommendation-card";
 import DigitalWallet from "@/components/wallet/digital-wallet";
+import { useQRScanner } from "@/components/qr/qr-scanner-modal";
 
 export default function Profile() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const qrScanner = useQRScanner();
   const [recommendations, setRecommendations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -155,13 +157,10 @@ export default function Profile() {
           <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between">
             <h2 className="text-xl font-semibold mb-2 md:mb-0">Your Recommendations</h2>
             <Button
-              onClick={() => {
-                const { openScanner } = require("@/components/qr/qr-scanner-modal");
-                openScanner();
-              }}
+              onClick={() => qrScanner.openScanner()}
             >
               <Camera className="h-4 w-4 mr-2" />
-              Scan QR & Create Recommendation
+              סרוק QR ויצור המלצה
             </Button>
           </div>
           
@@ -214,10 +213,7 @@ export default function Profile() {
                     נסה שוב
                   </Button>
                   <Button
-                    onClick={() => {
-                      const { openScanner } = require("@/components/qr/qr-scanner-modal");
-                      openScanner();
-                    }}
+                    onClick={() => qrScanner.openScanner()}
                   >
                     סרוק QR ליצירת המלצה
                   </Button>
@@ -266,10 +262,7 @@ export default function Profile() {
                   עדיין לא יצרת המלצות. התחל לשתף את העסקים האהובים עליך כדי להרוויח פרסים!
                 </p>
                 <Button
-                  onClick={() => {
-                    const { openScanner } = require("@/components/qr/qr-scanner-modal");
-                    openScanner();
-                  }}
+                  onClick={() => qrScanner.openScanner()}
                 >
                   סרוק QR ויצור את ההמלצה הראשונה שלך
                 </Button>
