@@ -135,7 +135,7 @@ export function SocialSharePanel({
               <div className="mb-6">
                 <p className="text-base font-medium mb-2 text-right">הקישור להמלצה שלך:</p>
                 <div className="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-lg p-3">
-                  <div className="truncate text-sm text-gray-600 text-left flex-grow" dir="ltr">
+                  <div className="truncate text-sm text-gray-600 text-left flex-grow" dir="rtl">
                     {getShareUrl()}
                   </div>
                   <Button
