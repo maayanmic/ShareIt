@@ -19,8 +19,36 @@ export default function RecommendationById() {
   const { toast } = useToast();
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [recommendation, setRecommendation] = useState<any | null>(null);
-  const [business, setBusiness] = useState<any | null>(null);
+  interface RecommendationData {
+    id: string;
+    businessId: string;
+    businessName: string;
+    description: string;
+    discount: string;
+    rating: number;
+    imageUrl: string;
+    expiryDate: string;
+    validUntil?: string;
+    savedCount: number;
+    creator: {
+      id: string;
+      name: string;
+      photoUrl: string;
+    }
+  }
+  
+  interface BusinessData {
+    id: string;
+    name: string;
+    category: string;
+    description: string;
+    address: string;
+    image: string;
+    businessImage?: string;
+  }
+  
+  const [recommendation, setRecommendation] = useState<RecommendationData | null>(null);
+  const [business, setBusiness] = useState<BusinessData | null>(null);
   
   // זיהוי פרמטר המפנה מהלינק (אם קיים)
   const urlParams = new URLSearchParams(window.location.search);
@@ -43,7 +71,7 @@ export default function RecommendationById() {
         console.log("כל ההמלצות שנטענו:", allRecommendations);
         
         // חיפוש המלצה ספציפית לפי המזהה
-        return allRecommendations.find(rec => {
+        return allRecommendations.find((rec: any) => {
           // בדיקה גמישה - אם המזהה זהה או אם הוא מכיל את המזהה המבוקש
           const recIdMatches = rec.id === recommendationId;
           const recIdContains = rec.id && rec.id.includes && rec.id.includes(recommendationId);
@@ -79,20 +107,21 @@ export default function RecommendationById() {
           console.log("נמצאה ההמלצה!", foundRecommendation);
           
           // המרה למבנה שהדף מצפה לו
-          const processedRec = {
-            id: foundRecommendation.id,
-            businessId: foundRecommendation.businessId,
-            businessName: foundRecommendation.businessName || "עסק לא ידוע",
-            description: foundRecommendation.text || foundRecommendation.description || "אין תיאור",
-            discount: foundRecommendation.discount || "10% הנחה",
-            rating: foundRecommendation.rating || 5,
-            imageUrl: foundRecommendation.imageUrl || "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=500",
-            expiryDate: foundRecommendation.validUntil || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-            savedCount: foundRecommendation.savedCount || 0,
+          const anyFoundRecommendation = foundRecommendation as any;
+          const processedRec: RecommendationData = {
+            id: anyFoundRecommendation.id,
+            businessId: anyFoundRecommendation.businessId,
+            businessName: anyFoundRecommendation.businessName || "עסק לא ידוע",
+            description: anyFoundRecommendation.text || anyFoundRecommendation.description || "אין תיאור",
+            discount: anyFoundRecommendation.discount || "10% הנחה",
+            rating: anyFoundRecommendation.rating || 5,
+            imageUrl: anyFoundRecommendation.imageUrl || "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=500",
+            expiryDate: anyFoundRecommendation.validUntil || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+            savedCount: anyFoundRecommendation.savedCount || 0,
             creator: {
-              id: foundRecommendation.userId || referrerId || "user-1",
-              name: foundRecommendation.userName || "יוצר ההמלצה",
-              photoUrl: foundRecommendation.userPhotoURL || "https://randomuser.me/api/portraits/men/32.jpg",
+              id: anyFoundRecommendation.userId || referrerId || "user-1",
+              name: anyFoundRecommendation.userName || "יוצר ההמלצה",
+              photoUrl: anyFoundRecommendation.userPhotoURL || "https://randomuser.me/api/portraits/men/32.jpg",
             }
           };
           

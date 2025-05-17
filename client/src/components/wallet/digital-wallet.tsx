@@ -44,20 +44,23 @@ interface RedeemableOfferProps {
 
 function RedeemableOffer({ id, name, image, description, coins, onRedeem }: RedeemableOfferProps) {
   return (
-    <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 flex items-center space-x-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-300">
-      <img
-        src={image}
-        alt={`${name} Reward`}
-        className="w-16 h-16 rounded-lg object-cover"
-      />
-      <div className="flex-1">
+    <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 flex items-center space-x-0 space-x-reverse space-x-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-300">
+      <div className="flex-1 text-right">
         <h4 className="font-medium text-gray-800 dark:text-white">{name}</h4>
         <p className="text-gray-500 dark:text-gray-400 text-sm">{description}</p>
         <div className="flex items-center mt-1 justify-between">
+          <Button
+            size="sm"
+            onClick={() => onRedeem(id, name)}
+            className="px-2 py-1 bg-primary-500 hover:bg-primary-600 text-white text-xs rounded"
+          >
+            מימוש
+          </Button>
           <div className="flex items-center">
+            <span className="text-sm text-gray-700 dark:text-gray-300 ml-1">{coins}</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4 text-amber-500"
+              className="h-4 w-4 text-amber-500 mr-1"
               viewBox="0 0 20 20"
               fill="currentColor"
             >
@@ -68,17 +71,14 @@ function RedeemableOffer({ id, name, image, description, coins, onRedeem }: Rede
                 clipRule="evenodd"
               />
             </svg>
-            <span className="text-sm text-gray-700 dark:text-gray-300 ml-1">{coins}</span>
           </div>
-          <Button
-            size="sm"
-            onClick={() => onRedeem(id, name)}
-            className="px-2 py-1 bg-primary-500 hover:bg-primary-600 text-white text-xs rounded"
-          >
-            מימוש
-          </Button>
         </div>
       </div>
+      <img
+        src={image}
+        alt={`${name} Reward`}
+        className="w-16 h-16 rounded-lg object-cover"
+      />
     </div>
   );
 }
@@ -105,7 +105,8 @@ export default function DigitalWallet() {
   ];
 
   const handleRedeem = (id: string, name: string) => {
-    if (!user || user.coins < 25) {
+    const userCoins = user?.coins || 0;
+    if (!user || userCoins < 25) {
       toast({
         title: "אין מספיק מטבעות",
         description: "אתה צריך יותר מטבעות כדי לממש הצעה זו.",
