@@ -29,8 +29,12 @@ export function SocialSharePanel({
   // יצירת URL לשיתוף עם מזהה ייחודי של היוצר
   const getShareUrl = () => {
     const baseUrl = window.location.origin;
-    // הוספת מזהה המשתמש היוצר כפרמטר לקישור
-    return `${baseUrl}/recommendation/${recommendationId}?referrer=${user?.uid || ""}`;
+    // במקום לקשר ישירות להמלצה (שאין לה דף), נקשר לדף פרופיל המשתמש
+    if (user?.uid) {
+      return `${baseUrl}/user-profile/${user.uid}?rec=${recommendationId}`;
+    }
+    // אם אין משתמש, נקשר לדף הבית
+    return `${baseUrl}/?rec=${recommendationId}`;
   };
   
   // פונקציה לטיפול בשיתוף בפייסבוק - זה כפתור שעובד באמת
