@@ -43,8 +43,75 @@ export default function DesktopNav() {
   return (
     <nav className="hidden md:flex fixed top-0 left-0 right-0 h-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 z-30 shadow-sm px-4">
       <div className="container mx-auto flex justify-between items-center h-full">
-        {/* Logo */}
-        <div className="flex-1">
+        {/* User Profile - Right side */}
+        <div className="flex items-center space-x-4 flex-1 justify-start">
+          <ThemeToggle variant="ghost" size="icon" />
+
+          {user ? (
+            <>
+              {/* Profile dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger className="focus:outline-none">
+                  <div className="flex items-center space-x-2">
+                    <Avatar>
+                      <AvatarImage src={user.photoURL || ""} />
+                      <AvatarFallback>
+                        {user.displayName?.charAt(0) || "U"}
+                      </AvatarFallback>
+                    </Avatar>
+                  </div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start">
+                  <DropdownMenuLabel>
+                    {user.displayName || "משתמש"}
+                    <p className="text-xs text-gray-500">{user.email}</p>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <Link href="/profile">
+                    <DropdownMenuItem className="cursor-pointer">
+                      <User className="ml-2 h-4 w-4" />
+                      <span>הפרופיל שלי</span>
+                    </DropdownMenuItem>
+                  </Link>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={() => logout()}
+                    className="cursor-pointer"
+                  >
+                    <LogOut className="ml-2 h-4 w-4" />
+                    <span>התנתק</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </>
+          ) : (
+            <Link href="/auth">
+              <span className="text-primary-600 dark:text-primary-500 font-semibold hover:underline">
+                התחבר / הירשם
+              </span>
+            </Link>
+          )}
+        </div>
+
+        {/* Desktop Navigation Links - Center */}
+        <div className="flex items-center space-x-0 space-x-reverse space-x-12">
+          {navItems.map((item) => (
+            <Link key={item.href} href={item.href}>
+              <span
+                className={`text-gray-700 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-500 font-medium cursor-pointer px-4 py-1 text-lg ${
+                  location === item.href
+                    ? "text-primary-600 dark:text-primary-500 font-bold border-b-2 border-primary-500"
+                    : ""
+                }`}
+              >
+                {item.name}
+              </span>
+            </Link>
+          ))}
+        </div>
+
+        {/* Logo - Left side */}
+        <div className="flex-1 flex justify-end">
           <Link href="/">
             <div className="flex items-center text-primary-500 cursor-pointer">
               {logoUrl ? (
@@ -65,88 +132,6 @@ export default function DesktopNav() {
               )}
             </div>
           </Link>
-        </div>
-
-        {/* Desktop Navigation Links - Center */}
-        <div className="flex items-center space-x-0 space-x-reverse space-x-12">
-          {navItems.map((item) => (
-            <Link key={item.href} href={item.href}>
-              <span
-                className={`text-gray-700 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-500 font-medium cursor-pointer px-4 py-1 text-lg ${
-                  location === item.href
-                    ? "text-primary-600 dark:text-primary-500 font-bold border-b-2 border-primary-500"
-                    : ""
-                }`}
-              >
-                {item.name}
-              </span>
-            </Link>
-          ))}
-        </div>
-
-        {/* Left side controls */}
-        <div className="flex items-center space-x-4 flex-1 justify-end">
-          <ThemeToggle variant="ghost" size="icon" />
-
-          {user ? (
-            <>
-              {/* Profile dropdown */}
-              <DropdownMenu>
-                <DropdownMenuTrigger className="focus:outline-none">
-                  <div className="flex items-center space-x-2">
-                    <Avatar>
-                      <AvatarImage src={user.photoURL || ""} />
-                      <AvatarFallback>
-                        {user.displayName?.charAt(0) || "U"}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex flex-col items-start">
-                      <div className="flex items-center">
-                        <span className="text-sm font-medium">
-                          {user.displayName}
-                        </span>
-                        {user.isAdmin && (
-                          <span className="ml-2 px-1.5 py-0.5 bg-amber-100 text-amber-800 text-xs rounded-full">
-                            מנהל
-                          </span>
-                        )}
-                      </div>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
-                        @{user.displayName?.toLowerCase().replace(/\s+/g, "") || "user"}
-                      </span>
-                    </div>
-                  </div>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>החשבון שלי</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <Link href="/profile">
-                    <DropdownMenuItem>
-                      <User className="ml-2 h-4 w-4" />
-                      <span>פרופיל</span>
-                    </DropdownMenuItem>
-                  </Link>
-                  <Link href="/saved-offers">
-                    <DropdownMenuItem>
-                      <Settings className="ml-2 h-4 w-4" />
-                      <span>הצעות שמורות</span>
-                    </DropdownMenuItem>
-                  </Link>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={logout}>
-                    <LogOut className="ml-2 h-4 w-4" />
-                    <span>התנתקות</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </>
-          ) : (
-            <Link href="/login">
-              <button className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 transition duration-300">
-                התחברות
-              </button>
-            </Link>
-          )}
         </div>
       </div>
     </nav>
