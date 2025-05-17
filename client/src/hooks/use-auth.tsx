@@ -50,7 +50,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const isAuthenticated = user !== null;
 
   useEffect(() => {
+    console.log("Setting up auth state listener");
+    
+    // בדיקה אם יש משתמש בלוקל סטורג' - לשיפור החוויה עד לטעינת פיירבייס
+    const storedUser = localStorage.getItem('authUser');
+    if (storedUser) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
+      } catch (e) {
+        console.error("Error parsing stored user:", e);
+      }
+    }
+    
     const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
+      console.log("Auth state changed", firebaseUser ? "User logged in" : "No user");
+      
       if (firebaseUser) {
         // Get user data from Firestore to append coins, referrals, etc.
         try {
@@ -61,12 +76,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             referrals: userData?.referrals || 0,
             savedOffers: userData?.savedOffers || 0,
           };
+          
+          // שמירת משתמש בלוקל סטורג' להתמודדות עם ריענון דף
+          const userToStore = {
+            uid: firebaseUser.uid,
+            email: firebaseUser.email,
+            displayName: firebaseUser.displayName,
+            photoURL: firebaseUser.photoURL,
+            coins: userData?.coins || 0,
+            referrals: userData?.referrals || 0,
+            savedOffers: userData?.savedOffers || 0,
+          };
+          localStorage.setItem('authUser', JSON.stringify(userToStore));
+          
           setUser(enhancedUser);
         } catch (error) {
           console.error("Error fetching user data: ", error);
           setUser(firebaseUser as AuthUser);
         }
       } else {
+        // כאשר מתנתקים, מנקים את המשתמש מהלוקל סטורג'
+        localStorage.removeItem('authUser');
         setUser(null);
       }
       setLoading(false);
@@ -77,20 +107,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string) => {
     try {
-      await loginWithEmail(email, password);
+      const userCredential = await loginWithEmail(email, password);
+      
+      // קבל נתוני משתמש נוספים מפיירסטור
+      if (userCredential) {
+        const userData = await getUserData(userCredential.uid);
+        if (userData) {
+          // שמירת משתמש בלוקל סטורג' להתמודדות עם ריענון דף
+          const userToStore = {
+            uid: userCredential.uid,
+            email: userCredential.email,
+            displayName: userCredential.displayName,
+            photoURL: userCredential.photoURL,
+            coins: userData?.coins || 0,
+            referrals: userData?.referrals || 0,
+            savedOffers: userData?.savedOffers || 0,
+          };
+          localStorage.setItem('authUser', JSON.stringify(userToStore));
+        }
+      }
+      
       toast({
-        title: "Welcome back!",
-        description: "You have successfully logged in.",
+        title: "ברוך שובך!",
+        description: "התחברת בהצלחה",
       });
       setLocation("/");
     } catch (error: any) {
       console.error("Login error: ", error);
-      let errorMessage = "Failed to log in. Please check your credentials.";
+      let errorMessage = "ההתחברות נכשלה. נא לבדוק את הפרטים שהזנת.";
       if (error.code === "auth/user-not-found" || error.code === "auth/wrong-password") {
-        errorMessage = "Invalid email or password.";
+        errorMessage = "אימייל או סיסמה לא תקינים.";
       }
       toast({
-        title: "Login Error",
+        title: "שגיאת התחברות",
         description: errorMessage,
         variant: "destructive",
       });
