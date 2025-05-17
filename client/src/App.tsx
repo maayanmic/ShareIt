@@ -8,6 +8,7 @@ import Register from "@/pages/auth/register";
 import Businesses from "@/pages/businesses";
 import SavedOffers from "@/pages/saved-offers";
 import Profile from "@/pages/profile";
+import Users from "@/pages/users";
 
 import BusinessPage from "@/pages/business";
 import DesktopNav from "@/components/navigation/desktop-nav";
@@ -53,6 +54,9 @@ function Router() {
 
       <Route path="/business/:businessId">
         {user ? <BusinessPage /> : <Login />}
+      </Route>
+      <Route path="/users">
+        {user ? <Users /> : <Login />}
       </Route>
       <Route>
         {user ? <NotFound /> : <Login />}

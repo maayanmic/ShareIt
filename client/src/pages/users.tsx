@@ -1,207 +1,163 @@
 import { useState, useEffect } from "react";
-import { getUsers, createConnection, getUserRating } from "@/lib/firebase";
 import { useAuth } from "@/hooks/use-auth";
-import { useToast } from "@/hooks/use-toast";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { getUsers, createConnection, getUserRating } from "@/lib/firebase-update";
 import { Button } from "@/components/ui/button";
-import { Star, UserPlus, Check } from "lucide-react";
+import { Star, StarHalf, UserPlus, Check } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Users() {
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [userConnections, setUserConnections] = useState<string[]>([]);
+  const [connectingTo, setConnectingTo] = useState<string | null>(null);
   const { user } = useAuth();
   const { toast } = useToast();
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      if (!user) return;
-
+    async function fetchUsers() {
       try {
-        // פונקציה שתביא את כל המשתמשים מהמערכת
-        const allUsers = await getUsers();
-        // סנן את המשתמש הנוכחי מהרשימה
-        const filteredUsers = allUsers.filter((u: any) => u.id !== user.uid);
-        setUsers(filteredUsers);
-
-        // טען את החיבורים של המשתמש הנוכחי
-        const connections = user.connections || [];
-        setUserConnections(connections);
+        setLoading(true);
+        const usersData = await getUsers();
+        
+        // פילטור הרשימה כך שלא תכלול את המשתמש הנוכחי
+        const filteredUsers = usersData.filter(u => u.id !== user?.uid);
+        
+        // העשרת נתוני המשתמשים עם מידע נוסף
+        const enrichedUsers = await Promise.all(filteredUsers.map(async (u) => {
+          const rating = await getUserRating(u.id);
+          return {
+            ...u,
+            rating,
+            isConnected: user?.connections?.includes(u.id) || false
+          };
+        }));
+        
+        setUsers(enrichedUsers);
       } catch (error) {
-        console.error("Error fetching users:", error);
-        toast({
-          title: "שגיאה",
-          description: "לא ניתן היה לטעון את רשימת המשתמשים",
-          variant: "destructive",
-        });
+        console.error("שגיאה בטעינת רשימת המשתמשים:", error);
       } finally {
         setLoading(false);
       }
-    };
+    }
 
-    fetchUsers();
-  }, [user, toast]);
+    if (user) {
+      fetchUsers();
+    }
+  }, [user]);
 
   const handleConnect = async (userId: string) => {
     if (!user) return;
-
+    
     try {
-      // בדוק אם כבר יש חיבור
-      const isConnected = userConnections.includes(userId);
-      
-      if (isConnected) {
-        // במקרה שכבר מחובר, הודע למשתמש
-        toast({
-          title: "כבר מחובר",
-          description: "אתה כבר מחובר למשתמש זה",
-        });
-        return;
-      }
-
-      // יצירת חיבור חדש
+      setConnectingTo(userId);
       await createConnection(user.uid, userId);
       
-      // עדכון המצב המקומי
-      setUserConnections([...userConnections, userId]);
+      // עדכון מקומי של רשימת המשתמשים
+      setUsers(prevUsers => prevUsers.map(u => 
+        u.id === userId ? { ...u, isConnected: true } : u
+      ));
       
       toast({
-        title: "חיבור נוצר בהצלחה",
-        description: "עכשיו תוכל לראות את ההמלצות של משתמש זה בדף הבית שלך",
+        title: "נוצר חיבור בהצלחה",
+        description: "כעת תראה את ההמלצות של משתמש זה",
+        variant: "default",
       });
     } catch (error) {
-      console.error("Error connecting with user:", error);
+      console.error("שגיאה ביצירת חיבור:", error);
       toast({
-        title: "שגיאה",
-        description: "לא ניתן היה ליצור חיבור עם המשתמש",
+        title: "שגיאה ביצירת חיבור",
+        description: "אנא נסה שוב מאוחר יותר",
         variant: "destructive",
       });
+    } finally {
+      setConnectingTo(null);
     }
   };
 
-  // פונקציה להצגת דירוג המשתמש בכוכבים
   const renderRating = (rating: number) => {
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 >= 0.5;
+    
     return (
-      <div className="flex">
-        {[...Array(5)].map((_, i) => (
-          <Star
-            key={i}
-            className={`h-4 w-4 ${
-              i < rating
-                ? "text-amber-500 fill-amber-500"
-                : "text-gray-300 dark:text-gray-600"
-            }`}
-          />
+      <div className="flex items-center">
+        {Array(fullStars).fill(0).map((_, i) => (
+          <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
         ))}
+        {hasHalfStar && <StarHalf className="h-4 w-4 fill-yellow-400 text-yellow-400" />}
+        {Array(5 - fullStars - (hasHalfStar ? 1 : 0)).fill(0).map((_, i) => (
+          <Star key={i} className="h-4 w-4 text-gray-300" />
+        ))}
+        <span className="ml-1 text-sm text-gray-600">{rating.toFixed(1)}</span>
       </div>
     );
   };
 
   return (
-    <div className="container max-w-5xl mx-auto">
+    <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-6 text-right">משתמשים</h1>
       
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 h-40 animate-pulse">
-              <div className="flex items-center space-x-4 mb-4">
-                <div className="rounded-full bg-gray-200 dark:bg-gray-700 h-12 w-12"></div>
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 animate-pulse">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-12 h-12 rounded-full bg-gray-200 dark:bg-gray-700"></div>
                 <div className="flex-1">
                   <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
                   <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
                 </div>
               </div>
-              <div className="flex justify-between items-center">
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/3"></div>
-                <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4"></div>
+              <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-full mb-4"></div>
+              <div className="flex justify-end">
+                <div className="w-24 h-8 bg-gray-200 dark:bg-gray-700 rounded"></div>
               </div>
             </div>
           ))}
         </div>
-      ) : users.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {users.map((userData) => {
-            const isConnected = userConnections.includes(userData.id);
-            const userRating = userData.avgRating || Math.floor(Math.random() * 5) + 1; // לצורך הדגמה - יש להחליף עם נתונים אמיתיים
-            
-            return (
-              <Card key={userData.id} className="overflow-hidden">
-                <CardContent className="pt-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center space-x-4">
-                      <Avatar className="h-12 w-12">
-                        <AvatarImage src={userData.photoURL || ""} />
-                        <AvatarFallback>
-                          {userData.displayName?.charAt(0) || "U"}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="mr-4 flex flex-col">
-                        <h3 className="font-medium text-right">{userData.displayName}</h3>
-                        {/* דירוג כוכבים */}
-                        <div className="flex justify-end mt-1">
-                          {renderRating(userRating)}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="text-sm text-gray-500 dark:text-gray-400 mb-4 text-right">
-                    <p>{userData.recommendations?.length || 0} המלצות פעילות</p>
-                  </div>
-                  
-                  <Button
-                    onClick={() => handleConnect(userData.id)}
-                    variant={isConnected ? "secondary" : "default"}
-                    className="w-full"
-                    disabled={isConnected}
-                  >
-                    {isConnected ? (
-                      <>
-                        <Check className="ml-2 h-4 w-4" />
-                        מחובר
-                      </>
-                    ) : (
-                      <>
-                        <UserPlus className="ml-2 h-4 w-4" />
-                        צור חיבור
-                      </>
-                    )}
-                  </Button>
-                </CardContent>
-              </Card>
-            );
-          })}
+      ) : users.length === 0 ? (
+        <div className="text-center py-10 text-gray-500">
+          <p className="text-xl">לא נמצאו משתמשים במערכת</p>
         </div>
       ) : (
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-8 text-center">
-          <div className="text-gray-400 dark:text-gray-500 mb-4">
-            <svg 
-              xmlns="http://www.w3.org/2000/svg" 
-              className="h-16 w-16 mx-auto" 
-              fill="none" 
-              viewBox="0 0 24 24" 
-              stroke="currentColor"
-            >
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth={1.5} 
-                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" 
-              />
-            </svg>
-          </div>
-          <h3 className="text-lg font-medium mb-2">אין משתמשים זמינים</h3>
-          <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto">
-            לא נמצאו משתמשים אחרים שניתן ליצור איתם חיבור.
-          </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {users.map((user) => (
+            <div key={user.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="relative">
+                  <img 
+                    src={user.photoURL || `https://avatars.dicebear.com/api/initials/${user.displayName}.svg`} 
+                    alt={user.displayName} 
+                    className="w-12 h-12 rounded-full object-cover"
+                  />
+                </div>
+                <div className="flex-1 text-right">
+                  <h3 className="font-semibold">{user.displayName}</h3>
+                  <div className="mt-1">{renderRating(user.rating || 0)}</div>
+                </div>
+              </div>
+              
+              <div className="text-right text-sm text-gray-600 mb-4">
+                <p className="line-clamp-2">{user.bio || "חבר במערכת 💬"}</p>
+              </div>
+              
+              <div className="flex justify-end">
+                {user.isConnected ? (
+                  <Button variant="outline" disabled className="text-green-600 text-right">
+                    <Check className="ml-2 h-4 w-4" />
+                    מחובר
+                  </Button>
+                ) : (
+                  <Button 
+                    onClick={() => handleConnect(user.id)} 
+                    disabled={connectingTo === user.id}
+                    className="text-right"
+                  >
+                    <UserPlus className="ml-2 h-4 w-4" />
+                    {connectingTo === user.id ? "מתחבר..." : "התחבר"}
+                  </Button>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </div>
