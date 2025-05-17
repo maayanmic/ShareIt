@@ -279,7 +279,7 @@ export const QRScannerProvider: React.FC<{ children: React.ReactNode }> = ({ chi
                 </div>
               </div>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-4 text-center">
-                סרוק את קוד ה-QR בעסק כדי להתחיל את ההמלצה שלך
+                סרוק את קוד ה-QR בעסק על מנת לשתף את ההמלצה שלך
               </p>
             </div>
           </div>
