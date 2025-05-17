@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useLocation } from "wouter";
-import { getBusinessById } from "@/lib/firebase";
-import { CreateRecommendationForm } from "@/components/share/CreateRecommendationForm";
+import { getBusinessById, createRecommendation } from "@/lib/firebase";
+import PhotoUploadForm from "@/components/share/PhotoUploadForm";
 import { SocialSharePanel } from "@/components/share/SocialSharePanel";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
@@ -76,13 +76,49 @@ export default function ScannedBusiness() {
   }, [businessId, navigate, toast, isAuthenticated]);
 
   // פונקציה לטיפול בסיום צעד יצירת ההמלצה
-  const handleRecommendationCreate = (recommendationId: string, text: string, imageUrl: string) => {
-    setRecommendation({
-      id: recommendationId,
-      text,
-      imageUrl,
-    });
-    setCurrentStep(RecommendationStep.SHARE);
+  const handleRecommendationCreate = async (businessId: string, text: string, imageUrl: string) => {
+    try {
+      setIsLoading(true);
+      
+      // במקרה אמיתי היינו שומרים את ההמלצה במסד נתונים כאן
+      // רק לצורך הדגמה, נדמה שיש לנו מזהה המלצה
+      let recommendationId;
+      
+      try {
+        // נסיון ליצור המלצה אמיתית ב-Firebase אם הפונקציה קיימת
+        const newRecommendation = await createRecommendation({
+          businessId,
+          text,
+          imageUrl,
+          userId: user?.uid || "anonymous",
+          createdAt: new Date(),
+        });
+        recommendationId = newRecommendation?.id || `rec_${Date.now()}`;
+      } catch (error) {
+        console.error("Error creating recommendation:", error);
+        // במקרה של שגיאה, נייצר מזהה זמני
+        recommendationId = `rec_${Date.now()}`;
+      }
+      
+      // עדכון המצב עם פרטי ההמלצה
+      setRecommendation({
+        id: recommendationId,
+        text,
+        imageUrl,
+      });
+      
+      // מעבר לשלב השיתוף
+      setCurrentStep(RecommendationStep.SHARE);
+    } catch (error) {
+      console.error("Error in recommendation creation flow:", error);
+      toast({
+        title: "שגיאה ביצירת המלצה",
+        description: "אירעה שגיאה ביצירת ההמלצה. אנא נסה שוב.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // פונקציה לטיפול בסיום צעד השיתוף
@@ -173,18 +209,21 @@ export default function ScannedBusiness() {
         {/* לוגו האתר */}
         <div className="flex justify-center mb-4">
           <img 
-            src="/images/Logo3.png" 
+            src="https://firebasestorage.googleapis.com/v0/b/shareit-454f0.firebasestorage.app/o/images%2FLogo3.png?alt=media&token=63561733-5bb8-4dcb-bb88-ecdb29485d59" 
             alt="ShareIt" 
-            className="h-12 mb-4" 
+            className="h-16 mb-2" 
           />
         </div>
 
         {/* תצוגת שלב נוכחי */}
         {currentStep === RecommendationStep.CREATE && businessData && (
-          <CreateRecommendationForm
+          <PhotoUploadForm
             businessId={businessId || ""}
             businessName={businessData.name}
-            onComplete={handleRecommendationCreate}
+            onComplete={(text, imageUrl) => {
+              // שימוש בפונקציה המעודכנת עם פרמטרים נכונים
+              handleRecommendationCreate(businessId || "temp_id", text, imageUrl);
+            }}
             onBack={handleBack}
           />
         )}

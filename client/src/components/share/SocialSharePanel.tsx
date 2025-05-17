@@ -119,31 +119,20 @@ export function SocialSharePanel({
       
       <div className="w-full space-y-3 mb-6">
         <Button 
-          className="w-full bg-[#1877F2] hover:bg-[#166FE5] flex items-center justify-center" 
+          className="w-full bg-[#1877F2] hover:bg-[#166FE5] flex items-center justify-center py-6 text-lg" 
           onClick={handleFacebookShare}
           disabled={isSharing}
         >
-          <Share2 className="h-4 w-4 ml-2" />
+          <svg className="h-5 w-5 ml-2 fill-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+            <path d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z"/>
+          </svg>
           שתף בפייסבוק
         </Button>
         
-        <Button 
-          className="w-full bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#FCAF45] hover:opacity-90 flex items-center justify-center" 
-          onClick={handleInstagramShare}
-          disabled={isSharing}
-        >
-          <Share2 className="h-4 w-4 ml-2" />
-          שתף באינסטגרם
-        </Button>
-        
-        <Button 
-          className="w-full bg-[#1DA1F2] hover:bg-[#1A94DA] flex items-center justify-center" 
-          onClick={handleTwitterShare}
-          disabled={isSharing}
-        >
-          <Share2 className="h-4 w-4 ml-2" />
-          שתף בטוויטר
-        </Button>
+        <div className="mt-4 text-sm text-gray-500 text-center">
+          השיתוף יכלול את התמונה והטקסט שהעלית, וכן קישור ייחודי להמלצה שלך.
+          כל מי שילחץ על הקישור יוכל לראות את ההמלצה ולשמור אותה.
+        </div>
       </div>
       
       <div className="flex justify-between w-full mt-4">
