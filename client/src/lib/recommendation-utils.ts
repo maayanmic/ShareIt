@@ -46,7 +46,9 @@ export async function createAndSaveRecommendation(data: {
   // שמירה במסד הנתונים
   const savedRecommendation = await createRecommendation(recommendationData);
   
-  // יצירת קישור ייחודי להמלצה
+  console.log("המלצה נשמרה בהצלחה:", savedRecommendation);
+  
+  // יצירת קישור ייחודי להמלצה - עכשיו משתמשים בשדה id שיצרנו
   const recommendationLink = generateRecommendationLink(savedRecommendation.id);
   
   return {
