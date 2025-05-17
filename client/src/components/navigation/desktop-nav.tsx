@@ -42,10 +42,10 @@ export default function DesktopNav() {
 
   return (
     <nav className="hidden md:flex fixed top-0 left-0 right-0 h-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 z-30 shadow-sm px-4">
-      <div className="container mx-auto flex items-center justify-between">
+      <div className="container mx-auto flex flex-col items-center justify-center">
         {/* Logo */}
         <Link href="/">
-          <div className="flex items-center space-x-2 text-primary-500 cursor-pointer">
+          <div className="flex items-center space-x-2 text-primary-500 cursor-pointer mb-1">
             {logoUrl ? (
               <img 
                 src={logoUrl} 
@@ -66,14 +66,14 @@ export default function DesktopNav() {
           </div>
         </Link>
 
-        {/* Desktop Navigation Links */}
-        <div className="flex items-center space-x-8">
+        {/* Desktop Navigation Links - Centered */}
+        <div className="flex items-center space-x-16 mx-auto">
           {navItems.map((item) => (
             <Link key={item.href} href={item.href}>
               <span
-                className={`text-gray-700 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-500 font-medium cursor-pointer px-3 py-2 ${
+                className={`text-gray-700 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-500 font-medium cursor-pointer px-4 py-1 text-lg ${
                   location === item.href
-                    ? "text-primary-600 dark:text-primary-500 font-bold"
+                    ? "text-primary-600 dark:text-primary-500 font-bold border-b-2 border-primary-500"
                     : ""
                 }`}
               >
@@ -84,7 +84,7 @@ export default function DesktopNav() {
         </div>
 
         {/* Right side controls */}
-        <div className="flex items-center space-x-4">
+        <div className="absolute right-4 top-0 h-16 flex items-center space-x-4">
           <ThemeToggle variant="ghost" size="icon" />
 
           {user ? (
