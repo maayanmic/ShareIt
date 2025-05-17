@@ -78,16 +78,16 @@ export default function SavedOffers() {
         <Card className="w-full max-w-md">
           <CardContent className="pt-6 text-center">
             <Info className="h-16 w-16 text-primary-500 mx-auto mb-4" />
-            <h1 className="text-2xl font-bold mb-4">Login Required</h1>
+            <h1 className="text-2xl font-bold mb-4">נדרשת התחברות</h1>
             <p className="text-gray-500 dark:text-gray-400 mb-6">
-              You need to be logged in to view your saved offers.
+              עליך להתחבר כדי לצפות בהצעות השמורות שלך.
             </p>
             <div className="flex justify-center space-x-4">
               <Button asChild>
-                <Link href="/login">Log In</Link>
+                <Link href="/login">התחבר</Link>
               </Button>
               <Button variant="outline" asChild>
-                <Link href="/register">Register</Link>
+                <Link href="/register">הרשם</Link>
               </Button>
             </div>
           </CardContent>
@@ -98,16 +98,16 @@ export default function SavedOffers() {
 
   return (
     <div className="container max-w-5xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Your Saved Offers</h1>
+      <h1 className="text-2xl font-bold mb-6">ההצעות השמורות שלך</h1>
       
       <Tabs defaultValue="available" onValueChange={setActiveTab}>
         <div className="flex justify-between items-center mb-4">
           <TabsList>
             <TabsTrigger value="available">
-              Available Offers ({availableOffers.length})
+              הצעות זמינות ({availableOffers.length})
             </TabsTrigger>
             <TabsTrigger value="claimed">
-              Claimed History ({claimedOffers.length})
+              היסטוריית מימוש ({claimedOffers.length})
             </TabsTrigger>
           </TabsList>
         </div>
@@ -172,7 +172,7 @@ export default function SavedOffers() {
                         
                         <div className="flex items-center mt-2 text-xs text-gray-500 dark:text-gray-400">
                           <Clock className="h-4 w-4 mr-1" />
-                          <span>Valid until {offer.recommendation?.validUntil || "N/A"}</span>
+                          <span>בתוקף עד {offer.recommendation?.validUntil || "לא זמין"}</span>
                         </div>
                         
                         <div className="flex items-center mt-3">
@@ -198,7 +198,7 @@ export default function SavedOffers() {
                             onClick={() => handleClaimOffer(offer.id, offer.recommendation?.recommenderId || "")}
                             className="bg-primary-500 hover:bg-primary-600"
                           >
-                            Use this Offer
+                            מימוש ההצעה
                           </Button>
                         </div>
                       </div>
