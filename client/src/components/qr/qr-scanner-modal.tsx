@@ -273,37 +273,6 @@ export const QRScannerProvider: React.FC<{ children: React.ReactNode }> = ({ chi
                 סרוק את קוד ה-QR בעסק כדי להתחיל את ההמלצה שלך
               </p>
             </div>
-            <div className="p-4 bg-gray-50 dark:bg-gray-700 flex justify-end">
-              <Button 
-                variant="outline" 
-                className="mx-2"
-                onClick={closeScanner}
-              >
-                ביטול
-              </Button>
-              <Button
-                className="flex items-center"
-                onClick={() => document.getElementById('qr-file-input')?.click()}
-              >
-                <Upload className="h-4 w-4 ml-2" />
-                העלה תמונה
-                <input 
-                  type="file" 
-                  id="qr-file-input" 
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleFileUpload}
-                />
-              </Button>
-              <Button 
-                variant="default" 
-                className="mx-2"
-                onClick={simulateScan}
-              >
-                <Camera className="h-4 w-4 ml-2" />
-                מצלמה
-              </Button>
-            </div>
           </div>
         </div>
       )}
