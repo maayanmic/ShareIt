@@ -240,9 +240,15 @@ export const getBusinessById = async (businessId: string) => {
 // פונקציה ליצירת עסקי דוגמה
 const createSampleBusinesses = async () => {
   try {
+    console.log("מנסה ליצור Collection של עסקי דוגמה בפיירבייס");
+    
     // בדוק אם יש כבר עסקים ב-collection
     const businessesCollection = collection(db, "businesses");
+    console.log("מנסה לגשת לקולקשן businesses במסד הנתונים", db);
+    
     const businessesSnapshot = await getDocs(businessesCollection);
+    console.log("תוצאת בדיקת קולקשן businesses:", 
+                businessesSnapshot.empty ? "ריק - צריך ליצור עסקי דוגמה" : "כבר קיים - מכיל נתונים");
     
     if (!businessesSnapshot.empty) {
       console.log("Businesses collection already has data, skipping sample creation");
@@ -338,15 +344,24 @@ const createSampleBusinesses = async () => {
     ];
     
     // הוסף את העסקים לדאטהבייס
+    console.log("מתחיל להוסיף עסקי דוגמה לפיירבייס...");
+    
     for (const business of sampleBusinesses) {
-      // יצירת עסק עם מזהה מוגדר מראש
-      await setDoc(doc(db, "businesses", business.id), {
-        ...business
-      });
-      console.log(`Created sample business: ${business.name}`);
+      try {
+        console.log(`מנסה ליצור עסק: ${business.name} עם מזהה: ${business.id}`);
+        
+        // יצירת עסק עם מזהה מוגדר מראש
+        await setDoc(doc(db, "businesses", business.id), {
+          ...business
+        });
+        
+        console.log(`נוצר בהצלחה עסק לדוגמה: ${business.name}`);
+      } catch (error) {
+        console.error(`שגיאה ביצירת עסק ${business.name}:`, error);
+      }
     }
     
-    console.log("Sample businesses created successfully");
+    console.log("תהליך יצירת עסקי דוגמה הושלם");
   } catch (error) {
     console.error("Error creating sample businesses: ", error);
   }

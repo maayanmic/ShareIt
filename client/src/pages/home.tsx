@@ -3,13 +3,17 @@ import WelcomeBanner from "@/components/home/welcome-banner";
 import RecommendationCard from "@/components/recommendation/recommendation-card";
 import CreateRecommendation from "@/components/recommendation/create-recommendation";
 import DigitalWallet from "@/components/wallet/digital-wallet";
-import { getRecommendations } from "@/lib/firebase";
+import { getRecommendations, getBusinessById, getBusinesses } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Home() {
   const [recommendations, setRecommendations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'recent' | 'popular'>('recent');
+  const [checkingFirebase, setCheckingFirebase] = useState(false);
+  const [firebaseStatus, setFirebaseStatus] = useState<string | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchRecommendations = async () => {
