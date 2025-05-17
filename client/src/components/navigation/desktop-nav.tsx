@@ -71,9 +71,9 @@ export default function DesktopNav() {
           {navItems.map((item) => (
             <Link key={item.href} href={item.href}>
               <span
-                className={`text-gray-700 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-500 font-medium cursor-pointer ${
+                className={`text-gray-700 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-500 font-medium cursor-pointer px-3 py-2 ${
                   location === item.href
-                    ? "text-primary-600 dark:text-primary-500"
+                    ? "text-primary-600 dark:text-primary-500 font-bold"
                     : ""
                 }`}
               >
