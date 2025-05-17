@@ -59,7 +59,10 @@ export default function DesktopNav() {
                 clipRule="evenodd"
               />
             </svg>
-            <span className="text-xl font-semibold mr-2">שייר-איט</span>
+            <div className="flex items-center">
+              <img src="https://via.placeholder.com/40x40?text=SI" alt="ShareIt Logo" className="w-8 h-8 mr-2" />
+              <span className="text-xl font-semibold mr-2">ShareIt</span>
+            </div>
           </div>
         </Link>
 
