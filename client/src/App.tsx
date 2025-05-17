@@ -56,6 +56,9 @@ function Router() {
       <Route path="/business/:businessId">
         {user ? <BusinessPage /> : <Login />}
       </Route>
+      <Route path="/business/:businessId/scan">
+        {user ? <ScannedBusiness /> : <Login />}
+      </Route>
       <Route path="/users">
         {user ? <Users /> : <Login />}
       </Route>
