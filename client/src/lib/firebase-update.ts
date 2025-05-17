@@ -1,3 +1,32 @@
+import { 
+  getFirestore, 
+  collection, 
+  doc, 
+  getDoc, 
+  getDocs, 
+  query, 
+  where,
+  updateDoc,
+  addDoc,
+  serverTimestamp
+} from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+import { initializeApp } from "firebase/app";
+
+// Use the same Firebase configuration as in firebase.ts
+const firebaseConfig = {
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "placeholder-api-key",
+  authDomain: `${import.meta.env.VITE_FIREBASE_PROJECT_ID || "placeholder-project"}.firebaseapp.com`,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "placeholder-project",
+  storageBucket: `${import.meta.env.VITE_FIREBASE_PROJECT_ID || "placeholder-project"}.appspot.com`,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "placeholder-messaging-id",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "placeholder-app-id"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
 // פונקציות לעבודה עם משתמשים וחיבורים
 export const getUsers = async () => {
   try {
@@ -55,7 +84,7 @@ export const getUserRating = async (userId: string) => {
   try {
     // הבא את כל ההמלצות של המשתמש
     const recommendationsRef = collection(db, "recommendations");
-    const q = query(recommendationsRef, where("recommenderId", "==", userId));
+    const q = query(recommendationsRef, where("userId", "==", userId));
     const querySnapshot = await getDocs(q);
     
     if (querySnapshot.empty) {

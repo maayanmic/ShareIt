@@ -18,6 +18,7 @@ interface AuthUser extends User {
   savedOffers?: number;
   role?: string;
   isAdmin?: boolean;
+  connections?: string[];
 }
 
 interface AuthContextType {
