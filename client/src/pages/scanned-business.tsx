@@ -80,22 +80,22 @@ export default function ScannedBusiness() {
     try {
       setIsLoading(true);
       
-      if (!business) {
+      if (!businessData) {
         throw new Error("פרטי העסק אינם זמינים");
       }
       
       // יצירת אובייקט המלצה מלא עם כל הפרטים הנדרשים
       const recommendationData = {
         businessId,
-        businessName: business.name || "",
-        businessImage: business.image || "",
+        businessName: businessData.name || "",
+        businessImage: businessData.image || "",
         text,
         imageUrl,
         userId: user?.uid || "anonymous",
         userName: user?.displayName || "משתמש אנונימי",
         userPhotoURL: user?.photoURL || "",
         rating: 5,  // דירוג ברירת מחדל
-        discount: business.discount || "10% הנחה",
+        discount: businessData.discount || "10% הנחה",
         savedCount: 0,
         createdAt: new Date().toISOString()
       };
@@ -122,15 +122,18 @@ export default function ScannedBusiness() {
       }
       
       // שמירת מידע ההמלצה המלא במצב האפליקציה
-      setRecommendation({
-        id: savedRecommendation.id,
+      const recommendationObject = {
+        id: typeof savedRecommendation === 'object' && savedRecommendation.id ? savedRecommendation.id : `rec_${Date.now()}`,
         text,
-        imageUrl,
-        fullData: savedRecommendation  // שמירת כל הנתונים לשימוש עתידי
-      });
+        imageUrl
+      };
+      
+      setRecommendation(recommendationObject);
       
       // יצירת לינק ייחודי להמלצה
-      const recommLink = window.location.origin + "/recommendation/" + savedRecommendation.id;
+      const recommId = typeof savedRecommendation === 'object' && savedRecommendation.id ? 
+        savedRecommendation.id : recommendationObject.id;
+      const recommLink = window.location.origin + "/recommendation/" + recommId;
       console.log("נוצר קישור ייחודי להמלצה:", recommLink);
       
       // מעבר לשלב השיתוף
