@@ -90,6 +90,34 @@ export function SocialSharePanel({
       <p className="text-gray-600 mb-6">שתף את ההמלצה ברשתות החברתיות</p>
       
       <div className="w-full space-y-3 mb-6">
+        {/* הצגת הקישור הייחודי להמלצה */}
+        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-4">
+          <p className="text-sm font-semibold mb-2">הקישור הייחודי להמלצה שלך:</p>
+          <div className="flex items-center justify-between bg-white border border-gray-300 rounded-md p-2">
+            <div className="truncate text-sm text-gray-600 text-left" dir="ltr">
+              {getShareUrl()}
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="ml-2"
+              onClick={() => {
+                navigator.clipboard.writeText(getShareUrl());
+                toast({
+                  title: "הקישור הועתק",
+                  description: "הקישור הועתק ללוח. כעת תוכל להדביק אותו בכל מקום.",
+                });
+              }}
+            >
+              העתק
+            </Button>
+          </div>
+          <p className="text-xs text-gray-500 mt-2">
+            הקישור הזה ייחודי להמלצה שהעלית לפלטפורמה ויוביל ישירות אליה
+          </p>
+        </div>
+
+        {/* כפתורי השיתוף */}
         <Button 
           className="w-full bg-[#1877F2] hover:bg-[#166FE5] flex items-center justify-center py-6 text-lg" 
           onClick={handleFacebookShare}
