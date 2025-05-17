@@ -182,7 +182,7 @@ export default function BusinessPage() {
             </div>
           </div>
           
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md mb-6">
             <h2 className="text-xl font-semibold mb-4">הצע המלצה</h2>
             <Button 
               className="w-full"
@@ -191,6 +191,21 @@ export default function BusinessPage() {
               <QrCode className="h-4 w-4 ml-2" />
               סרוק QR ליצירת המלצה
             </Button>
+          </div>
+          
+          {/* כפתור אדום זמני שיוסר בהמשך */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
+            <h2 className="text-xl font-semibold mb-4">שתף המלצה לעסק זה</h2>
+            <Button 
+              className="w-full bg-red-600 hover:bg-red-700"
+              onClick={() => setLocation(`/business/${businessId}/scan`)}
+            >
+              <Share2 className="h-4 w-4 ml-2" />
+              שתף המלצה (כפתור זמני)
+            </Button>
+            <p className="text-xs text-gray-500 mt-2 text-center">
+              כפתור זה ישמש לבדיקות בלבד ויוסר בגרסה הסופית
+            </p>
           </div>
         </div>
       </div>
