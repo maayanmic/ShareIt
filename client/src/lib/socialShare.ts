@@ -2,34 +2,76 @@
 
 // שיתוף בפייסבוק
 export function shareToFacebook(recommendationUrl: string, description?: string, imageUrl?: string) {
-  // וודא שפונקציית FB קיימת (Facebook SDK נטען)
-  if (typeof window.FB === 'undefined') {
-    console.error('Facebook SDK לא נטען. לא ניתן לשתף.');
-    return Promise.reject(new Error('Facebook SDK לא נטען.'));
-  }
-
+  // נבנה את הקישור לשיתוף בפייסבוק עם פרמטרים
+  // זה ישתמש ב-Facebook Share Dialog בלי צורך ב-SDK מלא
   return new Promise((resolve, reject) => {
-    // הכן את האובייקט לשיתוף
-    const shareObject: any = {
-      method: 'share',
-      href: recommendationUrl,
-    };
+    try {
+      // יוצרים URL לדיאלוג השיתוף
+      const facebookShareUrl = new URL('https://www.facebook.com/dialog/share');
+      
+      // אם Facebook SDK זמין, נשתמש בו
+      if (typeof window.FB !== 'undefined') {
+        const shareObject: any = {
+          method: 'share',
+          href: recommendationUrl,
+        };
 
-    // הוסף תיאור אם קיים
-    if (description) {
-      shareObject.quote = description;
-    }
+        // הוסף תיאור אם קיים
+        if (description) {
+          shareObject.quote = description;
+        }
 
-    // פתח את דיאלוג השיתוף של פייסבוק
-    window.FB.ui(shareObject, (response: any) => {
-      if (response && !response.error_message) {
-        console.log('שיתוף בפייסבוק הושלם בהצלחה!', response);
-        resolve(response);
-      } else {
-        console.error('שגיאה בשיתוף:', response?.error_message || 'לא ידוע');
-        reject(new Error(response?.error_message || 'שגיאה בשיתוף לפייסבוק'));
+        // פתח את דיאלוג השיתוף של פייסבוק
+        window.FB.ui(shareObject, (response: any) => {
+          if (response && !response.error_message) {
+            console.log('שיתוף בפייסבוק הושלם בהצלחה!', response);
+            resolve(response);
+          } else if (response === undefined) {
+            // המשתמש סגר את חלון השיתוף
+            resolve({ shared: false, platform: 'facebook', reason: 'user_cancelled' });
+          } else {
+            console.error('שגיאה בשיתוף:', response?.error_message || 'לא ידוע');
+            reject(new Error(response?.error_message || 'שגיאה בשיתוף לפייסבוק'));
+          }
+        });
+        return;
       }
-    });
+      
+      // אם Facebook SDK לא זמין, נשתמש בקישור ישיר לדיאלוג השיתוף
+      facebookShareUrl.searchParams.append('app_id', '1234567890'); // יש להחליף למזהה האפליקציה האמיתי
+      facebookShareUrl.searchParams.append('href', recommendationUrl);
+      facebookShareUrl.searchParams.append('display', 'popup');
+      
+      if (description) {
+        facebookShareUrl.searchParams.append('quote', description);
+      }
+      
+      // פתח חלון חדש עם קישור השיתוף
+      const shareWindow = window.open(
+        facebookShareUrl.toString(),
+        'facebook-share-dialog',
+        'width=626,height=436'
+      );
+      
+      // נחכה קצת ונבדוק אם החלון נסגר
+      const checkWindowClosed = setInterval(() => {
+        if (shareWindow?.closed) {
+          clearInterval(checkWindowClosed);
+          resolve({ shared: true, platform: 'facebook' });
+        }
+      }, 1000);
+      
+      // נגדיר timeout למקרה שמשהו השתבש
+      setTimeout(() => {
+        clearInterval(checkWindowClosed);
+        if (!shareWindow?.closed) {
+          resolve({ shared: true, platform: 'facebook' });
+        }
+      }, 60000); // דקה אחת
+    } catch (error) {
+      console.error('שגיאה בפתיחת דיאלוג השיתוף:', error);
+      reject(error);
+    }
   });
 }
 
