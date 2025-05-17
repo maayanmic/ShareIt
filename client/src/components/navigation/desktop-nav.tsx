@@ -83,8 +83,8 @@ export default function DesktopNav() {
           ))}
         </div>
 
-        {/* Right side controls */}
-        <div className="absolute right-4 top-0 h-16 flex items-center space-x-4">
+        {/* Left side controls - moved from right */}
+        <div className="absolute left-4 top-0 h-16 flex items-center space-x-4">
           <ThemeToggle variant="ghost" size="icon" />
 
           {user ? (
