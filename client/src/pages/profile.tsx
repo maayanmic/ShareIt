@@ -25,19 +25,31 @@ export default function Profile() {
   const { toast } = useToast();
   const [recommendations, setRecommendations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUserRecommendations = async () => {
       if (!user) return;
 
       try {
+        console.log("Fetching recommendations for user:", user.uid);
+        setError(null);
         const data = await getUserRecommendations(user.uid);
-        setRecommendations(data);
+        console.log("Received recommendations data:", data);
+        
+        if (Array.isArray(data)) {
+          setRecommendations(data);
+        } else {
+          console.error("Unexpected data format:", data);
+          setRecommendations([]);
+          setError("התקבל פורמט נתונים לא צפוי");
+        }
       } catch (error) {
         console.error("Error fetching user recommendations:", error);
+        setError("שגיאה בטעינת ההמלצות שלך");
         toast({
-          title: "Error",
-          description: "Failed to load your recommendations. Please try again.",
+          title: "שגיאה בטעינת המלצות",
+          description: "לא ניתן לטעון את ההמלצות שלך. אנא נסה שוב מאוחר יותר.",
           variant: "destructive",
         });
       } finally {
@@ -173,6 +185,45 @@ export default function Profile() {
                 </div>
               ))}
             </div>
+          ) : error ? (
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-8 text-center">
+              <div className="flex flex-col items-center">
+                <svg
+                  className="h-20 w-20 text-red-400 dark:text-red-600 mb-4"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <h3 className="text-lg font-semibold mb-2">שגיאה בטעינת המלצות</h3>
+                <p className="text-gray-500 dark:text-gray-400 max-w-md mb-6">
+                  {error}
+                </p>
+                <div className="flex space-x-4">
+                  <Button
+                    onClick={() => window.location.reload()}
+                    variant="outline"
+                  >
+                    נסה שוב
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      const { openScanner } = require("@/components/qr/qr-scanner-modal");
+                      openScanner();
+                    }}
+                  >
+                    סרוק QR ליצירת המלצה
+                  </Button>
+                </div>
+              </div>
+            </div>
           ) : recommendations.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {recommendations.map((recommendation) => (
@@ -182,12 +233,12 @@ export default function Profile() {
                   businessName={recommendation.businessName}
                   businessImage={recommendation.imageUrl || "https://images.unsplash.com/photo-1555396273-367ea4eb4db5"}
                   description={recommendation.description}
-                  discount={recommendation.discount || "10% OFF"}
+                  discount={recommendation.discount || "10% הנחה"}
                   rating={recommendation.rating || 4}
-                  recommenderName={recommendation.userDisplayName || user.displayName}
-                  recommenderPhoto={recommendation.userPhotoURL || user.photoURL}
-                  recommenderId={recommendation.userId}
-                  validUntil={recommendation.validUntil || "N/A"}
+                  recommenderName={recommendation.userDisplayName || user.displayName || "משתמש"}
+                  recommenderPhoto={recommendation.userPhotoURL || user.photoURL || ""}
+                  recommenderId={recommendation.userId || user?.uid || ""}
+                  validUntil={recommendation.validUntil || "ללא הגבלה"}
                   savedCount={recommendation.savedCount || 0}
                   saved={true}
                 />
@@ -210,9 +261,9 @@ export default function Profile() {
                     d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"
                   />
                 </svg>
-                <h3 className="text-lg font-semibold mb-2">No Recommendations Yet</h3>
+                <h3 className="text-lg font-semibold mb-2">אין לך המלצות עדיין</h3>
                 <p className="text-gray-500 dark:text-gray-400 max-w-md mb-6">
-                  You haven't created any recommendations yet. Start sharing your favorite businesses to earn rewards!
+                  עדיין לא יצרת המלצות. התחל לשתף את העסקים האהובים עליך כדי להרוויח פרסים!
                 </p>
                 <Button
                   onClick={() => {
@@ -220,7 +271,7 @@ export default function Profile() {
                     openScanner();
                   }}
                 >
-                  Scan QR & Create Your First Recommendation
+                  סרוק QR ויצור את ההמלצה הראשונה שלך
                 </Button>
               </div>
             </div>
