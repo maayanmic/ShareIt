@@ -34,10 +34,10 @@ export default function DesktopNav() {
   }, []);
 
   const navItems = [
-    { name: "בית", href: "/" },
-    { name: "בתי עסק", href: "/businesses" },
-    { name: "משתמשים", href: "/users" },
     { name: "הפרופיל שלי", href: "/profile" },
+    { name: "משתמשים", href: "/users" },
+    { name: "בתי עסק", href: "/businesses" },
+    { name: "בית", href: "/" },
   ];
 
   return (
