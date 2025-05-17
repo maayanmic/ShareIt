@@ -128,9 +128,16 @@ export default function DesktopNav() {
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col items-start">
-                      <span className="text-sm font-medium">
-                        {user.displayName}
-                      </span>
+                      <div className="flex items-center">
+                        <span className="text-sm font-medium">
+                          {user.displayName}
+                        </span>
+                        {user.isAdmin && (
+                          <span className="ml-2 px-1.5 py-0.5 bg-amber-100 text-amber-800 text-xs rounded-full">
+                            מנהל
+                          </span>
+                        )}
+                      </div>
                       <span className="text-xs text-gray-500 dark:text-gray-400">
                         @{user.displayName?.toLowerCase().replace(/\s+/g, "") || "user"}
                       </span>

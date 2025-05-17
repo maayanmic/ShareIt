@@ -77,6 +77,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             coins: userData?.coins || 0,
             referrals: userData?.referrals || 0,
             savedOffers: userData?.savedOffers || 0,
+            role: userData?.role || "user",
+            isAdmin: userData?.isAdmin || false
           };
           
           // שמירת משתמש בלוקל סטורג' להתמודדות עם ריענון דף
@@ -88,6 +90,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             coins: userData?.coins || 0,
             referrals: userData?.referrals || 0,
             savedOffers: userData?.savedOffers || 0,
+            role: userData?.role || "user",
+            isAdmin: userData?.isAdmin || false,
           };
           localStorage.setItem('authUser', JSON.stringify(userToStore));
           

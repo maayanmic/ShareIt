@@ -393,7 +393,14 @@ export const getUserData = async (userId: string) => {
   try {
     const userDoc = await getDoc(doc(db, "users", userId));
     if (userDoc.exists()) {
-      return userDoc.data();
+      const userData = userDoc.data();
+      
+      // הוספת דגל isAdmin לפי הרול
+      return {
+        ...userData,
+        // אם שדה ה-role מוגדר כ-admin, המשתמש הוא מנהל
+        isAdmin: userData.role === "admin"
+      };
     }
     return null;
   } catch (error) {
