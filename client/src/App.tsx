@@ -8,8 +8,7 @@ import Register from "@/pages/auth/register";
 import Recommendations from "@/pages/recommendations";
 import SavedOffers from "@/pages/saved-offers";
 import Profile from "@/pages/profile";
-import Portfolio from "@/pages/portfolio";
-import PortfolioDetail from "@/pages/portfolio-detail";
+
 import BusinessPage from "@/pages/business";
 import DesktopNav from "@/components/navigation/desktop-nav";
 import MobileNav from "@/components/navigation/mobile-nav";
@@ -51,12 +50,7 @@ function Router() {
       <Route path="/profile">
         {user ? <Profile /> : <Login />}
       </Route>
-      <Route path="/portfolio">
-        {user ? <Portfolio /> : <Login />}
-      </Route>
-      <Route path="/portfolio/:id">
-        {user ? <PortfolioDetail /> : <Login />}
-      </Route>
+
       <Route path="/business/:businessId">
         {user ? <BusinessPage /> : <Login />}
       </Route>
