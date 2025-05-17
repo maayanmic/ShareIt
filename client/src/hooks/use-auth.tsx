@@ -72,6 +72,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // Get user data from Firestore to append coins, referrals, etc.
         try {
           const userData = await getUserData(firebaseUser.uid);
+          // טיפול במקרה שהמשתמש קיים בפיירבייס אבל אין עבורו מסמך ב-Firestore
           const enhancedUser = {
             ...firebaseUser,
             coins: userData?.coins || 0,
