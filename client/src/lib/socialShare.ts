@@ -38,7 +38,7 @@ export function shareToFacebook(recommendationUrl: string, description?: string,
       }
       
       // אם Facebook SDK לא זמין, נשתמש בקישור ישיר לדיאלוג השיתוף
-      facebookShareUrl.searchParams.append('app_id', '1234567890'); // יש להחליף למזהה האפליקציה האמיתי
+      facebookShareUrl.searchParams.append('app_id', '1408603290182678');
       facebookShareUrl.searchParams.append('href', recommendationUrl);
       facebookShareUrl.searchParams.append('display', 'popup');
       
