@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
 import { shareToFacebook, shareToTwitter, shareToInstagram } from "@/lib/socialShare";
 
 interface SocialSharePanelProps {
@@ -22,12 +23,14 @@ export function SocialSharePanel({
   onComplete
 }: SocialSharePanelProps) {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [isSharing, setIsSharing] = useState(false);
   
-  // יצירת URL לשיתוף
+  // יצירת URL לשיתוף עם מזהה ייחודי של היוצר
   const getShareUrl = () => {
     const baseUrl = window.location.origin;
-    return `${baseUrl}/recommendation/${recommendationId}`;
+    // הוספת מזהה המשתמש היוצר כפרמטר לקישור
+    return `${baseUrl}/recommendation/${recommendationId}?referrer=${user?.uid || ""}`;
   };
   
   // פונקציה לטיפול בשיתוף בפייסבוק
