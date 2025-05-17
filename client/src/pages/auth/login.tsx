@@ -44,6 +44,8 @@ export default function Login() {
     setIsLoading(true);
     try {
       await login(data.email, data.password);
+      console.log("Login successful, redirecting to home");
+      // לא צריך להפנות ידנית - הניתוב באפליקציה יטפל בזה כאשר ה-user משתנה
     } catch (error) {
       console.error("Login failed", error);
     } finally {

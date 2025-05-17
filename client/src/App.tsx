@@ -20,27 +20,7 @@ import { useLocation } from "wouter";
 import { handleAuthRedirect } from "@/lib/firebase";
 
 function Router() {
-  return (
-    <Switch>
-      <Route path="/login" component={Login} />
-      <Route path="/register" component={Register} />
-      <Route path="/" component={AuthenticatedRoutes} />
-      <Route component={Login} /> {/* משתמשים לא מחוברים מופנים לדף התחברות */}
-    </Switch>
-  );
-}
-
-// רכיב ניתוב עבור משתמשים מחוברים בלבד
-function AuthenticatedRoutes() {
   const { user, loading } = useAuth();
-  const [, setLocation] = useLocation();
-  
-  // שימוש ב-useEffect להפניית משתמש לא מחובר לדף התחברות
-  useEffect(() => {
-    if (!loading && !user) {
-      setLocation("/login");
-    }
-  }, [user, loading, setLocation]);
   
   // אם עדיין טוען את מצב המשתמש, נציג מסך טעינה
   if (loading) {
@@ -51,25 +31,43 @@ function AuthenticatedRoutes() {
     );
   }
   
-  // אם המשתמש לא מחובר, הצג תוכן ריק עד להפניה
-  if (!user) {
-    return null;
-  }
-  
-  // אם המשתמש מחובר, הצג את הנתיבים המאובטחים
   return (
     <Switch>
-      <Route path="/" component={Home} />
-      <Route path="/recommendations" component={Recommendations} />
-      <Route path="/saved-offers" component={SavedOffers} />
-      <Route path="/profile" component={Profile} />
-      <Route path="/portfolio" component={Portfolio} />
-      <Route path="/portfolio/:id" component={PortfolioDetail} />
-      <Route path="/business/:businessId" component={BusinessPage} />
-      <Route component={NotFound} />
+      <Route path="/login">
+        {user ? <Home /> : <Login />}
+      </Route>
+      <Route path="/register">
+        {user ? <Home /> : <Register />}
+      </Route>
+      <Route path="/">
+        {user ? <Home /> : <Login />}
+      </Route>
+      <Route path="/recommendations">
+        {user ? <Recommendations /> : <Login />}
+      </Route>
+      <Route path="/saved-offers">
+        {user ? <SavedOffers /> : <Login />}
+      </Route>
+      <Route path="/profile">
+        {user ? <Profile /> : <Login />}
+      </Route>
+      <Route path="/portfolio">
+        {user ? <Portfolio /> : <Login />}
+      </Route>
+      <Route path="/portfolio/:id">
+        {user ? <PortfolioDetail /> : <Login />}
+      </Route>
+      <Route path="/business/:businessId">
+        {user ? <BusinessPage /> : <Login />}
+      </Route>
+      <Route>
+        {user ? <NotFound /> : <Login />}
+      </Route>
     </Switch>
   );
 }
+
+// נוטרל - עכשיו זה מטופל ישירות בניתוב הראשי
 
 function App() {
   // Handle authentication redirects
