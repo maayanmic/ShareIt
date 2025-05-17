@@ -31,7 +31,7 @@ export default function MobileNav() {
         </Link>
         
         <button 
-          className="flex flex-col items-center justify-center bg-primary-500 rounded-full h-14 w-14 mx-auto -mt-5 text-white shadow-lg"
+          className="flex flex-col items-center justify-center bg-primary-500 rounded-full h-14 w-14 mx-auto -mt-2 text-white shadow-lg"
           onClick={handleScanClick}
           type="button"
         >
