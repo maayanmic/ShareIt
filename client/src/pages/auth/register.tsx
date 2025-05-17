@@ -118,10 +118,11 @@ export default function Register() {
               </svg>
               Google
             </Button>
-            <Button variant="outline" className="w-full" onClick={handleFacebookLogin} disabled={isLoading}>
+            {/* כפתור פייסבוק מוסתר זמנית עד תיקון הבעיה עם הגדרות הפייסבוק */}
+            {/* <Button variant="outline" className="w-full" onClick={handleFacebookLogin} disabled={isLoading}>
               <Facebook className="h-5 w-5 mr-2 text-blue-600" />
               Facebook
-            </Button>
+            </Button> */}
           </div>
 
           <div className="flex items-center">
