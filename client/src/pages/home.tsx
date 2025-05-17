@@ -6,17 +6,31 @@ import DigitalWallet from "@/components/wallet/digital-wallet";
 import { getRecommendations, getBusinessById, getBusinesses } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
+import { Link } from "wouter";
+import { UserPlus } from "lucide-react";
 
 export default function Home() {
   const [recommendations, setRecommendations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<'recent' | 'popular'>('recent');
+  const [hasConnections, setHasConnections] = useState(false);
 
   const { toast } = useToast();
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchRecommendations = async () => {
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+      
       try {
+        // בדוק אם יש למשתמש חיבורים
+        const userConnections = user.connections || [];
+        setHasConnections(userConnections.length > 0);
+        
+        // טען את ההמלצות מהמערכת
         const data = await getRecommendations(10);
         setRecommendations(data);
       } catch (error) {
@@ -27,7 +41,7 @@ export default function Home() {
     };
 
     fetchRecommendations();
-  }, []);
+  }, [user]);
 
   // Sample data for when no actual data is available yet
   const sampleRecommendations = [
@@ -73,11 +87,6 @@ export default function Home() {
   ];
 
   const displayRecommendations = recommendations.length > 0 ? recommendations : sampleRecommendations;
-
-  const filteredRecommendations = 
-    filter === 'popular' 
-      ? [...displayRecommendations].sort((a, b) => b.savedCount - a.savedCount)
-      : displayRecommendations;
 
   return (
     <div className="flex flex-col space-y-6">
