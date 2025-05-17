@@ -133,7 +133,7 @@ export default function RecommendationCard({
           <div className="flex items-center mt-4">
             <Avatar className="h-6 w-6">
               <AvatarImage src={recommenderPhoto} alt={recommenderName} />
-              <AvatarFallback>{recommenderName.charAt(0)}</AvatarFallback>
+              <AvatarFallback>{recommenderName && recommenderName.charAt(0) || '?'}</AvatarFallback>
             </Avatar>
             <span className="text-xs text-gray-500 dark:text-gray-400 mr-2">
               הומלץ על-ידי <span className="font-medium text-gray-700 dark:text-gray-300">{recommenderName}</span>
