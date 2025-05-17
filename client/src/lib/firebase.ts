@@ -287,23 +287,56 @@ export const signInWithFacebook = async () => {
     facebookProvider.addScope('email');
     facebookProvider.addScope('public_profile');
     
-    // פתרון עבור בעיית ה-sessionStorage במובייל
-    // הגדר מצב אימות זמני לפני הפניה
-    const currentUrl = window.location.href;
-    // שמור מידע בלוקל סטורג' לפני הפניה
-    localStorage.setItem('fbAuthInProgress', 'true');
-    localStorage.setItem('fbAuthRedirectUrl', currentUrl);
+    // זיהוי אם המשתמש במובייל או בדסקטופ
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     
-    console.log("מתחיל תהליך התחברות פייסבוק, שומר מצב מקומי...");
+    console.log(`מתחיל תהליך התחברות פייסבוק במכשיר ${isMobile ? 'נייד' : 'דסקטופ'}...`);
     
-    // תמיד נשתמש בשיטת redirect שעובדת טוב יותר בכל הפלטפורמות
-    await signInWithPopup(auth, facebookProvider);
-    // הפונקציה הזו תחזיר null והמשתמש יועבר לדף פייסבוק
-    // כאשר יחזור, handleAuthRedirect יטפל בתוצאה
-    return null;
+    // שימוש בשיטות שונות בהתאם לסוג המכשיר
+    if (isMobile) {
+      // במובייל - שימוש בredirect עם הגדרות מיוחדות
+      facebookProvider.setCustomParameters({
+        // פרמטרים מיוחדים לפייסבוק במובייל
+        display: 'touch',
+        auth_type: 'rerequest',
+        prompt: 'select_account'
+      });
+      
+      // שמירת מצב בלוקל סטורג' לפני הפניה
+      localStorage.setItem('fbAuthInProgress', 'true');
+      localStorage.setItem('fbAuthRedirectUrl', window.location.href);
+      
+      // שימוש בהפניה במובייל
+      await signInWithRedirect(auth, facebookProvider);
+      return null;
+    } else {
+      // במחשב - שימוש בפופאפ רגיל
+      const result = await signInWithPopup(auth, facebookProvider);
+      const user = result.user;
+      
+      // טיפול בפרופיל משתמש בפיירסטור
+      const userRef = doc(db, "users", user.uid);
+      const userSnap = await getDoc(userRef);
+      
+      if (!userSnap.exists()) {
+        await setDoc(userRef, {
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          photoURL: user.photoURL,
+          role: "user",
+          coins: 0,
+          referrals: 0,
+          savedOffers: 0,
+          createdAt: serverTimestamp()
+        });
+      }
+      
+      return user;
+    }
   } catch (error) {
-    console.error("Error signing in with Facebook: ", error);
-    // נקה את המצב הזמני במקרה של שגיאה
+    console.error("שגיאת התחברות פייסבוק: ", error);
+    // נקה מצב במקרה של שגיאה
     localStorage.removeItem('fbAuthInProgress');
     localStorage.removeItem('fbAuthRedirectUrl');
     throw error;
