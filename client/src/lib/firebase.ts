@@ -206,6 +206,152 @@ export const getBusinesses = async () => {
   }
 };
 
+export const getBusinessById = async (businessId: string) => {
+  try {
+    // תחילה, נסה לקבל את העסק מה-collection של businesses
+    const businessDoc = await getDoc(doc(db, "businesses", businessId));
+    
+    if (businessDoc.exists()) {
+      return { id: businessDoc.id, ...businessDoc.data() };
+    }
+    
+    // אם העסק לא נמצא, נבדוק אם יש לנו עסקים כלשהם ב-collection
+    const businessesCollection = collection(db, "businesses");
+    const businessesSnapshot = await getDocs(businessesCollection);
+    
+    if (businessesSnapshot.empty) {
+      // אם אין בכלל עסקים, ננסה ליצור כמה עסקי דוגמה לצורכי פיתוח
+      await createSampleBusinesses();
+      
+      // ננסה שוב לקבל את העסק
+      const refreshedDoc = await getDoc(doc(db, "businesses", businessId));
+      if (refreshedDoc.exists()) {
+        return { id: refreshedDoc.id, ...refreshedDoc.data() };
+      }
+    }
+    
+    return null;
+  } catch (error) {
+    console.error("Error getting business by ID: ", error);
+    throw error;
+  }
+};
+
+// פונקציה ליצירת עסקי דוגמה
+const createSampleBusinesses = async () => {
+  try {
+    // בדוק אם יש כבר עסקים ב-collection
+    const businessesCollection = collection(db, "businesses");
+    const businessesSnapshot = await getDocs(businessesCollection);
+    
+    if (!businessesSnapshot.empty) {
+      console.log("Businesses collection already has data, skipping sample creation");
+      return;
+    }
+    
+    // עסקי דוגמה
+    const sampleBusinesses = [
+      {
+        id: "coffee",
+        name: "קפה טוב",
+        category: "בתי קפה",
+        description: "בית קפה איכותי עם מבחר עשיר של קפה, מאפים וארוחות בוקר. האווירה נעימה ומתאימה ללימודים, פגישות עבודה או סתם לבלות עם חברים.",
+        address: "רחוב הרצל 123, תל אביב",
+        phone: "03-1234567",
+        website: "https://example.com/coffeegood",
+        images: [
+          "https://images.unsplash.com/photo-1559925393-8be0ec4767c8?q=80&w=1000&auto=format&fit=crop",
+          "https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=1000&auto=format&fit=crop"
+        ],
+        discount: "10% הנחה על כל התפריט",
+        hours: "א'-ה' 07:00-22:00, ו' 08:00-16:00, שבת סגור",
+        ratings: 4.5,
+        reviews: [
+          {
+            id: "review1",
+            userId: "user123",
+            userName: "ישראל ישראלי",
+            rating: 5,
+            text: "קפה מעולה ושירות אדיב. ממליץ בחום!",
+            date: "2023-11-15",
+            recommended: true
+          }
+        ],
+        createdAt: serverTimestamp()
+      },
+      {
+        id: "restaurant",
+        name: "מסעדה טעימה",
+        category: "מסעדות",
+        description: "מסעדה משפחתית עם מטבח ים תיכוני עשיר וטעים. התפריט כולל מבחר מנות דגים, בשרים וצמחוניות עם חומרי גלם טריים.",
+        address: "רחוב אלנבי 45, תל אביב",
+        phone: "03-7654321",
+        website: "https://example.com/tastyrestaurant",
+        images: [
+          "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1000&auto=format&fit=crop",
+          "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=1000&auto=format&fit=crop"
+        ],
+        discount: "ארוחת ילדים חינם בימי ראשון",
+        hours: "א'-ש' 12:00-23:00",
+        ratings: 4.2,
+        reviews: [
+          {
+            id: "review2",
+            userId: "user456",
+            userName: "חנה כהן",
+            rating: 4,
+            text: "אוכל מצוין ואווירה נעימה. קצת יקר אבל שווה.",
+            date: "2023-10-20",
+            recommended: true
+          }
+        ],
+        createdAt: serverTimestamp()
+      },
+      {
+        id: "attire",
+        name: "חנות בגדים",
+        category: "אופנה",
+        description: "חנות אופנה המציעה מגוון רחב של פריטי לבוש לנשים, גברים וילדים. מותגים מקומיים ובינלאומיים במחירים נוחים.",
+        address: "קניון עזריאלי, קומה 2, תל אביב",
+        phone: "03-9876543",
+        website: "https://example.com/fashionstore",
+        images: [
+          "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?q=80&w=1000&auto=format&fit=crop",
+          "https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=1000&auto=format&fit=crop"
+        ],
+        discount: "20% הנחה על הפריט השני",
+        hours: "א'-ה' 09:30-22:00, ו' 09:00-15:00, שבת: שעה לאחר צאת השבת עד 23:00",
+        ratings: 4.0,
+        reviews: [
+          {
+            id: "review3",
+            userId: "user789",
+            userName: "דני לוי",
+            rating: 4,
+            text: "שירות אדיב ומבחר גדול. המחירים הוגנים.",
+            date: "2023-09-05",
+            recommended: true
+          }
+        ],
+        createdAt: serverTimestamp()
+      }
+    ];
+    
+    // הוסף את העסקים לדאטהבייס
+    for (const business of sampleBusinesses) {
+      // יצירת עסק עם מזהה מוגדר מראש
+      await setDoc(doc(db, "businesses", business.id), {
+        ...business
+      });
+      console.log(`Created sample business: ${business.name}`);
+    }
+    
+    console.log("Sample businesses created successfully");
+  } catch (error) {
+    console.error("Error creating sample businesses: ", error);
+  }
+};
+
 export const createRecommendation = async (recommendation: any) => {
   try {
     const recommendationsCollection = collection(db, "recommendations");

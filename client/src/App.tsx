@@ -10,6 +10,7 @@ import SavedOffers from "@/pages/saved-offers";
 import Profile from "@/pages/profile";
 import Portfolio from "@/pages/portfolio";
 import PortfolioDetail from "@/pages/portfolio-detail";
+import BusinessPage from "@/pages/business";
 import DesktopNav from "@/components/navigation/desktop-nav";
 import MobileNav from "@/components/navigation/mobile-nav";
 import { AuthProvider, useAuth } from "@/hooks/use-auth";
@@ -64,10 +65,7 @@ function AuthenticatedRoutes() {
       <Route path="/profile" component={Profile} />
       <Route path="/portfolio" component={Portfolio} />
       <Route path="/portfolio/:id" component={PortfolioDetail} />
-      <Route path="/business/:businessId" component={props => import("@/pages/business").then(m => {
-        const Business = m.default;
-        return <Business {...props} />;
-      })} />
+      <Route path="/business/:businessId" component={BusinessPage} />
       <Route component={NotFound} />
     </Switch>
   );
