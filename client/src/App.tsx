@@ -10,6 +10,7 @@ import SavedOffers from "@/pages/saved-offers";
 import Profile from "@/pages/profile";
 import Users from "@/pages/users";
 import UserProfile from "@/pages/user-profile";
+import ScannedBusiness from "@/pages/scanned-business";
 
 import BusinessPage from "@/pages/business";
 import DesktopNav from "@/components/navigation/desktop-nav";
