@@ -176,15 +176,14 @@ export default function SavedOffers() {
                         </div>
                         
                         <div className="flex items-center mt-3">
-                          <Avatar className="h-6 w-6">
-                            <AvatarImage
-                              src={offer.recommendation?.recommenderPhoto || ""}
-                              alt={offer.recommendation?.recommenderName || "Recommender"}
-                            />
-                            <AvatarFallback>
-                              {(offer.recommendation?.recommenderName || "").charAt(0) || "R"}
-                            </AvatarFallback>
-                          </Avatar>
+                          {offer.recommendation?.recommenderPhoto && (
+                            <Avatar className="h-6 w-6">
+                              <AvatarImage
+                                src={offer.recommendation?.recommenderPhoto}
+                                alt={offer.recommendation?.recommenderName || "Recommender"}
+                              />
+                            </Avatar>
+                          )}
                           <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
                             Recommended by{" "}
                             <span className="font-medium text-gray-700 dark:text-gray-300">
@@ -306,15 +305,14 @@ export default function SavedOffers() {
                         </div>
                         
                         <div className="flex items-center mt-3">
-                          <Avatar className="h-6 w-6">
-                            <AvatarImage
-                              src={offer.recommendation?.recommenderPhoto || ""}
-                              alt={offer.recommendation?.recommenderName || "Recommender"}
-                            />
-                            <AvatarFallback>
-                              {(offer.recommendation?.recommenderName || "").charAt(0) || "R"}
-                            </AvatarFallback>
-                          </Avatar>
+                          {offer.recommendation?.recommenderPhoto && (
+                            <Avatar className="h-6 w-6">
+                              <AvatarImage
+                                src={offer.recommendation?.recommenderPhoto}
+                                alt={offer.recommendation?.recommenderName || "Recommender"}
+                              />
+                            </Avatar>
+                          )}
                           <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
                             Recommended by{" "}
                             <span className="font-medium text-gray-700 dark:text-gray-300">

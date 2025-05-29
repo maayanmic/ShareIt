@@ -3,6 +3,133 @@
 @tailwind utilities;
 
 @layer base {
+  html, body, #root, main, section, header, footer, nav, div, span, p, h1, h2, h3, h4, h5, h6, ul, ol, li, a, label, input, textarea, select, button {
+    direction: rtl !important;
+    text-align: right !important;
+    unicode-bidi: embed !important;
+  }
+
+  /* כל הכותרות והטפסים בימין */
+  h1, h2, h3, h4, h5, h6, label, legend, th {
+    text-align: right !important;
+    direction: rtl !important;
+    color: #000 !important;
+  }
+
+  /* כל הטפסים והקלטים בימין */
+  input, textarea, select, button {
+    direction: rtl !important;
+    text-align: right !important;
+  }
+
+  /* כל הכפתורים בימין */
+  button, .btn, .Button {
+    text-align: right !important;
+    direction: rtl !important;
+  }
+
+  /* כל ה-flex הפוך */
+  .flex:not(.flex-row-normal):not(.flex-col):not(.flex-col-reverse) {
+    flex-direction: row-reverse !important;
+  }
+
+  /* כל הגרידים בימין */
+  .grid {
+    direction: rtl !important;
+  }
+
+  /* כל הרשימות בימין */
+  ul, ol {
+    padding-right: 1.5rem !important;
+    padding-left: 0 !important;
+    direction: rtl !important;
+    text-align: right !important;
+  }
+
+  /* כל ה-containers בימין */
+  .container, .mx-auto, .px-4, .px-6, main, section {
+    direction: rtl !important;
+    text-align: right !important;
+  }
+
+  /* כל ה-links בימין */
+  a {
+    direction: rtl !important;
+    text-align: right !important;
+  }
+
+  /* כל ה-dropdowns בימין */
+  .dropdown-menu, .dropdown-content {
+    direction: rtl !important;
+    text-align: right !important;
+  }
+
+  /* כל ה-modal/dialog בימין */
+  .modal, .dialog, .Dialog, .Sheet, .Drawer {
+    direction: rtl !important;
+    text-align: right !important;
+  }
+
+  /* כל ה-alerts בימין */
+  .alert, .Alert {
+    direction: rtl !important;
+    text-align: right !important;
+  }
+
+  /* כל ה-pagination בימין */
+  .pagination, .Pagination {
+    direction: rtl !important;
+    text-align: right !important;
+  }
+
+  /* כל ה-breadcrumbs בימין */
+  .breadcrumb, .Breadcrumb {
+    direction: rtl !important;
+    text-align: right !important;
+  }
+
+  /* כל ה-sidebar בימין */
+  .sidebar, .Sidebar {
+    direction: rtl !important;
+    text-align: right !important;
+  }
+
+  /* כל ה-tabs בימין */
+  .tabs, .Tabs {
+    direction: rtl !important;
+    text-align: right !important;
+  }
+
+  /* כל ה-toast בימין */
+  .toast, .Toast {
+    direction: rtl !important;
+    text-align: right !important;
+  }
+
+  /* כל ה-carousel בימין */
+  .carousel, .Carousel {
+    direction: rtl !important;
+    text-align: right !important;
+  }
+
+  /* כל ה-switch בימין */
+  .switch, .Switch {
+    direction: rtl !important;
+    text-align: right !important;
+  }
+
+  /* כל ה-toggle-group בימין */
+  .toggle-group, .ToggleGroup {
+    direction: rtl !important;
+    text-align: right !important;
+  }
+
+  /* כל ה-checkbox/radio בימין */
+  .checkbox, .radio, .Checkbox, .Radio {
+    direction: rtl !important;
+    text-align: right !important;
+  }
+
   html {
     font-family: 'Heebo', sans-serif;
     direction: rtl;

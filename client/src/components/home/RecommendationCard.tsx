@@ -108,11 +108,13 @@ export function RecommendationCard({ recommendation }: RecommendationCardProps) 
         <p className="text-gray-500 dark:text-gray-400 text-sm mt-2">{recommendation.description}</p>
         
         <div className="flex items-center mt-4">
-          <img 
-            src={recommendation.creator.photoUrl} 
-            alt={recommendation.creator.name} 
-            className="h-6 w-6 rounded-full object-cover"
-          />
+          {recommendation.creator.photoUrl ? (
+            <img 
+              src={recommendation.creator.photoUrl} 
+              alt={recommendation.creator.name} 
+              className="h-6 w-6 rounded-full object-cover"
+            />
+          ) : null}
           <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
             Recommended by <span className="font-medium text-gray-700 dark:text-gray-300">{recommendation.creator.name}</span>
           </span>

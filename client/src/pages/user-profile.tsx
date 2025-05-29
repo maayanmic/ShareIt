@@ -4,8 +4,9 @@ import { useAuth } from "@/hooks/use-auth";
 import { getUserRating, createConnection, getUserData, getUserRecommendations } from "@/lib/firebase-update";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { Star, StarHalf, UserPlus, Check } from "lucide-react";
+import { Star, StarHalf, UserPlus, Check, AlertCircle, Info } from "lucide-react";
 import RecommendationCard from "@/components/recommendation/recommendation-card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export default function UserProfile() {
   const { userId } = useParams();
@@ -14,6 +15,8 @@ export default function UserProfile() {
   const [recommendations, setRecommendations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [connecting, setConnecting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [debugInfo, setDebugInfo] = useState<any>(null);
   
   const { user } = useAuth();
   const { toast } = useToast();
@@ -25,10 +28,17 @@ export default function UserProfile() {
       
       try {
         setLoading(true);
+        setError(null);
+        setDebugInfo(null);
+        
+        console.log(`מתחיל טעינת פרופיל משתמש עבור: ${userId}`);
         
         // טעינת פרטי המשתמש
         const userData = await getUserData(userId);
         if (!userData) {
+          console.error(`לא נמצא משתמש עם המזהה: ${userId}`);
+          setError("לא נמצא משתמש עם המזהה שצוין");
+          
           toast({
             title: "שגיאה",
             description: "לא נמצא משתמש עם המזהה שצוין",
@@ -37,17 +47,34 @@ export default function UserProfile() {
           return;
         }
         
+        console.log(`פרטי המשתמש שנמצאו:`, userData);
         setProfileUser(userData);
         
         // טעינת דירוג המשתמש
         const rating = await getUserRating(userId);
+        console.log(`דירוג המשתמש:`, rating);
         setUserRating(rating);
         
         // טעינת ההמלצות של המשתמש
-        const userRecommendations = await getUserRecommendations(userId);
-        setRecommendations(userRecommendations);
+        console.log(`מתחיל טעינת המלצות עבור משתמש: ${userId}`);
+        try {
+          const userRecommendations = await getUserRecommendations(userId);
+          console.log(`התקבלו ${userRecommendations.length} המלצות למשתמש`);
+          
+          if (userRecommendations.length > 0) {
+            console.log(`דוגמה להמלצה ראשונה:`, userRecommendations[0]);
+            setDebugInfo(userRecommendations[0]);
+          }
+          
+          setRecommendations(userRecommendations);
+        } catch (recError) {
+          console.error("שגיאה בטעינת המלצות:", recError);
+          setError(`שגיאה בטעינת המלצות: ${(recError as any).message}`);
+        }
       } catch (error) {
         console.error("שגיאה בטעינת פרופיל המשתמש:", error);
+        setError(`שגיאה כללית: ${(error as any).message}`);
+        
         toast({
           title: "שגיאה",
           description: "אירעה שגיאה בטעינת פרופיל המשתמש",
@@ -211,9 +238,39 @@ export default function UserProfile() {
         </div>
       </div>
       
+      {/* הצגת שגיאות */}
+      {error && (
+        <Alert variant="destructive" className="mb-4">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>שגיאה</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+      
+      {/* מידע על ההמלצות - רק למפתחים */}
+      <div className="mb-4">
+        <Alert>
+          <Info className="h-4 w-4" />
+          <AlertTitle>מידע אבחון</AlertTitle>
+          <AlertDescription>
+            מספר המלצות: {recommendations.length}
+          </AlertDescription>
+        </Alert>
+      </div>
+      
       {/* רשימת המלצות */}
       <div className="mb-8">
         <h2 className="text-xl font-semibold mb-4 text-right">המלצות של {profileUser.displayName}</h2>
+        
+        {/* אם יש מידע אבחון, נציג אותו */}
+        {debugInfo && (
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 mb-4">
+            <h3 className="text-lg font-semibold mb-2 text-right">מידע אבחון על המלצה ראשונה:</h3>
+            <pre className="bg-gray-100 dark:bg-gray-700 p-3 rounded text-xs overflow-auto text-right" dir="ltr">
+              {JSON.stringify(debugInfo, null, 2)}
+            </pre>
+          </div>
+        )}
         
         {recommendations.length === 0 ? (
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 text-center">
@@ -226,40 +283,60 @@ export default function UserProfile() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {recommendations.map((recommendation) => {
-              // המרת שדה validUntil לפורמט תאריך תקין אם צריך
-              let formattedValidUntil = "ללא הגבלה";
-              
-              if (recommendation.validUntil) {
-                if (typeof recommendation.validUntil === 'object' && 'seconds' in recommendation.validUntil) {
-                  // המרה מאובייקט Timestamp של Firestore
-                  const date = new Date(recommendation.validUntil.seconds * 1000);
-                  formattedValidUntil = date.toLocaleDateString('he-IL');
-                } else if (recommendation.validUntil instanceof Date) {
-                  // אם זה אובייקט Date רגיל
-                  formattedValidUntil = recommendation.validUntil.toLocaleDateString('he-IL');
-                } else {
-                  // אם זה כבר מחרוזת, השתמש בה כמו שהיא
-                  formattedValidUntil = String(recommendation.validUntil);
+            {recommendations.map((recommendation, index) => {
+              try {
+                // המרת שדה validUntil לפורמט תאריך תקין אם צריך
+                let formattedValidUntil = "ללא הגבלה";
+                
+                if (recommendation.validUntil) {
+                  if (typeof recommendation.validUntil === 'object' && 'seconds' in recommendation.validUntil) {
+                    // המרה מאובייקט Timestamp של Firestore
+                    const date = new Date(recommendation.validUntil.seconds * 1000);
+                    formattedValidUntil = date.toLocaleDateString('he-IL');
+                  } else if (recommendation.validUntil instanceof Date) {
+                    // אם זה אובייקט Date רגיל
+                    formattedValidUntil = recommendation.validUntil.toLocaleDateString('he-IL');
+                  } else {
+                    // אם זה כבר מחרוזת, השתמש בה כמו שהיא
+                    formattedValidUntil = String(recommendation.validUntil);
+                  }
                 }
+                
+                // וידוא שכל השדות הנדרשים קיימים ויש להם ערכי ברירת מחדל
+                const businessName = recommendation.businessName || recommendation.name || "עסק";
+                const businessImage = recommendation.businessImage || recommendation.imageUrl || recommendation.image || "https://via.placeholder.com/300";
+                const description = recommendation.description || recommendation.text || "המלצה על עסק זה";
+                const discount = recommendation.discount || "10%";
+                const rating = typeof recommendation.rating === "number" ? recommendation.rating : Number(recommendation.rating || 4.5);
+                const savedCount = typeof recommendation.savedCount === "number" ? recommendation.savedCount : Number(recommendation.savedCount || 0);
+                const recommenderName = recommendation.userName || recommendation.userDisplayName || profileUser.displayName;
+                const recommenderPhoto = recommendation.userPhotoURL || profileUser.photoURL || `https://avatars.dicebear.com/api/initials/${profileUser.displayName}.svg`;
+                const recommenderId = recommendation.userId || recommendation.recommenderId || profileUser.id;
+                
+                return (
+                  <RecommendationCard
+                    key={recommendation.id || index}
+                    id={recommendation.id || `rec-${index}`}
+                    businessName={businessName}
+                    businessImage={businessImage}
+                    description={description}
+                    discount={discount}
+                    rating={rating}
+                    recommenderName={recommenderName}
+                    recommenderPhoto={recommenderPhoto}
+                    recommenderId={recommenderId}
+                    validUntil={formattedValidUntil}
+                    savedCount={savedCount}
+                  />
+                );
+              } catch (err) {
+                console.error(`שגיאה בהמלצה ${index}:`, err, recommendation);
+                return (
+                  <div key={index} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4">
+                    <p className="text-red-500 text-center">שגיאה בהצגת המלצה זו</p>
+                  </div>
+                );
               }
-              
-              return (
-                <RecommendationCard
-                  key={recommendation.id}
-                  id={recommendation.id}
-                  businessName={recommendation.businessName}
-                  businessImage={recommendation.businessImage}
-                  description={recommendation.description || recommendation.text}
-                  discount={recommendation.discount}
-                  rating={recommendation.rating}
-                  recommenderName={profileUser.displayName}
-                  recommenderPhoto={profileUser.photoURL || `https://avatars.dicebear.com/api/initials/${profileUser.displayName}.svg`}
-                  recommenderId={profileUser.id}
-                  validUntil={formattedValidUntil}
-                  savedCount={recommendation.savedCount}
-                />
-              );
             })}
           </div>
         )}

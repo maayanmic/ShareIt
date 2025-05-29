@@ -37,7 +37,7 @@ export default function DesktopNav() {
     { name: "הפרופיל שלי", href: "/profile" },
     { name: "משתמשים", href: "/users" },
     { name: "בתי עסק", href: "/businesses" },
-    { name: "בית", href: "/" },
+    { name: "דף בית", href: "/" },
   ];
 
   return (
@@ -118,11 +118,11 @@ export default function DesktopNav() {
                 <img 
                   src={logoUrl} 
                   alt="ShareIt Logo" 
-                  className="h-9 w-auto" 
+                  className="h-16 w-auto" 
                 />
               ) : (
                 <svg 
-                  className="w-9 h-9 text-primary-500" 
+                className="w-16 h-16 text-primary-500" 
                   fill="currentColor" 
                   viewBox="0 0 24 24" 
                   xmlns="http://www.w3.org/2000/svg"

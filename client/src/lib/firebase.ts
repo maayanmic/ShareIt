@@ -38,7 +38,7 @@ const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "placeholder-api-key",
   authDomain: `${import.meta.env.VITE_FIREBASE_PROJECT_ID || "placeholder-project"}.firebaseapp.com`,
   projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "placeholder-project",
-  storageBucket: `${import.meta.env.VITE_FIREBASE_PROJECT_ID || "placeholder-project"}.appspot.com`,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || `${import.meta.env.VITE_FIREBASE_PROJECT_ID || "placeholder-project"}.appspot.com`,
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "placeholder-messaging-id",
   appId: import.meta.env.VITE_FIREBASE_APP_ID || "placeholder-app-id"
 };
@@ -213,7 +213,7 @@ const facebookProvider = new FacebookAuthProvider();
           businessId: "coffee",
           userId: "demo_user1",
           userName: "ישראל ישראלי",
-          userPhotoURL: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&auto=format&fit=crop&w=40&h=40",
+          userPhotoURL: "",
           businessName: "קפה טוב",
           businessImage: "https://images.unsplash.com/photo-1559925393-8be0ec4767c8?q=80&w=1000&auto=format&fit=crop",
           text: "המקום הכי טוב לקפה בעיר! השירות אדיב והאווירה נעימה. ממליץ בחום על הקרואסון שוקולד!",
@@ -482,7 +482,8 @@ export const getUserData = async (userId: string) => {
         // וידוא שהשדות הנדרשים קיימים
         coins: userData.coins || 0,
         referrals: userData.referrals || 0,
-        savedOffers: userData.savedOffers || 0
+        savedOffers: userData.savedOffers || 0,
+        connections: userData.connections || []
       };
     }
     return {
@@ -491,7 +492,8 @@ export const getUserData = async (userId: string) => {
       isAdmin: false,
       coins: 0,
       referrals: 0,
-      savedOffers: 0
+      savedOffers: 0,
+      connections: []
     };
   } catch (error) {
     console.error("Error getting user data: ", error);
@@ -501,7 +503,8 @@ export const getUserData = async (userId: string) => {
       isAdmin: false,
       coins: 0,
       referrals: 0,
-      savedOffers: 0
+      savedOffers: 0,
+      connections: []
     };
   }
 };

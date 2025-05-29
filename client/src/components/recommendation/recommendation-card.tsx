@@ -134,10 +134,11 @@ export default function RecommendationCard({
             <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
               הומלץ על-ידי <span className="font-medium text-gray-700 dark:text-gray-300">{recommenderName}</span>
             </span>
-            <Avatar className="h-6 w-6">
-              <AvatarImage src={recommenderPhoto} alt={recommenderName} />
-              <AvatarFallback>{recommenderName && recommenderName.charAt(0) || '?'}</AvatarFallback>
-            </Avatar>
+            {recommenderPhoto ? (
+              <Avatar className="h-6 w-6">
+                <AvatarImage src={recommenderPhoto} alt={recommenderName} />
+              </Avatar>
+            ) : null}
           </div>
           
           <div className="flex flex-row-reverse justify-between items-center mt-4">

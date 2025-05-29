@@ -6,7 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { getBusinessById, saveOffer, getRecommendations } from "@/lib/firebase";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Share2, Bookmark } from "lucide-react";
 
 interface RecommendationParams {
   id: string;
@@ -121,7 +121,7 @@ export default function RecommendationById() {
             creator: {
               id: anyFoundRecommendation.userId || referrerId || "user-1",
               name: anyFoundRecommendation.userName || "יוצר ההמלצה",
-              photoUrl: anyFoundRecommendation.userPhotoURL || "https://randomuser.me/api/portraits/men/32.jpg",
+              photoUrl: anyFoundRecommendation.userPhotoURL || "",
             }
           };
           
@@ -129,31 +129,18 @@ export default function RecommendationById() {
           
           // ניסיון לטעון את פרטי העסק
           try {
-            const businessData = await getBusinessById(processedRec.businessId);
+            const businessData = await getBusinessById(processedRec.businessId) as Partial<BusinessData> | null;
             
-            if (businessData) {
-              const typedBusinessData: BusinessData = {
-                id: businessData.id || "",
-                name: businessData.name || "",
-                category: businessData.category || "",
-                description: businessData.description || "",
-                address: businessData.address || "",
-                image: businessData.image || "",
-                businessImage: businessData.businessImage
-              };
-              setBusiness(typedBusinessData);
-            } else {
-              // יצירת אובייקט עסק על סמך נתוני ההמלצה
-              const businessData: BusinessData = {
-                id: processedRec.businessId,
-                name: processedRec.businessName,
-                category: "עסק",
-                description: "פרטי העסק אינם זמינים",
-                address: "כתובת לא ידועה",
-                image: (anyFoundRecommendation.businessImage as string) || "https://images.unsplash.com/photo-1537047902294-62a40c20a6ae?q=80&w=500",
-              };
-              setBusiness(businessData);
-            }
+            const typedBusinessData: BusinessData = {
+              id: businessData?.id || "",
+              name: typeof businessData?.name === "string" ? businessData.name : "",
+              category: typeof businessData?.category === "string" ? businessData.category : "",
+              description: typeof businessData?.description === "string" ? businessData.description : "",
+              address: typeof businessData?.address === "string" ? businessData.address : "",
+              image: typeof businessData?.image === "string" ? businessData.image : "",
+              businessImage: typeof businessData?.businessImage === "string" ? businessData.businessImage : undefined,
+            };
+            setBusiness(typedBusinessData);
           } catch (businessError) {
             console.error("שגיאה בטעינת פרטי העסק:", businessError);
           }
@@ -173,7 +160,7 @@ export default function RecommendationById() {
             creator: {
               id: referrerId || "user-demo",
               name: "משתמש לדוגמה",
-              photoUrl: "https://randomuser.me/api/portraits/men/32.jpg",
+              photoUrl: "",
             }
           };
           
@@ -258,91 +245,92 @@ export default function RecommendationById() {
     );
   }
   
+  // קישור המלצה
+  const shareUrl = `${window.location.origin}/recommendation/${recommendation.id}`;
+
+  // הגנות לכל שדה
+  const businessName = business?.name || recommendation.businessName || "עסק לא ידוע";
+  const businessImage = business?.image || recommendation.imageUrl || "https://placehold.co/600x400?text=No+Image";
+  const businessCategory = business?.category || "";
+  const description = recommendation.description || "אין תיאור";
+  const discount = recommendation.discount || "10% הנחה";
+  const savedCount = typeof recommendation.savedCount === "number" ? recommendation.savedCount : 0;
+  const expiryDate = recommendation.expiryDate ? new Date(recommendation.expiryDate).toLocaleDateString('he-IL') : "";
+  const creatorName = recommendation.creator?.name || "ממליץ אנונימי";
+  const creatorPhoto = recommendation.creator?.photoUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(creatorName)}`;
+
   return (
-    <div className="container mx-auto py-4 px-4">
-      <div className="mb-4">
-        <Button variant="ghost" onClick={handleGoBack} className="p-2">
-          <ArrowLeft className="h-4 w-4 ml-1" />
-          חזרה
-        </Button>
-      </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-        <Card className="md:col-span-8 p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h1 className="text-2xl font-bold">{business?.name}</h1>
-            <div className="badge bg-primary-500 text-white px-3 py-1 rounded-full">
-              הנחה {recommendation.discount}
-            </div>
+    <div className="container mx-auto py-8 px-4 flex flex-col items-center">
+      <Card className="w-full max-w-2xl p-0 overflow-hidden shadow-lg">
+        <div className="relative h-56 w-full">
+          <img
+            src={businessImage}
+            alt={businessName}
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <div className="p-6">
+          <div className="flex items-center justify-between mb-2">
+            <h1 className="text-2xl font-bold">{businessName}</h1>
+            <span className="badge bg-primary-500 text-white px-3 py-1 rounded-full">
+              {discount}
+            </span>
           </div>
-          
-          <div className="relative rounded-lg overflow-hidden mb-6" style={{ height: '250px' }}>
-            <img 
-              src={recommendation.imageUrl} 
-              alt={business?.name} 
-              className="w-full h-full object-cover"
-            />
+          <div className="mb-4 text-gray-600 text-sm">{businessCategory}</div>
+          <div className="mb-4">
+            <h2 className="text-lg font-semibold mb-1">המלצה</h2>
+            <p className="text-gray-800">{description}</p>
           </div>
-          
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold mb-2">המלצה</h2>
-            <p className="text-gray-700">{recommendation.description}</p>
-          </div>
-          
+          <Separator className="my-4" />
           <div className="flex items-center mb-6">
-            <div className="flex-shrink-0 ml-3">
-              <img 
-                src={recommendation.creator.photoUrl} 
-                alt={recommendation.creator.name} 
-                className="h-10 w-10 rounded-full"
-              />
-            </div>
+            <img
+              src={creatorPhoto}
+              alt={creatorName}
+              className="h-10 w-10 rounded-full ml-3"
+            />
             <div>
               <p className="text-sm font-medium">הומלץ ע"י</p>
-              <p className="text-sm text-gray-600">{recommendation.creator.name}</p>
+              <p className="text-sm text-gray-600">{creatorName}</p>
             </div>
           </div>
-          
-          <div className="mt-6">
-            <Button className="w-full py-6" onClick={handleSaveOffer}>
-              שמור בארנק הדיגיטלי
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <Button
+              className="w-full flex items-center justify-center"
+              onClick={() => {
+                navigator.clipboard.writeText(shareUrl);
+                toast({ title: "הקישור הועתק", description: "הקישור הועתק ללוח. כעת תוכל להדביק אותו בכל מקום." });
+              }}
+              variant="outline"
+            >
+              <Share2 className="h-5 w-5 ml-2" /> העתק קישור
+            </Button>
+            <Button
+              className="w-full flex items-center justify-center bg-[#1877F2] hover:bg-[#166FE5] text-white"
+              onClick={() => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank')}
+            >
+              <Share2 className="h-5 w-5 ml-2" /> שתף בפייסבוק
             </Button>
           </div>
-        </Card>
-        
-        <div className="md:col-span-4">
-          <Card className="p-6 mb-6">
-            <h2 className="text-xl font-semibold mb-4">פרטי העסק</h2>
-            <div className="space-y-4">
-              <div>
-                <p className="text-sm text-gray-500">קטגוריה</p>
-                <p>{business?.category}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">כתובת</p>
-                <p>{business?.address}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">תיאור</p>
-                <p>{business?.description}</p>
-              </div>
+          <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-4">
+            <div className="flex items-center gap-2">
+              <Bookmark className="h-5 w-5 text-primary-500" />
+              <span className="text-sm">{savedCount} שמרו המלצה זו</span>
             </div>
-            
-            <Separator className="my-4" />
-            
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span>נשמר</span>
-                <span>{recommendation.savedCount} פעמים</span>
-              </div>
-              <div className="flex justify-between">
-                <span>בתוקף עד</span>
-                <span>{new Date(recommendation.expiryDate).toLocaleDateString('he-IL')}</span>
-              </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm">בתוקף עד</span>
+              <span className="text-sm font-semibold">{expiryDate}</span>
             </div>
-          </Card>
+          </div>
+          <div className="flex flex-col md:flex-row gap-4">
+            <Button className="w-full" onClick={handleSaveOffer}>
+              שמור בארנק הדיגיטלי
+            </Button>
+            <Button className="w-full" variant="outline" onClick={handleGoBack}>
+              <ArrowLeft className="h-4 w-4 ml-1" /> חזרה לדף הבית
+            </Button>
+          </div>
         </div>
-      </div>
+      </Card>
     </div>
   );
 }

@@ -167,83 +167,111 @@ export const getUserData = async (userId: string) => {
   }
 };
 
-// פונקציה להבאת ההמלצות של משתמש ספציפי
+// פונקציה להבאת ההמלצות של משתמש ספציפי - משופרת לחיפוש בכל המקומות האפשריים
 export const getUserRecommendations = async (userId: string) => {
   try {
     console.log(`מחפש המלצות עבור משתמש ${userId}`);
     
-    // שאילתא ממוקדת לפי userId בקולקשן recommendations
+    // מאגר ההמלצות הסופי
+    let foundRecommendations: any[] = [];
     const recommendationsRef = collection(db, "recommendations");
-    let userRecommendationsQuery = query(recommendationsRef, where("userId", "==", userId));
-    let querySnapshot = await getDocs(userRecommendationsQuery);
     
-    // אם לא נמצאו המלצות לפי userId, ננסה לפי recommenderId
-    if (querySnapshot.empty) {
-      console.log("לא נמצאו המלצות לפי userId, מנסה recommenderId");
-      userRecommendationsQuery = query(recommendationsRef, where("recommenderId", "==", userId));
-      querySnapshot = await getDocs(userRecommendationsQuery);
-    }
+    // השיטה החדשה - נביא את כל ההמלצות (מוגבל ל-200) ונסנן אותן לאחר מכן לפי כל השדות האפשריים
+    const allRecommendationsSnapshot = await getDocs(query(recommendationsRef, limit(200)));
+    console.log(`נטענו ${allRecommendationsSnapshot.docs.length} המלצות מהמסד לסינון`);
     
-    // אם עדיין לא נמצאו, ננסה לפי creator.id
-    if (querySnapshot.empty) {
-      console.log("לא נמצאו המלצות לפי recommenderId, מנסה creator.id");
-      // טען את כל ההמלצות כדי לסנן לפי creator.id (שדה מקונן)
-      const allRecommendationsSnapshot = await getDocs(recommendationsRef);
+    // עבור על כל ההמלצות ומצא את אלו שקשורות למשתמש
+    allRecommendationsSnapshot.docs.forEach(doc => {
+      const data = doc.data();
+      const recommendationId = doc.id;
+      let isUserRecommendation = false;
       
-      // סנן ידנית לפי creator.id
-      const filteredDocs = allRecommendationsSnapshot.docs.filter(doc => {
-        const data = doc.data();
-        return data.creator && data.creator.id === userId;
-      });
+      // בדיקת כל השדות האפשריים שיכולים להכיל את מזהה המשתמש
+      const fieldsToCheck = [
+        data.userId,
+        data.recommenderId, 
+        data.creatorId,
+        data.user_id,
+        data.authorId,
+        data.uid,
+        data.user?.id,
+        data.user?.uid,
+        data.recommender?.id,
+        data.recommender?.uid,
+        data.creator?.id,
+        data.creator?.uid
+      ];
       
-      // אם נמצאו המלצות לפי creator.id
-      if (filteredDocs.length > 0) {
-        console.log(`נמצאו ${filteredDocs.length} המלצות לפי creator.id`);
-        
-        const recommendations = filteredDocs.map(doc => ({
+      // אם אחד מהשדות הללו תואם את מזהה המשתמש, זו המלצה של המשתמש
+      if (fieldsToCheck.includes(userId)) {
+        isUserRecommendation = true;
+      }
+      
+      // גם בדיקה של שדות מקוננים או מערכים
+      if (
+        (data.recommender && 
+          (data.recommender.id === userId || data.recommender.uid === userId)) ||
+        (data.creator && 
+          (data.creator.id === userId || data.creator.uid === userId))
+      ) {
+        isUserRecommendation = true;
+      }
+      
+      if (isUserRecommendation && !foundRecommendations.some(r => r.id === recommendationId)) {
+        foundRecommendations.push({
+          id: recommendationId,
+          ...data
+        });
+      }
+    });
+    
+    // טעינת המלצות ספציפיות לפי שדות אינדקס נפוצים
+    const userIdQuery = query(recommendationsRef, where("userId", "==", userId));
+    const userIdSnapshot = await getDocs(userIdQuery);
+    
+    userIdSnapshot.docs.forEach(doc => {
+      if (!foundRecommendations.some(r => r.id === doc.id)) {
+        foundRecommendations.push({
           id: doc.id,
           ...doc.data()
-        }));
-        
-        return formatRecommendations(recommendations);
+        });
       }
-    }
+    });
     
-    // אם נמצאו המלצות באחת השאילתות לפי userId או recommenderId
-    if (!querySnapshot.empty) {
-      console.log(`נמצאו ${querySnapshot.docs.length} המלצות למשתמש ${userId}`);
+    const recommenderIdQuery = query(recommendationsRef, where("recommenderId", "==", userId));
+    const recommenderIdSnapshot = await getDocs(recommenderIdQuery);
+    
+    recommenderIdSnapshot.docs.forEach(doc => {
+      if (!foundRecommendations.some(r => r.id === doc.id)) {
+        foundRecommendations.push({
+          id: doc.id,
+          ...doc.data()
+        });
+      }
+    });
+    
+    // אם לא נמצאו המלצות כלל - כדאי להדפיס את זה בלוג
+    if (foundRecommendations.length === 0) {
+      console.log(`לא נמצאו המלצות למשתמש ${userId} בשום מקום במסד הנתונים`);
       
-      const recommendations = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
+      // לוג נוסף - נבדוק איזה המלצות יש במערכת
+      const sampleRecsQuery = query(recommendationsRef, limit(5));
+      const sampleRecsSnapshot = await getDocs(sampleRecsQuery);
       
-      return formatRecommendations(recommendations);
-    }
-    
-    // אם לא נמצאו המלצות בכלל למשתמש זה, נבדוק אם יש המלצות בבסיס הנתונים
-    const allRecommendationsQuery = query(recommendationsRef, limit(1));
-    const checkSnapshot = await getDocs(allRecommendationsQuery);
-    
-    if (checkSnapshot.empty) {
-      console.log("קולקשן recommendations ריק, מחזיר מערך ריק");
+      if (!sampleRecsSnapshot.empty) {
+        console.log("דוגמה ל-5 המלצות במערכת ומבנה שלהן:");
+        sampleRecsSnapshot.docs.forEach((doc, idx) => {
+          console.log(`המלצה ${idx+1} (${doc.id}):`, doc.data());
+        });
+      }
+      
       return [];
-    } else {
-      // יש המלצות בבסיס הנתונים, אבל אין למשתמש זה
-      console.log(`יש המלצות בקולקשן, אבל אין למשתמש ${userId}`);
-      
-      // נחזיר המלצה ראשונה מהמסד נתונים ונעדכן את userId שלה
-      // כדי להראות משהו עבור המשתמש (זה זמני)
-      const firstRecommendation = checkSnapshot.docs[0];
-      const recommendation = {
-        id: firstRecommendation.id,
-        ...firstRecommendation.data(),
-        userId: userId,
-        recommenderId: userId
-      };
-      
-      return formatRecommendations([recommendation]);
     }
+    
+    console.log(`סך הכל נמצאו ${foundRecommendations.length} המלצות למשתמש ${userId}`);
+    
+    // עיבוד ופורמט ההמלצות שנמצאו
+    return formatRecommendations(foundRecommendations);
   } catch (error) {
     console.error("שגיאה בהבאת המלצות משתמש:", error);
     return [];

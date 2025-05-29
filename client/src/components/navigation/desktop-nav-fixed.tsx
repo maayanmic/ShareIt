@@ -34,7 +34,7 @@ export default function DesktopNav() {
   }, []);
 
   const navItems = [
-    { name: "דף הבית", href: "/" },
+    { name: "בית", href: "/" },
     { name: "בתי עסק", href: "/businesses" },
     { name: "ההמלצות שלי", href: "/profile" },
     { name: "הצעות שמורות", href: "/saved-offers" },
@@ -50,7 +50,7 @@ export default function DesktopNav() {
               <img 
                 src={logoUrl} 
                 alt="ShareIt Logo" 
-                className="h-8 w-auto ml-2" 
+                className="h-16 w-auto ml-2" 
               />
             ) : (
               <svg 

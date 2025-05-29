@@ -27,6 +27,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { Link } from "wouter";
 
 const formSchema = z.object({
   businessId: z.string().min(1, "Please select a business"),
@@ -154,178 +155,93 @@ export default function CreateRecommendation() {
         <p className="text-gray-500 dark:text-gray-400 mb-4">
           You need to be logged in to create recommendations.
         </p>
-        <Button href="/login" asChild>
-          <a>Log In to Continue</a>
+        <Button asChild>
+          <Link href="/login">Log In to Continue</Link>
         </Button>
       </div>
     );
   }
 
   return (
-    <div className="mt-8 bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md">
-      <div className="border-b border-gray-200 dark:border-gray-700 px-6 py-4">
-        <h2 className="text-lg font-semibold">Create New Recommendation</h2>
-      </div>
-      <div className="p-6">
-        <div className="flex items-start space-x-4">
-          <Avatar className="h-10 w-10">
-            <AvatarImage src={user?.photoURL || ""} alt={user?.displayName || "User"} />
-            <AvatarFallback>{user?.displayName?.charAt(0) || "U"}</AvatarFallback>
-          </Avatar>
-          
-          <div className="flex-1">
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="bg-gray-100 dark:bg-gray-700 rounded-xl p-4">
-                <FormField
-                  control={form.control}
-                  name="businessId"
-                  render={({ field }) => (
-                    <FormItem className="mb-4">
-                      <FormLabel>Business</FormLabel>
-                      <div className="flex gap-2">
-                        <FormControl>
-                          <Select 
-                            onValueChange={field.onChange} 
-                            defaultValue={field.value}
-                          >
-                            <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Select business or scan QR code" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {businesses.map((business) => (
-                                <SelectItem key={business.id} value={business.id}>
-                                  {business.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </FormControl>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          className="bg-white dark:bg-gray-800"
-                          onClick={handleBusinessScan}
-                        >
-                          <Camera className="h-5 w-5" />
-                          <span className="sr-only">Scan QR Code</span>
-                        </Button>
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem className="mb-4">
-                      <FormLabel>Your Recommendation</FormLabel>
-                      <FormControl>
-                        <Textarea 
-                          placeholder="Share what you loved about this business..." 
-                          className="resize-none"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <div className="mb-4">
-                  <FormLabel>Add Photo/Video</FormLabel>
-                  <div className="flex items-center justify-center w-full">
-                    {imagePreview ? (
-                      <div className="relative w-full">
-                        <img 
-                          src={imagePreview} 
-                          alt="Preview" 
-                          className="h-32 w-full object-cover rounded-lg" 
-                        />
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="sm"
-                          className="absolute top-2 right-2"
-                          onClick={() => {
-                            setImagePreview(null);
-                            setImageFile(null);
-                            if (fileInputRef.current) {
-                              fileInputRef.current.value = "";
-                            }
-                          }}
-                        >
-                          Remove
-                        </Button>
-                      </div>
-                    ) : (
-                      <label className="flex flex-col w-full h-24 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-300">
-                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                          <Upload className="w-8 h-8 text-gray-400 mb-1" />
-                          <p className="text-xs text-gray-500 dark:text-gray-400">Upload photo or video</p>
-                        </div>
-                        <input 
-                          ref={fileInputRef}
-                          type="file" 
-                          className="hidden" 
-                          accept="image/*,video/*"
-                          onChange={handleFileChange}
-                        />
-                      </label>
-                    )}
-                  </div>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900 p-4 md:p-8">
+      <div className="w-full max-w-full md:max-w-xl xl:max-w-3xl bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 md:p-8">
+        <div className="flex flex-col items-center md:items-start">
+          <h2 className="text-2xl font-bold mb-6 text-center md:text-right">העלאת המלצה</h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-8 text-center md:text-right">
+            {businesses.find(b => b.id === form.getValues("businessId"))?.name || "Business"}
+          </p>
+          <div className="w-full mb-6 md:mb-8">
+            <Textarea
+              placeholder="כתוב את ההמלצה שלך כאן..."
+              value={form.getValues("description")}
+              onChange={(e) => form.setValue("description", e.target.value)}
+              className="w-full h-32 md:h-40 resize-none"
+            />
+          </div>
+          <div className="w-full mb-8 md:mb-10">
+            <div className="flex items-center justify-center w-full">
+              {imagePreview ? (
+                <div className="relative w-full">
+                  <img 
+                    src={imagePreview} 
+                    alt="Preview" 
+                    className="h-32 md:h-48 w-full object-cover rounded-lg" 
+                  />
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    className="absolute top-2 right-2"
+                    onClick={() => {
+                      setImagePreview(null);
+                      setImageFile(null);
+                      if (fileInputRef.current) {
+                        fileInputRef.current.value = "";
+                      }
+                    }}
+                  >
+                    הסר
+                  </Button>
                 </div>
-                
-                <FormField
-                  control={form.control}
-                  name="socialNetwork"
-                  render={({ field }) => (
-                    <FormItem className="mb-4">
-                      <FormLabel>Share to</FormLabel>
-                      <FormControl>
-                        <RadioGroup
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          className="flex space-x-4"
-                        >
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="facebook" id="facebook" />
-                            <Label htmlFor="facebook">Facebook</Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="instagram" id="instagram" />
-                            <Label htmlFor="instagram">Instagram</Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="tiktok" id="tiktok" />
-                            <Label htmlFor="tiktok">TikTok</Label>
-                          </div>
-                        </RadioGroup>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <Button 
-                  type="submit" 
-                  className="w-full"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? "Posting..." : "Post Recommendation"}
-                </Button>
-              </form>
-            </Form>
-            
-            <div className="mt-2 flex items-center">
-              <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
-                <Info className="h-4 w-4 mr-1" />
-                <span>
-                  Posting will create a unique link to track when your friends use your recommendation
-                </span>
-              </div>
+              ) : (
+                <label className="flex flex-col w-full h-24 md:h-32 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-300">
+                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                    <Upload className="w-8 h-8 text-gray-400 mb-1" />
+                    <p className="text-xs text-gray-500 dark:text-gray-400">העלה תמונה או וידאו</p>
+                  </div>
+                  <input 
+                    ref={fileInputRef}
+                    type="file" 
+                    className="hidden" 
+                    accept="image/*,video/*"
+                    onChange={handleFileChange}
+                  />
+                </label>
+              )}
             </div>
+          </div>
+          <div className="flex justify-between w-full mt-8 lg:mt-6 max-w-xl mx-auto md:mx-0">
+            <Button
+              variant="outline"
+              onClick={() => form.reset()}
+              disabled={isSubmitting}
+              className="bg-gray-100 text-gray-800 hover:bg-gray-200 px-8 py-6 text-lg md:px-10"
+            >
+              חזור
+            </Button>
+            
+            <Button
+              onClick={form.handleSubmit(onSubmit)}
+              disabled={isSubmitting || !form.getValues("description").trim() || !imagePreview}
+              className="bg-gray-800 text-white hover:bg-gray-700 px-10 py-6 text-lg md:px-12"
+            >
+              {isSubmitting ? (
+                <>
+                  <span className="h-5 w-5 ml-2 animate-spin rounded-full border-2 border-white border-r-transparent"></span>
+                  שומר...
+                </>
+              ) : "המשך"}
+            </Button>
           </div>
         </div>
       </div>

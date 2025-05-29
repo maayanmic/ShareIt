@@ -155,7 +155,7 @@ export default function ScannedBusiness() {
     setCurrentStep(RecommendationStep.COMPLETE);
   };
 
-  // פונקציה לחזרה לצעד הקודם
+  // פונקציה ל לצעד הקודם
   const handleBack = () => {
     if (currentStep === RecommendationStep.SHARE) {
       setCurrentStep(RecommendationStep.CREATE);
@@ -186,7 +186,7 @@ export default function ScannedBusiness() {
   if (currentStep === RecommendationStep.COMPLETE) {
     return (
       <div className="container mx-auto p-4 text-center">
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 max-w-md mx-auto">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 max-w-full md:max-w-xl xl:max-w-3xl mx-auto">
           <div className="mb-4">
             <svg
               className="h-16 w-16 text-green-500 mx-auto mb-2"
@@ -227,22 +227,11 @@ export default function ScannedBusiness() {
 
   return (
     <div className="container mx-auto p-4">
-      <div className="mb-4">
-        <Button variant="ghost" onClick={handleBack} className="p-0">
-          <ArrowLeft className="h-4 w-4 ml-1" />
-          חזרה
-        </Button>
-      </div>
+      
 
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 max-w-md mx-auto">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 max-w-full md:max-w-xl xl:max-w-3xl mx-auto">
         {/* לוגו האתר */}
-        <div className="flex justify-center mb-4">
-          <img 
-            src="https://firebasestorage.googleapis.com/v0/b/shareit-454f0.firebasestorage.app/o/images%2FLogo3.png?alt=media&token=63561733-5bb8-4dcb-bb88-ecdb29485d59" 
-            alt="ShareIt" 
-            className="h-16 mb-2" 
-          />
-        </div>
+    
 
         {/* תצוגת שלב נוכחי */}
         {currentStep === RecommendationStep.CREATE && businessData && (

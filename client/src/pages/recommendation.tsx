@@ -56,18 +56,22 @@ export default function RecommendationPage() {
             // המרת הנתונים למבנה שנדרש בדף
             const formattedRecommendation = {
               id: foundRecommendation.id,
-              businessId: foundRecommendation.businessId,
-              businessName: foundRecommendation.businessName,
-              description: foundRecommendation.text || foundRecommendation.description,
-              discount: foundRecommendation.discount || "10% הנחה",
-              rating: foundRecommendation.rating || 5,
-              imageUrl: foundRecommendation.imageUrl,
-              expiryDate: foundRecommendation.validUntil || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-              savedCount: foundRecommendation.savedCount || 0,
+              businessId: "businessId" in foundRecommendation ? foundRecommendation.businessId : "",
+              businessName: "businessName" in foundRecommendation ? foundRecommendation.businessName : "",
+              description: "text" in foundRecommendation
+                ? foundRecommendation.text
+                : ("description" in foundRecommendation ? foundRecommendation.description : ""),
+              discount: "discount" in foundRecommendation ? foundRecommendation.discount : "10% הנחה",
+              rating: "rating" in foundRecommendation ? foundRecommendation.rating : 5,
+              imageUrl: "imageUrl" in foundRecommendation ? foundRecommendation.imageUrl : "",
+              expiryDate: "validUntil" in foundRecommendation
+                ? foundRecommendation.validUntil
+                : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+              savedCount: "savedCount" in foundRecommendation ? foundRecommendation.savedCount : 0,
               creator: {
-                id: foundRecommendation.userId || referrerId || "user-1",
-                name: foundRecommendation.userName || "משתמש",
-                photoUrl: foundRecommendation.userPhotoURL || "https://randomuser.me/api/portraits/men/32.jpg",
+                id: "userId" in foundRecommendation ? foundRecommendation.userId : (referrerId || "user-1"),
+                name: "userName" in foundRecommendation ? foundRecommendation.userName : "משתמש",
+                photoUrl: "userPhotoURL" in foundRecommendation ? foundRecommendation.userPhotoURL : "",
               }
             };
             
@@ -75,7 +79,7 @@ export default function RecommendationPage() {
             
             // טעינת מידע על העסק
             try {
-              const businessData = await getBusinessById(formattedRecommendation.businessId);
+              const businessData = await getBusinessById(String(formattedRecommendation.businessId));
               if (businessData) {
                 setBusiness(businessData);
               } else {
@@ -86,7 +90,7 @@ export default function RecommendationPage() {
                   category: "עסק",
                   description: "פרטי העסק אינם זמינים",
                   address: "כתובת לא זמינה",
-                  image: foundRecommendation.businessImage || "https://images.unsplash.com/photo-1537047902294-62a40c20a6ae?q=80&w=500",
+                  image: "businessImage" in foundRecommendation ? foundRecommendation.businessImage : "https://images.unsplash.com/photo-1537047902294-62a40c20a6ae?q=80&w=500",
                 });
               }
             } catch (businessError) {
@@ -116,7 +120,7 @@ export default function RecommendationPage() {
           creator: {
             id: referrerId || "user-1",
             name: "משתמש לדוגמה",
-            photoUrl: "https://randomuser.me/api/portraits/men/32.jpg",
+            photoUrl: "",
           }
         };
         
@@ -204,12 +208,7 @@ export default function RecommendationPage() {
   
   return (
     <div className="container mx-auto py-4 px-4">
-      <div className="mb-4">
-        <Button variant="ghost" onClick={handleGoBack} className="p-2">
-          <ArrowLeft className="h-4 w-4 ml-1" />
-          חזרה
-        </Button>
-      </div>
+      
       
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
         <Card className="md:col-span-8 p-6">

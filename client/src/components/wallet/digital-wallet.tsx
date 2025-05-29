@@ -9,6 +9,9 @@ import {
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 
 interface WalletCardProps {
   gradient: string;
@@ -142,85 +145,97 @@ export default function DigitalWallet() {
 
   return (
     <div className="mt-8">
-      <h2 className="text-xl font-semibold mb-4 text-right">הארנק הדיגיטלי שלך</h2>
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden p-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <WalletCard
-            gradient="bg-gradient-to-r from-primary-600 to-primary-400"
-            icon={
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-10 w-10 text-yellow-300"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            }
-            title="סך כל המטבעות"
-            value={user.coins || 0}
-            subtext={
-              <div>
-                <div className="w-full h-1 bg-white bg-opacity-30 rounded-full">
-                  <div
-                    className="h-1 bg-white rounded-full"
-                    style={{ width: `${Math.min(100, ((user.coins || 0) / 50) * 100)}%` }}
-                  ></div>
-                </div>
-                <div className="flex justify-between mt-1 text-xs opacity-90">
-                  <span>0</span>
-                  <span>{user.coins || 0}/50 מטבעות עד לדרגת התגמול הבאה</span>
-                </div>
-              </div>
-            }
-          />
-
-          <WalletCard
-            gradient="bg-gradient-to-r from-green-500 to-green-400"
-            icon={<Users className="h-10 w-10 text-white opacity-80" />}
-            title="הפניות מוצלחות"
-            value={user.referrals || 0}
-            subtext={
-              <p className="flex items-center">
-                <TrendingUp className="h-4 w-4 ml-1" />
-                עלייה של {Math.max(0, (user.referrals || 0) - 2)} מהחודש שעבר
-              </p>
-            }
-          />
-
-          <WalletCard
-            gradient="bg-gradient-to-r from-amber-500 to-amber-400"
-            icon={<Bookmark className="h-10 w-10 text-white opacity-80" />}
-            title="הצעות שמורות"
-            value={user.savedOffers || 0}
-            subtext={
-              <p className="flex items-center">
-                <Check className="h-4 w-4 ml-1" />
-                {Math.max(0, Math.min(2, (user.savedOffers || 0)))} פוקעות תוך 7 ימים
-              </p>
-            }
-          />
+      <h2 className="text-xl font-semibold mb-4 text-right">ארנק דיגיטלי</h2>
+      <div className="flex flex-col md:flex-row gap-4 mb-6">
+        <div className="flex-1 bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
+          <h3 className="text-lg font-medium mb-2 text-right">יתרה</h3>
+          <p className="text-3xl font-bold text-right">{user.coins || 0} ₪</p>
         </div>
-
-        {/* Redemption Options */}
-        <div className="mt-6">
-          <h3 className="text-lg font-semibold mb-4 text-right">מוכן למימוש</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {redeemableOffers.map((offer) => (
-              <RedeemableOffer
-                key={offer.id}
-                {...offer}
-                onRedeem={handleRedeem}
-              />
-            ))}
-          </div>
+        <div className="flex-1 bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
+          <h3 className="text-lg font-medium mb-2 text-right">משיכה</h3>
+          <p className="text-3xl font-bold text-right">{user.withdrawn || 0} ₪</p>
         </div>
       </div>
+      <div className="flex gap-4 mb-6">
+        <Button onClick={() => setShowDepositModal(true)} className="flex-1">
+          הפקדה
+        </Button>
+        <Button onClick={() => setShowWithdrawModal(true)} className="flex-1">
+          משיכה
+        </Button>
+      </div>
+      <h3 className="text-lg font-medium mb-4 text-right">היסטוריית עסקאות</h3>
+      {user.transactions.length === 0 ? (
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 text-center">
+          <p className="text-gray-500 dark:text-gray-400">
+            עדיין לא ביצעת עסקאות.
+          </p>
+          <p className="text-gray-500 dark:text-gray-400 mt-2">
+            התחל בהפקדה או משיכת כספים.
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {user.transactions.map((transaction) => (
+            <div key={transaction.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-500 dark:text-gray-400">
+                  {new Date(transaction.timestamp).toLocaleDateString()}
+                </span>
+                <span className={`font-semibold ${transaction.type === 'deposit' ? 'text-green-500' : 'text-red-500'}`}>
+                  {transaction.type === 'deposit' ? '+' : '-'}{transaction.amount} ₪
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+      {showDepositModal && (
+        <Dialog open={showDepositModal} onOpenChange={setShowDepositModal}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>הפקדת כספים</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="amount">סכום</Label>
+                <Input
+                  id="amount"
+                  type="number"
+                  value={amount}
+                  onChange={(e) => setAmount(Number(e.target.value))}
+                />
+              </div>
+              <Button onClick={handleDeposit} disabled={loading}>
+                {loading ? 'מבצע הפקדה...' : 'הפקד'}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+      {showWithdrawModal && (
+        <Dialog open={showWithdrawModal} onOpenChange={setShowWithdrawModal}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>משיכת כספים</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="withdrawAmount">סכום</Label>
+                <Input
+                  id="withdrawAmount"
+                  type="number"
+                  value={withdrawAmount}
+                  onChange={(e) => setWithdrawAmount(Number(e.target.value))}
+                />
+              </div>
+              <Button onClick={handleWithdraw} disabled={loading}>
+                {loading ? 'מבצע משיכה...' : 'משוך'}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }

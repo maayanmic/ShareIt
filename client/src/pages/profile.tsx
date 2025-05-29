@@ -68,16 +68,16 @@ export default function Profile() {
         <Card className="w-full max-w-md">
           <CardContent className="pt-6 text-center">
             <Info className="h-16 w-16 text-primary-500 mx-auto mb-4" />
-            <h1 className="text-2xl font-bold mb-4">Login Required</h1>
+            <h1 className="text-2xl font-bold mb-4">נדרשת התחברות</h1>
             <p className="text-gray-500 dark:text-gray-400 mb-6">
-              You need to be logged in to view your profile.
+              עליך להתחבר כדי לצפות בפרופיל שלך.
             </p>
             <div className="flex justify-center space-x-4">
               <Button asChild>
-                <Link href="/login">Log In</Link>
+                <Link href="/login">התחבר</Link>
               </Button>
               <Button variant="outline" asChild>
-                <Link href="/register">Register</Link>
+                <Link href="/register">הרשמה</Link>
               </Button>
             </div>
           </CardContent>
@@ -93,10 +93,9 @@ export default function Profile() {
         <div className="bg-gradient-to-r from-primary-500 to-primary-600 h-32 flex items-end p-6">
           <div className="flex flex-col md:flex-row items-center md:items-end gap-4">
             <Avatar className="w-24 h-24 border-4 border-white dark:border-gray-800">
-              <AvatarImage src={user.photoURL || ""} alt={user.displayName || "User"} />
-              <AvatarFallback className="text-2xl">
-                {user.displayName?.charAt(0) || "U"}
-              </AvatarFallback>
+              {user.photoURL ? (
+                <AvatarImage src={user.photoURL} alt={user.displayName || "User"} />
+              ) : null}
             </Avatar>
             <div className="text-center md:text-left mb-4 md:mb-0">
               <h1 className="text-2xl font-bold text-white">{user.displayName}</h1>
@@ -111,36 +110,36 @@ export default function Profile() {
             <div className="flex items-center">
               <Users className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
               <span>
-                <span className="font-semibold">{user.referrals || 0}</span> Referrals
+                <span className="font-semibold">{user.referrals || 0}</span> הפניות
               </span>
             </div>
             <div className="flex items-center">
               <Share className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
               <span>
-                <span className="font-semibold">{recommendations.length}</span> Recommendations
+                <span className="font-semibold">{recommendations.length}</span> המלצות
               </span>
             </div>
             <div className="flex items-center">
               <ThumbsUp className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
               <span>
-                <span className="font-semibold">{user.savedOffers || 0}</span> Saved Offers
+                <span className="font-semibold">{user.savedOffers || 0}</span> הצעות שמורות
               </span>
             </div>
             <div className="flex items-center">
               <Award className="h-5 w-5 text-amber-500 mr-2" />
               <span>
-                <span className="font-semibold">{user.coins || 0}</span> Coins
+                <span className="font-semibold">{user.coins || 0}</span> מטבעות
               </span>
             </div>
           </div>
           <div className="mt-6 flex justify-center md:justify-end gap-4">
             <Button variant="outline" className="flex items-center">
               <Edit className="h-4 w-4 mr-2" />
-              Edit Profile
+              עריכת פרופיל
             </Button>
             <Button variant="outline" className="flex items-center">
               <Settings className="h-4 w-4 mr-2" />
-              Settings
+              הגדרות
             </Button>
           </div>
         </div>
@@ -160,7 +159,7 @@ export default function Profile() {
               onClick={() => qrScanner.openScanner()}
             >
               <Camera className="h-4 w-4 mr-2" />
-              סרוק QR ויצור המלצה
+              סרוק QR וצור המלצה
             </Button>
           </div>
           
@@ -258,13 +257,13 @@ export default function Profile() {
                   />
                 </svg>
                 <h3 className="text-lg font-semibold mb-2">אין לך המלצות עדיין</h3>
-                <p className="text-gray-500 dark:text-gray-400 max-w-md mb-6">
-                  עדיין לא יצרת המלצות. התחל לשתף את העסקים האהובים עליך כדי להרוויח פרסים!
+                <p className="text-gray-500 dark:text-gray-400 max-w-md mb-6 ">
+                  עדיין לא יצרת המלצות. התחל לשתף את העסקים האהובים עליך!
                 </p>
                 <Button
                   onClick={() => qrScanner.openScanner()}
                 >
-                  סרוק QR ויצור את ההמלצה הראשונה שלך
+                  סרוק QR וצור את ההמלצה הראשונה שלך
                 </Button>
               </div>
             </div>

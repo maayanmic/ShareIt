@@ -64,7 +64,7 @@ function Router() {
       <Route path="/users">
         {user ? <Users /> : <Login />}
       </Route>
-      <Route path="/user/:userId">
+      <Route path="/user-profile/:userId">
         {user ? <UserProfile /> : <Login />}
       </Route>
       <Route path="/recommendation/:id">

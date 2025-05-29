@@ -137,10 +137,10 @@ export default function Register() {
                 name="displayName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Full Name</FormLabel>
+                    <FormLabel>שם מלא</FormLabel>
                     <FormControl>
                       <Input 
-                        placeholder="John Doe" 
+                        placeholder="מעיין מיכאלי" 
                         {...field} 
                         disabled={isLoading}
                       />
